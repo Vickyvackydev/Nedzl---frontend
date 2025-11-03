@@ -6,17 +6,19 @@ import { getUserProfile, updateUser } from "../../../services/auth.service";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setUserId } from "../../../state/slices/globalReducer";
 
 function Account() {
   const {
     data: userProfile,
-    isLoading,
+    // isLoading,
     refetch,
   } = useQuery({ queryKey: ["profile"], queryFn: getUserProfile });
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<File | null>(null);
   const fileUploadInputRef = useRef<HTMLInputElement | null>(null);
-
+  const dispatch = useDispatch();
   const [fields, setFields] = useState({
     first_name: "",
     last_name: "",
@@ -61,6 +63,12 @@ function Account() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (userProfile) {
+      dispatch(setUserId(userProfile?.user?.id));
+    }
+  }, [userProfile]);
 
   return (
     <div className="w-full flex items-center flex-col justify-center py-10">

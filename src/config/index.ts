@@ -4,7 +4,7 @@ import { Store } from "../state/store";
 import { reset } from "../state/slices/authReducer";
 
 export const API = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "https://railway.com/project/24c7d55d-b996-4af8-87d5-5cdf88522ed8",
 });
 
 API.defaults.headers.common.Accept = "application/json";

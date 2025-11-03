@@ -2,13 +2,13 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { USER } from "../assets";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { selectUser } from "../state/slices/authReducer";
+// import { useSelector } from "react-redux";
+// import { selectUser } from "../state/slices/authReducer";
 
 export default function AccountDropdown() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const user = useSelector(selectUser);
+  // const user = useSelector(selectUser);
 
   return (
     <div className="relative">

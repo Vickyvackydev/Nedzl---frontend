@@ -3,11 +3,13 @@ import { motion, AnimatePresence } from "framer-motion";
 interface FullScreenLoaderProps {
   isLoading: boolean;
   progress: number; // between 0–100
+  message: string;
 }
 
 export default function FullScreenLoader({
   isLoading,
   progress,
+  message,
 }: FullScreenLoaderProps) {
   return (
     <AnimatePresence>
@@ -28,7 +30,7 @@ export default function FullScreenLoader({
           {/* Progress Text */}
           <div className="text-center">
             <h2 className="text-xl font-semibold text-gray-800">
-              Creating Product
+              {message} Product
             </h2>
             <p className="text-gray-600 text-sm mt-1">Please wait...</p>
           </div>

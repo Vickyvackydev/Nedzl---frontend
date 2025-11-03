@@ -1,5 +1,5 @@
 import { ButtonTypeProps } from "../types";
-import { PreloaderIcon } from "./Preloader";
+// import { PreloaderIcon } from "./Preloader";
 
 function Button(props: ButtonTypeProps) {
   return (

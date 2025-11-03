@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 
-import { FaCheck, FaEye, FaEyeSlash } from "react-icons/fa";
-import { MdPhone } from "react-icons/md";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import { motion } from "framer-motion";
 
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "../../layout/Authlayout";
-import { CHECK_GREEN, NEDZL_LOGO_GREEN, PAD_LOCK } from "../../assets";
+import { NEDZL_LOGO_GREEN, PAD_LOCK } from "../../assets";
 import Button from "../../components/Button";
 import { login } from "../../services/auth.service";
 import toast from "react-hot-toast";
@@ -61,7 +60,9 @@ function Login() {
         reset();
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.error);
+      console.log(error);
+
+      toast.error(error?.response?.data?.error || "Something went wrong");
     } finally {
       setLoading(false);
     }

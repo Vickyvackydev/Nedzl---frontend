@@ -1,10 +1,10 @@
-import React from "react";
+// import React from "react";
 import {
   HELP,
   NEDZL_LOGO_GREEN,
   NIGERIA_FLAG,
   SEARCH_INPUT,
-  USER,
+  // USER,
 } from "../assets";
 import Button from "./Button";
 import { Link } from "react-router-dom";

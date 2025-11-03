@@ -68,3 +68,50 @@ export interface ProductType {
   image_urls: File[] | string[];
   created_at: string;
 }
+
+export interface ProductResponse {
+  id: string;
+  product_name: string;
+  product_price: number;
+  market_price_from: number;
+  market_price_to: number;
+  category_name: string;
+  is_negotiable: boolean;
+  description: string;
+  state: string;
+  address_in_state: string;
+  outstanding_issues: string;
+  image_urls: string[];
+  status: "UNDER_REVIEW" | "APPROVED" | "REJECTED" | string; // extendable
+  condition: "brand-new" | "used" | string;
+  user_id: string;
+  brand_name: string;
+  user: User;
+  created_at: string; // ISO date string
+  updated_at: string; // ISO date string
+  deleted_at: string | null;
+}
+
+export interface User {
+  id: string;
+  user_name: string;
+  email: string;
+  role: "USER" | "ADMIN" | string;
+  phone_number: string;
+  image_url: string;
+  location: string;
+  created_at: string; // ISO date string
+  updated_at: string; // ISO date string
+  deleted_at: string | null;
+}
+
+export interface StoreSettingsPayload {
+  business_name: string;
+  about_company: string;
+  store_name: string;
+  state: string;
+  address: string;
+  how_do_we_locate_you: string;
+  business_hours_from: string;
+  business_hours_to: string;
+}

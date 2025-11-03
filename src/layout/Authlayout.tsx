@@ -1,9 +1,9 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { NEDZL_AUTH_LAYOUT, NEDZL_LOGO_WHITE } from "../assets";
 
 function AuthLayout({ children }: { children: React.ReactNode }) {
-  const location = useLocation();
-  const { pathname } = location;
+  // const location = useLocation();
+  // const { pathname } = location;
 
   return (
     <main className="w-full flex items-start h-full">

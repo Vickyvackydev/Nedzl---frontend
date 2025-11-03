@@ -1,7 +1,7 @@
-import React from "react";
+// import React from "react";
 import MainLayout from "../layout/MainLayout";
 import { BAR_WHITE, LEXUS } from "../assets";
-import { data, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ProductRow from "../ui/product-row";
 import { useQuery } from "@tanstack/react-query";
 import { getAllProducts } from "../services/product.service";
@@ -36,10 +36,8 @@ function Home() {
   const {
     data: products,
     isLoading,
-    refetch,
+    // refetch,
   } = useQuery({ queryKey: ["all-products"], queryFn: getAllProducts });
-
-  console.log(products);
 
   return (
     <MainLayout>
@@ -160,12 +158,13 @@ function Home() {
           </div>
         </div>
       </div>
+
       <ProductRow
         title="Today deal"
         data={products?.data}
         loading={isLoading}
       />
-      <ProductRow title="For you" data={[1, 2, 3, 4, 5]} />
+      <ProductRow title="For you" data={products?.data} loading={isLoading} />
     </MainLayout>
   );
 }

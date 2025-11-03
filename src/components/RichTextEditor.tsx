@@ -19,7 +19,7 @@ import {
   Heading2,
   Heading3,
 } from "lucide-react";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 
 interface RichTextEditorProps {
   content?: string;

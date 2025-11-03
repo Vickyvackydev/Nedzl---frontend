@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import {
   DISCORD,
   FACEBOOK,
-  FEND_FOOTER_LOGO,
+  // FEND_FOOTER_LOGO,
   INSTAGRAM,
   NEDZL_LOGO_GREEN,
   TWITTER,

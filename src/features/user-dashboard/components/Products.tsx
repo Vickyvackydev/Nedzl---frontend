@@ -22,22 +22,27 @@ import FullScreenLoader from "../../../components/FullScreenLoader";
 import { ProductType } from "../../../types";
 import {
   getUserProducts,
+  updateProduct,
   uploadProduct,
 } from "../../../services/product.service";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
+import { formatText } from "../../../utils";
 
 type Tabs = "active" | "closed" | "reviewed";
 const tabs = [
   {
     label: "Active",
+    // value: "ACTIVE",
   },
   {
     label: "Closed",
+    // value: "CLOSED",
     count: `(${0})`,
   },
   {
     label: "Reviewed",
+    // value: "UNDER_REVIEW",
     count: `(${0})`,
   },
 ];
@@ -46,13 +51,16 @@ function Products() {
   // const [showFields, setShowFields] = useState(false);
   const [isCreatingProduct, setIsCreatingProduct] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [editingProduct, setEditingProduct] = useState<ProductType | null>(
+    null
+  );
+  const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
 
   const showProductFields = useSelector(selectProductFields);
   const dispatch = useDispatch();
   const [images, setImages] = useState<File[]>([]);
   const maxImages = 5;
-  const formatText = (text: string) =>
-    text.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [formFields, setFormFields] = useState({
     product_name: "",
@@ -66,13 +74,20 @@ function Products() {
     description: "",
     condition: "",
     is_negotiable: "",
+    brand_name: "",
   });
 
   const {
     data: userProducts,
     isLoading,
     refetch,
-  } = useQuery({ queryKey: ["user-products"], queryFn: getUserProducts });
+  } = useQuery({
+    queryKey: ["user-products", activeTab],
+    queryFn: () =>
+      getUserProducts({
+        status: activeTab === "reviewed" ? "UNDER_REVIEW" : activeTab,
+      }),
+  });
 
   const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -87,13 +102,21 @@ function Products() {
       toast.error("Only JPG/JPEG images are allowed");
       return;
     }
-    if (validFiles.length > maxImages) {
-      toast.error("Maximum of 5 images is allowed");
+
+    const availableSlots =
+      maxImages - (existingImageUrls.length + images.length);
+    if (availableSlots <= 0) {
+      toast.error(`Maximum of ${maxImages} images is allowed`);
       return;
     }
 
-    const totalFiles = [...images, ...validFiles].slice(0, maxImages);
+    const filesToAdd = validFiles.slice(0, availableSlots);
+    const totalFiles = [...images, ...filesToAdd];
     setImages(totalFiles);
+
+    if (validFiles.length > availableSlots) {
+      toast.error(`Only ${availableSlots} more image(s) can be added`);
+    }
   };
 
   const handleRemoveImage = (index: number) => {
@@ -121,6 +144,54 @@ function Products() {
     input.click();
   };
 
+  const handleEditProduct = (product: ProductType) => {
+    setEditingProduct(product);
+
+    // Populate form fields
+    setFormFields({
+      product_name: product.product_name || "",
+      product_price:
+        product.product_price
+          ?.toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") || "",
+      market_price_from:
+        product.market_price_from
+          ?.toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") || "",
+      market_price_to:
+        product.market_price_to
+          ?.toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") || "",
+      category_name: product.category_name || "",
+      state: product.state || "",
+      address_in_state: product.address_in_state || "",
+      outstanding_issues: product.outstanding_issues || "",
+      description: product.description || "",
+      condition: product.condition || "",
+      is_negotiable: product.is_negotiable ? "yes" : "no",
+      brand_name: (product as any).brand_name || "",
+    });
+
+    // Handle existing images (URLs)
+    const imageUrls = Array.isArray(product.image_urls)
+      ? product.image_urls.filter(
+          (img): img is string => typeof img === "string"
+        )
+      : [];
+    setExistingImageUrls(imageUrls);
+    setImages([]); // Clear new file uploads
+
+    // Show the form
+    dispatch(setProductFields(true));
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProduct(null);
+    setExistingImageUrls([]);
+    reset();
+    dispatch(setProductFields(false));
+  };
+
   const handleCreateProduct = async () => {
     setIsCreatingProduct(true);
 
@@ -143,19 +214,41 @@ function Products() {
     formData.append("description", formFields.description);
     formData.append(
       "is_negotiable",
-      formFields.is_negotiable === "Yes" ? true : (false as any)
+      formFields.is_negotiable === "yes" || formFields.is_negotiable === "Yes"
+        ? "true"
+        : "false"
     );
     formData.append("state", formFields.state);
     formData.append("address_in_state", formFields.address_in_state);
     formData.append("outstanding_issues", formFields.outstanding_issues);
-    images.forEach((image) => formData.append("image_urls", image));
+    formData.append("brand_name", formFields.brand_name);
+
+    if (editingProduct) {
+      // ✅ Editing: send existing URLs + new images
+      formData.append("image_urls", JSON.stringify(existingImageUrls));
+      images.forEach((image) => formData.append("new_images", image));
+    } else {
+      // ✅ Creating: only new image uploads
+      images.forEach((image) => formData.append("new_images", image));
+    }
 
     try {
-      const response = await uploadProduct(formData, setUploadProgress);
+      const response = editingProduct
+        ? await updateProduct(
+            editingProduct.id as string,
+            formData,
+            setUploadProgress
+          )
+        : await uploadProduct(formData, setUploadProgress);
+
       if (response) {
         toast.success(response.message);
         reset();
+        setEditingProduct(null);
+        setExistingImageUrls([]);
         dispatch(setProductFields(false));
+        setActiveTab("reviewed");
+        refetch();
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.error);
@@ -177,10 +270,21 @@ function Products() {
       description: "",
       condition: "",
       is_negotiable: "",
+      brand_name: "",
     });
 
     setImages([]);
+    setExistingImageUrls([]);
+    setEditingProduct(null);
   };
+
+  const handleRemoveExistingImage = (index: number) => {
+    const updated = [...existingImageUrls];
+    updated.splice(index, 1);
+    setExistingImageUrls(updated);
+  };
+
+  const totalImagesCount = existingImageUrls.length + images.length;
 
   return (
     <div>
@@ -191,6 +295,7 @@ function Products() {
             required
             label="Product Name"
             placeholder="Kindly enter product name"
+            value={formFields.product_name}
             setValue={(e) => setFormFields({ ...formFields, product_name: e })}
           />
           <div className="w-full flex items-center gap-3 justify-between">
@@ -281,6 +386,22 @@ function Products() {
               setValue={(e) => setFormFields({ ...formFields, state: e })}
             />
             <SelectInput
+              isInput
+              required
+              label="Address in state"
+              placeholder={
+                formFields.state
+                  ? `Where in ${formatText(formFields.state)}`
+                  : "Select a state"
+              }
+              value={formFields.address_in_state}
+              setValue={(val) => {
+                setFormFields({ ...formFields, address_in_state: val });
+              }}
+            />
+          </div>
+          <div className="w-full flex items-center gap-3 justify-between">
+            <SelectInput
               required
               label="Condition"
               options={[
@@ -290,6 +411,16 @@ function Products() {
               value={formatText(formFields.condition)}
               placeholder="Please select"
               setValue={(e) => setFormFields({ ...formFields, condition: e })}
+            />
+            <SelectInput
+              isInput
+              required
+              label="Brand Name"
+              placeholder={"Enter product brand"}
+              value={formFields.brand_name}
+              setValue={(val) => {
+                setFormFields({ ...formFields, brand_name: val });
+              }}
             />
           </div>
           <div className="w-full flex flex-col gap-y-2">
@@ -337,7 +468,7 @@ function Products() {
                 your photos and drag
               </span>
             </div>
-            {images.length < 1 && (
+            {totalImagesCount < 1 && (
               <div
                 onClick={() => imageInputRef.current?.click()}
                 className="w-full  h-[250px] rounded-xl border border-dotted border-[#E97A3B] bg-[#E97A3B08] flex items-center flex-col gap-y-2 justify-center "
@@ -356,15 +487,36 @@ function Products() {
 
             <div
               className={`w-full h-auto flex-wrap gap-2 p-2 rounded-xl border border-dotted border-[#E97A3B] bg-[#E97A3B08] transition-all duration-300 ${
-                images.length > 0 ? "flex" : "hidden"
+                totalImagesCount > 0 ? "flex" : "hidden"
               }`}
             >
-              {/* Image previews */}
+              {/* Existing image URLs (from editing) */}
+              {existingImageUrls.map((url, idx) => (
+                <div
+                  key={`existing-${idx}`}
+                  className="relative w-[100px] h-[100px] rounded-lg overflow-hidden border border-gray-300 flex items-center justify-center"
+                >
+                  <img
+                    src={url}
+                    alt={`existing-${idx}`}
+                    className="object-cover w-full h-full"
+                  />
+                  {/* Delete Icon */}
+                  <button
+                    onClick={() => handleRemoveExistingImage(idx)}
+                    className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
+                  >
+                    <FiX className="w-4 h-4 text-red-500" />
+                  </button>
+                </div>
+              ))}
+
+              {/* New image file previews */}
               {images.map((file, idx) => {
                 const url = URL.createObjectURL(file);
                 return (
                   <div
-                    key={idx}
+                    key={`new-${idx}`}
                     className="relative w-[100px] h-[100px] rounded-lg overflow-hidden border border-gray-300 flex items-center justify-center"
                   >
                     <img
@@ -389,7 +541,7 @@ function Products() {
                   </div>
                 );
               })}
-              {images.length > 0 && images.length != maxImages && (
+              {totalImagesCount < maxImages && (
                 <div
                   onClick={() => imageInputRef.current?.click()}
                   className="w-[100px] h-[100px] border border-dotted border-[#E97A3B] bg-[#E97A3B08] rounded-lg flex-col gap-y-2 flex items-center justify-center "
@@ -405,9 +557,19 @@ function Products() {
             </div>
           </div>
           {/* <ImageUploader /> */}
-          <div className="w-full flex items-end justify-end">
+          <div className="w-full flex items-end justify-end gap-3">
+            {editingProduct && (
+              <Button
+                title="Cancel"
+                btnStyles="bg-gray-500 w-fit px-5 h-[40px] rounded-xl"
+                textStyle="text-white text-sm font-medium"
+                handleClick={handleCancelEdit}
+              />
+            )}
             <Button
-              title="Save & continue"
+              title={editingProduct ? "Update Product" : "Save & continue"}
+              loading={isCreatingProduct}
+              disabled={isCreatingProduct}
               btnStyles="bg-global-green w-fit px-5 h-[40px] rounded-xl"
               textStyle="text-white text-sm font-medium"
               handleClick={handleCreateProduct}
@@ -488,7 +650,10 @@ function Products() {
                       </div>
                     </div>
                     <div className="flex items-center gap-x-3">
-                      <button className="w-fit py-1 px-4 rounded-lg bg-global-green text-white font-medium text-xs">
+                      <button
+                        onClick={() => handleEditProduct(item)}
+                        className="w-fit py-1 px-4 rounded-lg bg-global-green text-white font-medium text-xs"
+                      >
                         Edit
                       </button>
                       <button className="w-fit py-1 px-4 rounded-lg bg-[#FF3B30] text-white font-medium text-xs">
@@ -526,7 +691,10 @@ function Products() {
               <Button
                 title="Post a new product"
                 textStyle="text-white font-medium text-sm"
-                handleClick={() => dispatch(setProductFields(true))}
+                handleClick={() => {
+                  reset();
+                  dispatch(setProductFields(true));
+                }}
                 btnStyles="w-fit px-5 py-3 rounded-xl bg-global-green"
               />
             </div>
@@ -536,6 +704,7 @@ function Products() {
       <FullScreenLoader
         isLoading={isCreatingProduct}
         progress={uploadProgress}
+        message={editingProduct ? "Updating" : "Creating"}
       />
     </div>
   );

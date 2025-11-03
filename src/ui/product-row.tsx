@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import { motion } from "framer-motion";
 
 import ProductCard from "../components/ProductCard";
@@ -52,7 +52,7 @@ export default function ProductSection({
   );
 }
 
-function SkeletonCard() {
+export function SkeletonCard() {
   return (
     <div className="w-full bg-white rounded-xl shadow-sm animate-pulse p-3 flex flex-col gap-y-2">
       <div className="w-full h-[180px] bg-gray-200 rounded-lg" />

@@ -48,6 +48,9 @@ export { default as UPLOAD } from "../assets/images/upload.svg";
 export { default as PRELOADER_ICON } from "../assets/images/preloader-icon.svg";
 export { default as CALENDER_GREEN } from "../assets/icons/calender-green.svg";
 export { default as CLOCK_GREEN } from "../assets/icons/clock-green.svg";
+export { default as DOUBLE_DIRECT } from "../assets/images/double-direct.svg";
+export { default as ARROW_DOWN } from "../assets/icons/arrow-down.svg";
+export { default as LINE } from "../assets/images/Line 1.svg";
 
 // end
 export { default as FEND_LOGO } from "../assets/images/fend-logo.svg";

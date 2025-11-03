@@ -1,5 +1,5 @@
-import React from "react";
-import { LEXUS, LOCATION } from "../assets";
+// import React from "react";
+import { LOCATION } from "../assets";
 import { useNavigate } from "react-router-dom";
 import { ProductType } from "../types";
 import clsx from "clsx";
@@ -9,7 +9,7 @@ function ProductCard({ item }: { item: ProductType }) {
   const navigate = useNavigate();
   return (
     <div
-      onClick={() => navigate("/product-details")}
+      onClick={() => navigate(`/product-details/${item.id}`)}
       className="w-full h-full bg-white hover:scale-105 transition-all duration-300 shadow-box p-3 rounded-xl flex flex-col gap-y-2 items-start"
     >
       <img

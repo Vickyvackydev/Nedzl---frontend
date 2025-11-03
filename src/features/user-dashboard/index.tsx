@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import MainLayout from "../../layout/MainLayout";
 import clsx from "clsx";
 import {
@@ -14,7 +14,7 @@ import {
   REVIEWS_WHITE,
   SETTINGS_BLACK,
   SETTINGS_WHITE,
-  SINGLE_USER,
+  // SINGLE_USER,
   SINGLE_USER_BLACK,
   SINGLE_USER_WHITE,
   STORE_SETTINGS_BLACK,
@@ -32,6 +32,8 @@ import {
   selectProductFields,
   setProductFields,
 } from "../../state/slices/globalReducer";
+// import { motion } from "framer-motion";
+// import Button from "../../components/Button";
 
 type TabTypes =
   | "my_account"
@@ -134,11 +136,35 @@ function UserDashboard() {
         <div className="w-[75%] bg-white rounded-xl">
           <div className="w-full p-4 border-b border-[#E9EAEB]">
             {!showProductFields ? (
-              <span className="text-[16px] font-medium text-[#313133]">
-                {activeTab === "my_account"
-                  ? "ACCOUNT OVERVIEW"
-                  : formatText(activeTab)}
-              </span>
+              <div className="w-full flex items-center justify-between">
+                <span className="text-[16px] font-medium text-[#313133]">
+                  {activeTab === "my_account"
+                    ? "ACCOUNT OVERVIEW"
+                    : formatText(activeTab)}
+                </span>
+                {activeTab === "my_products" && (
+                  <button
+                    onClick={() => dispatch(setProductFields(true))}
+                    className="flex items-center gap-1.5 bg-[#00C853]/10 text-[#00C853] text-sm font-medium px-3 py-1.5 rounded-md hover:bg-[#00C853]/20 transition-all duration-200"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="w-4 h-4"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 4.5v15m7.5-7.5h-15"
+                      />
+                    </svg>
+                    Add Product
+                  </button>
+                )}
+              </div>
             ) : (
               <div className="flex items-center gap-x-2">
                 <button
