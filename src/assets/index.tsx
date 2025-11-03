@@ -27,7 +27,7 @@ export { default as SINGLE_USER } from "../assets/images/singe-user.svg";
 export { default as SINGLE_USER_WHITE } from "../assets/images/single-user-white.svg";
 export { default as REVIEW_BLACK } from "../assets/images/review-black.svg";
 export { default as REVIEW_WHITE } from "../assets/images/review-white.svg";
-export { default as REVIEWS_BLACK } from "../assets/images/reviewS-black.svg";
+export { default as REVIEWS_BLACK } from "../assets/images/reviews-black.svg";
 export { default as REVIEWS_WHITE } from "../assets/images/reviews-white.svg";
 export { default as STORE_SETTINGS_BLACK } from "../assets/images/store-settings-black.svg";
 export { default as STORE_SETTINGS_WHITE } from "../assets/images/store-settings-white.svg";
