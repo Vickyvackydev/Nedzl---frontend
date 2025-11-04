@@ -51,6 +51,7 @@ export { default as CLOCK_GREEN } from "../assets/icons/clock-green.svg";
 export { default as DOUBLE_DIRECT } from "../assets/images/double-direct.svg";
 export { default as ARROW_DOWN } from "../assets/icons/arrow-down.svg";
 export { default as LINE } from "../assets/images/Line 1.svg";
+export { default as EMPTY_CART } from "../assets/images/empty-cart.png";
 
 // end
 export { default as FEND_LOGO } from "../assets/images/fend-logo.svg";

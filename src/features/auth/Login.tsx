@@ -50,8 +50,9 @@ function Login() {
       const response = await login(payload);
       if (response) {
         toast.success(response?.message);
-        dispatch(setToken(response?.token));
-        dispatch(setUser(response?.user));
+        dispatch(setToken(response?.data?.token));
+        dispatch(setUser(response?.data?.user));
+
         window.history.pushState({}, "", "/dashboard");
         setTimeout(() => {
           window.location.reload();
@@ -62,7 +63,7 @@ function Login() {
     } catch (error: any) {
       console.log(error);
 
-      toast.error(error?.response?.data?.error || "Something went wrong");
+      toast.error(error?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

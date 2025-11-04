@@ -605,10 +605,10 @@ function Products() {
               </div>
             ))}
           </div>
-          {userProducts?.data?.length > 0 ? (
+          {userProducts?.data?.data?.length > 0 ? (
             <div className="max-h-[500px] w-full overflow-auto px-4 py-7">
               <div className="flex items-start flex-col gap-y-3 w-full">
-                {userProducts?.data?.map((item: ProductType) => (
+                {userProducts?.data?.data?.map((item: ProductType) => (
                   <div className="w-full flex items-start justify-between p-3 rounded-lg">
                     <div className="flex items-start gap-x-2">
                       <img
@@ -665,7 +665,7 @@ function Products() {
               </div>
             </div>
           ) : isLoading ? (
-            <div className="flex space-x-1">
+            <div className="flex space-x-1 h-[75vh] justify-center items-center">
               <div
                 className="w-2 h-2 bg-global-green rounded-full animate-preloader-bounce"
                 style={{ animationDelay: "0ms" }}

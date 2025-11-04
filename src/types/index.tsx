@@ -91,6 +91,9 @@ export interface ProductResponse {
   updated_at: string; // ISO date string
   deleted_at: string | null;
 }
+export interface SingleProductResponse {
+  product: ProductResponse;
+}
 
 export interface User {
   id: string;

@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 
 import ProductCard from "../components/ProductCard";
-import { GRAY_PLAY } from "../assets";
+import { EMPTY_CART, GRAY_PLAY } from "../assets";
 import { ProductType } from "../types";
 
 interface ProductSectionProps {
@@ -33,21 +33,45 @@ export default function ProductSection({
       </div>
 
       {/* Content */}
-      <div className="w-full grid grid-cols-5 gap-3">
-        {loading
-          ? Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)
-          : data !== undefined &&
-            data?.map((item: ProductType, index: number) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-              >
-                <ProductCard item={item} />
-              </motion.div>
-            ))}
-      </div>
+      {loading ? (
+        <div className="w-full grid grid-cols-5 gap-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      ) : data && data.length > 0 ? (
+        <div className="w-full grid grid-cols-5 gap-3">
+          {data.map((item: ProductType, index: number) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
+            >
+              <ProductCard item={item} />
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-gray-200"
+        >
+          <img
+            src={EMPTY_CART}
+            alt="No Products"
+            className="w-28 h-28 mb-4 opacity-70"
+          />
+          <h3 className="text-gray-700 text-base font-semibold">
+            No Products Available
+          </h3>
+          <p className="text-gray-500 text-sm mt-1">
+            Check back later or explore other categories.
+          </p>
+        </motion.div>
+      )}
     </div>
   );
 }

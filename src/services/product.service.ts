@@ -38,11 +38,11 @@ export const getUserProducts = async (filters: Record<string, any>) => {
 export const getAllProducts = async (filters: Record<string, any>) => {
   const query = buildQueryStrings(filters);
   const response = await API.get(`/products?${query}`);
-  return response.data;
+  return response.data?.data;
 };
 export const getSingleProduct = async (id: string) => {
   const response = await API.get(`/products/${id}`);
-  return response?.data?.product;
+  return response?.data?.data;
 };
 export const getSellerStoreDetails = async (id: string) => {
   const response = await API.get(`/store-settings/${id}`);
@@ -55,5 +55,5 @@ export const createStoreSettings = async (data: StoreSettingsPayload) => {
 
 export const getProductCategoryCounts = async () => {
   const response = await API.get(`/products/counts`);
-  return response?.data;
+  return response?.data?.data;
 };

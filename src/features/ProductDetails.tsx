@@ -18,7 +18,7 @@ import {
   getSingleProduct,
 } from "../services/product.service";
 import { Link, useLocation } from "react-router-dom";
-import { ProductResponse } from "../types";
+import { ProductResponse, SingleProductResponse } from "../types";
 import { formatPrice } from "../utils";
 
 function ProductDetails() {
@@ -33,7 +33,7 @@ function ProductDetails() {
     data: productDetails,
     // isLoading,
     // refetch,
-  } = useQuery<ProductResponse>({
+  } = useQuery<SingleProductResponse>({
     queryKey: ["product-details", product_id],
     queryFn: () => getSingleProduct(product_id as string),
   });
@@ -42,11 +42,12 @@ function ProductDetails() {
     // isLoading: loadingStoreSettings,
     // refetch,
   } = useQuery({
-    queryKey: ["store-settings", productDetails?.user_id],
-    queryFn: () => getSellerStoreDetails(productDetails?.user_id as string),
+    queryKey: ["store-settings", productDetails?.product.user_id],
+    queryFn: () =>
+      getSellerStoreDetails(productDetails?.product.user_id as string),
   });
 
-  const category = productDetails?.category_name?.replace(/_/g, " ");
+  const category = productDetails?.product.category_name?.replace(/_/g, " ");
 
   const [showSellerNumber, setShowSellerNumber] = useState(false);
 
@@ -70,7 +71,7 @@ function ProductDetails() {
           <span className="text-xs font-semibold text-primary-300">/</span>
 
           <div className="w-fit h-fit px-2 py-1.5 rounded-full text-xs font-semibold text-primary-300 bg-white shadow-box">
-            {productDetails?.product_name}
+            {productDetails?.product.product_name}
           </div>
         </div>
         <div className="w-full flex items-start justify-between mt-4 gap-7">
@@ -78,25 +79,27 @@ function ProductDetails() {
             <div className="w-full p-5 bg-white shadow-box rounded-xl flex flex-col gap-y-3">
               <div className="w-full ">
                 <img
-                  src={productDetails?.image_urls[currentImage]}
+                  src={productDetails?.product.image_urls[currentImage]}
                   className="w-full h-[300px] rounded-xl object-cover"
                   alt=""
                 />
               </div>
               <div className="max-w-full overflow-x-scroll flex items-center gap-x-2">
-                {productDetails?.image_urls?.map((img: string, i: number) => (
-                  <img
-                    src={img}
-                    onClick={() => setCurrentImage(i)}
-                    className="w-full h-[79px] rounded-xl object-cover cursor-pointer"
-                    alt=""
-                  />
-                ))}
+                {productDetails?.product?.image_urls?.map(
+                  (img: string, i: number) => (
+                    <img
+                      src={img}
+                      onClick={() => setCurrentImage(i)}
+                      className="w-full h-[79px] rounded-xl object-cover cursor-pointer"
+                      alt=""
+                    />
+                  )
+                )}
               </div>
               <div className="flex flex-col gap-y-2 items-startp">
                 <div className="w-full flex items-center justify-between ">
                   <span className="text-xl font-semibold text-primary-300">
-                    {productDetails?.product_name}
+                    {productDetails?.product.product_name}
                   </span>
                   <div className="flex items-center justify-end gap-x-3">
                     <div className="w-[32px] h-[32px] rounded-full border-[0.67px] border-[#DADADA] flex items-center justify-center">
@@ -110,7 +113,7 @@ function ProductDetails() {
                 <span className="text-sm font-normal text-faded-black-light">
                   Brand:{" "}
                   <span className="text-global-green">
-                    {productDetails?.brand_name}
+                    {productDetails?.product.brand_name}
                   </span>
                 </span>
                 <div className="flex items-center justify-start gap-x-2">
@@ -120,7 +123,7 @@ function ProductDetails() {
                     alt=""
                   />
                   <span className="text-[#75757A] font-normal text-sm">
-                    {productDetails?.address_in_state}, 1 hour ago
+                    {productDetails?.product.address_in_state}, 1 hour ago
                   </span>
                 </div>
                 <div className="flex items-center justify-start gap-x-2">
@@ -130,7 +133,9 @@ function ProductDetails() {
                   </span>
                 </div>
                 <div className="w-fit h-fit bg-[#07B4631A]  rounded-lg p-1.5 text-xs font-medium text-global-green">
-                  {productDetails?.condition?.replace(/-/g, " ").toUpperCase()}
+                  {productDetails?.product.condition
+                    ?.replace(/-/g, " ")
+                    .toUpperCase()}
                 </div>
               </div>
             </div>
@@ -171,12 +176,12 @@ function ProductDetails() {
                 {activeTab === "product-details" && (
                   <div
                     dangerouslySetInnerHTML={{
-                      __html: productDetails?.description as string,
+                      __html: productDetails?.product.description as string,
                     }}
                   ></div>
                 )}
                 {activeTab === "outstanding-issues" && (
-                  <span>{productDetails?.outstanding_issues}</span>
+                  <span>{productDetails?.product.outstanding_issues}</span>
                 )}
               </div>
             </div>
@@ -186,25 +191,30 @@ function ProductDetails() {
               <div className="flex flex-col items-start gap-y-1">
                 <span className="text-2xl font-semibold text-primary-300">
                   ₦{" "}
-                  {productDetails?.product_price
+                  {productDetails?.product.product_price
                     ?.toString()
                     .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                 </span>
 
                 <div className="w-fit h-fit border border-[#E9EAEB] rounded-lg p-1.5 text-xs font-medium text-primary-300">
                   Market Price:{" "}
-                  {formatPrice(productDetails?.market_price_from as number)} -{" "}
-                  {formatPrice(productDetails?.market_price_to as number)}
+                  {formatPrice(
+                    productDetails?.product.market_price_from as number
+                  )}{" "}
+                  -{" "}
+                  {formatPrice(
+                    productDetails?.product.market_price_to as number
+                  )}
                 </div>
               </div>
               <div
                 className={`w-fit h-fit rounded-lg p-1.5 text-xs font-medium ${
-                  productDetails?.is_negotiable
+                  productDetails?.product.is_negotiable
                     ? "bg-[#07B4631A] text-global-green"
                     : "bg-[#FF3B301A] text-[#FF3B30]"
                 }`}
               >
-                {productDetails?.is_negotiable
+                {productDetails?.product.is_negotiable
                   ? "Negotiable"
                   : "Not Negotiable"}
               </div>
@@ -226,7 +236,8 @@ function ProductDetails() {
                   </div>
                   <div className="flex flex-col items-start gap-y-1">
                     <span className="text-[16px] font-semibold text-primary-300">
-                      {storeDetails?.store_settings?.business_name}
+                      {storeDetails?.store_settings?.business_name ||
+                        productDetails?.product.user?.user_name}
                     </span>
                     <div className="flex items-center gap-x-2">
                       <img
@@ -254,7 +265,7 @@ function ProductDetails() {
                   <Button
                     title={
                       showSellerNumber
-                        ? (productDetails?.user?.phone_number as string)
+                        ? (productDetails?.product.user?.phone_number as string)
                         : "Show Seller Contact"
                     }
                     btnStyles="w-full bg-global-green rounded-xl h-[40px]"
@@ -273,10 +284,7 @@ function ProductDetails() {
           </div>
         </div>
       </div>
-      <ProductRow
-        title="Similar Adverts"
-        data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-      />
+      <ProductRow title="Similar Adverts" data={[]} />
     </MainLayout>
   );
 }

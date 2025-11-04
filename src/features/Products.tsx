@@ -103,7 +103,15 @@ function Products() {
             // to={`/products?category=${category}`}
             className="w-fit h-fit flex items-center  gap-x-2 px-2 py-1.5 rounded-full text-xs font-semibold text-primary-300 bg-white shadow-box"
           >
-            <span className="text-[#808080]">356,990 Ads</span>
+            <span className="text-[#808080]">
+              {categoriesWithCount
+                ?.find(
+                  (item) => item.label === formatText(selectedCatgory as string)
+                )
+                ?.count.toString()
+                ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0}{" "}
+              Ads
+            </span>
             <span>{formatText(selectedCatgory as string)}</span>
           </div>
         </div>
@@ -153,8 +161,12 @@ function Products() {
                     {formatText(selectedCatgory as string)}
                   </span>
                   <span className="w-fit h-fit px-2 py-1 text-xs font-semibold text-[#808080] rounded-3xl bg-white">
-                    {categorizedProductCount?.count
-                      ?.toString()
+                    {categoriesWithCount
+                      ?.find(
+                        (item) =>
+                          item.label === formatText(selectedCatgory as string)
+                      )
+                      ?.count.toString()
                       ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0}{" "}
                     Ads
                   </span>
@@ -259,8 +271,8 @@ function Products() {
             {isLoading ? (
               Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
             ) : categorizedProduct?.data &&
-              categorizedProduct.data.length > 0 ? (
-              categorizedProduct.data.map(
+              categorizedProduct.data?.length > 0 ? (
+              categorizedProduct.data?.map(
                 (item: ProductResponse, index: number) => (
                   <motion.div
                     key={index}

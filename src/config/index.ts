@@ -4,7 +4,7 @@ import { Store } from "../state/store";
 import { reset } from "../state/slices/authReducer";
 
 export const API = axios.create({
-  baseURL: "https://railway.com/project/24c7d55d-b996-4af8-87d5-5cdf88522ed8",
+  baseURL: "https://nedzl-backend-production.up.railway.app/",
 });
 
 API.defaults.headers.common.Accept = "application/json";
@@ -31,7 +31,7 @@ API.interceptors.response.use(
     if (error.response?.status === 401 && !isAuthRequest) {
       Store.dispatch(reset()); // Clear token using Redux action
       // restore initial auth state
-      window.location.href = "/sign-in";
+      window.location.href = "/login";
     }
     throw error;
   }

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import ProductRow from "../ui/product-row";
 import { useQuery } from "@tanstack/react-query";
 import { getAllProducts } from "../services/product.service";
+import { categories } from "../constant";
 
 const links = [
   {
@@ -49,8 +50,11 @@ function Home() {
               All categories
             </span>
           </div>
-          {links.map((li) => (
-            <Link to={"*"} className="w-fit p-3 text-white text-sm font-medium">
+          {categories.slice(0, 6).map((li) => (
+            <Link
+              to={`/products?category=${li.value}`}
+              className="w-fit p-3 text-white text-sm font-medium"
+            >
               {li.label}
             </Link>
           ))}

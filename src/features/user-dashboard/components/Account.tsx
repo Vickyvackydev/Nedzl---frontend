@@ -27,15 +27,17 @@ function Account() {
     location: "",
   });
 
+  const user = userProfile?.data?.user;
+
   useEffect(() => {
     if (userProfile) {
       setFields((prev) => ({
         ...prev,
-        first_name: userProfile?.user?.user_name?.split(" ")?.[0],
-        last_name: userProfile?.user?.user_name?.split(" ")?.[1],
-        email: userProfile?.user?.email,
-        location: userProfile?.user?.location || "",
-        phone_number: userProfile?.user?.phone_number,
+        first_name: user?.user_name?.split(" ")?.[0],
+        last_name: user?.user_name?.split(" ")?.[1],
+        email: user?.email,
+        location: user?.location || "",
+        phone_number: user?.phone_number,
       }));
     }
   }, [userProfile]);
