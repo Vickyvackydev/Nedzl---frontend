@@ -2,8 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { USER } from "../assets";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { selectUser } from "../state/slices/authReducer";
+
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile } from "../services/auth.service";
 
@@ -13,7 +12,7 @@ export default function AccountDropdown() {
   const {
     data: userProfile,
     // isLoading,
-    refetch,
+    // refetch,
   } = useQuery({ queryKey: ["profile"], queryFn: getUserProfile });
 
   const user = userProfile?.data?.user;

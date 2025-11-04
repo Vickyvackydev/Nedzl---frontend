@@ -18,7 +18,7 @@ import {
   getSingleProduct,
 } from "../services/product.service";
 import { Link, useLocation } from "react-router-dom";
-import { ProductResponse, SingleProductResponse } from "../types";
+import { SingleProductResponse } from "../types";
 import { formatPrice } from "../utils";
 
 function ProductDetails() {

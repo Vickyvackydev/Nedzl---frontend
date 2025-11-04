@@ -7,32 +7,6 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllProducts } from "../services/product.service";
 import { categories } from "../constant";
 
-const links = [
-  {
-    label: "Computers and accessories",
-    value: "Computers-and-accessories",
-  },
-  {
-    label: "Phones & Tablets",
-    value: "phones-tablets",
-  },
-  {
-    label: "Electronics",
-    value: "electronics",
-  },
-  {
-    label: "Fashion",
-    value: "fashion",
-  },
-  {
-    label: "Home & Kitchen",
-    value: "home-kitchen",
-  },
-  {
-    label: "Hair Extension & wigs",
-    value: "hair-extension-wigs",
-  },
-];
 function Home() {
   const {
     data: products,
