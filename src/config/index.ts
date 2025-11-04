@@ -31,7 +31,7 @@ API.interceptors.response.use(
     if (error.response?.status === 401 && !isAuthRequest) {
       Store.dispatch(reset()); // Clear token using Redux action
       // restore initial auth state
-      window.location.href = "/login";
+      // window.location.href = "/login";
     }
     throw error;
   }

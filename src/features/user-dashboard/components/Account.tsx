@@ -79,12 +79,12 @@ function Account() {
           src={
             image
               ? URL.createObjectURL(image)
-              : userProfile?.user?.image_url
-              ? userProfile?.user?.image_url
+              : user?.image_url
+              ? user?.image_url
               : GREEN_USER
           }
           className={clsx(
-            userProfile?.user?.image_url || image
+            user?.image_url || image
               ? "w-full h-full rounded-full object-cover"
               : "w-[20px] h-[20px]"
           )}
