@@ -53,10 +53,11 @@ function Login() {
         dispatch(setToken(response?.data?.token));
         dispatch(setUser(response?.data?.user));
 
-        window.history.pushState({}, "", "/dashboard");
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        // window.history.pushState({}, "", "/dashboard");
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 1000);
+        navigate("/dashboard");
 
         reset();
       }
