@@ -1,6 +1,6 @@
 // import React from "react";
 import MainLayout from "../layout/MainLayout";
-import { BAR_WHITE, LEXUS } from "../assets";
+import { LEXUS } from "../assets";
 import { Link } from "react-router-dom";
 import ProductRow from "../ui/product-row";
 import { useQuery } from "@tanstack/react-query";
