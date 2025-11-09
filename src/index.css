@@ -153,3 +153,48 @@ body {
 .animate-preloader-fade-out {
   animation: preloader-fade-out 0.3s ease-in;
 }
+
+/* Lists */
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.prose li {
+  margin: 0.5rem 0;
+}
+
+/* Blockquotes */
+.prose blockquote {
+  border-left: 4px solid #e5e7eb;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  font-style: italic;
+  color: #6b7280;
+}
+
+/* Headings */
+.prose h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 1.5rem 0 1rem;
+}
+
+.prose h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 1.25rem 0 0.75rem;
+}
+
+.prose h3 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin: 1rem 0 0.5rem;
+}

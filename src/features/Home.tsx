@@ -6,6 +6,8 @@ import ProductRow from "../ui/product-row";
 import { useQuery } from "@tanstack/react-query";
 import { getAllProducts } from "../services/product.service";
 import { categories } from "../constant";
+import CategoriesOverlay from "../components/CategoriesOverlay";
+import { ProductType } from "../types";
 
 function Home() {
   const {
@@ -14,16 +16,22 @@ function Home() {
     // refetch,
   } = useQuery({ queryKey: ["all-products"], queryFn: getAllProducts });
 
+  const todaysDeal = products?.data?.filter((item: ProductType) => {
+    const updatedDate = new Date(item.updated_at).toISOString().split("T")[0];
+    return updatedDate === new Date().toISOString().split("T")[0];
+  });
+
   return (
     <MainLayout>
       <div className="">
         <div className="bg-global-green px-20 py-4 w-full flex items-center justify-between">
-          <div className="w-fit px-7 border border-white rounded-xl p-2 flex items-center gap-x-2">
+          {/* <div className="w-fit px-7 border cursor-pointer border-white rounded-xl p-2 flex items-center gap-x-2">
             <img src={BAR_WHITE} className="w-[24px] h-[24px]" alt="" />
             <span className="text-sm font-medium text-white">
               All categories
             </span>
-          </div>
+          </div> */}
+          <CategoriesOverlay />
           {categories.slice(0, 6).map((li) => (
             <Link
               to={`/products?category=${li.value}`}
@@ -137,11 +145,7 @@ function Home() {
         </div>
       </div>
 
-      <ProductRow
-        title="Today deal"
-        data={products?.data}
-        loading={isLoading}
-      />
+      <ProductRow title="Today deal" data={todaysDeal} loading={isLoading} />
       <ProductRow title="For you" data={products?.data} loading={isLoading} />
     </MainLayout>
   );

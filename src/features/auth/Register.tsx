@@ -99,7 +99,7 @@ function Register() {
         reset();
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.error || "Something went wrong");
+      toast.error(error?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -326,7 +326,7 @@ function Register() {
               </div>
 
               {formInput.confirm_password &&
-                !passwordPattern.test(formInput.confirm_password) && (
+                formInput.confirm_password !== formInput.password && (
                   <span className="text-xs font-normal text-red-500">
                     Password must match
                   </span>

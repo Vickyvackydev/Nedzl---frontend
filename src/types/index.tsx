@@ -67,6 +67,7 @@ export interface ProductType {
   status?: string;
   image_urls: File[] | string[];
   created_at: string;
+  updated_at: string;
 }
 
 export interface ProductResponse {

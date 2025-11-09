@@ -1,14 +1,9 @@
 // import React from "react";
-import {
-  HELP,
-  NEDZL_LOGO_GREEN,
-  NIGERIA_FLAG,
-  SEARCH_INPUT,
-  // USER,
-} from "../assets";
-import Button from "./Button";
+import { HELP, NEDZL_LOGO_GREEN, NIGERIA_FLAG } from "../assets";
+
 import { Link } from "react-router-dom";
 import AccountDropdown from "./AccountDropdown";
+import SearchBar from "./SearchBar";
 
 function Header() {
   return (
@@ -21,20 +16,21 @@ function Header() {
         />
       </Link>
       <div className="flex items-center gap-x-2">
-        <div className="w-[403px] flex items-center gap-3  justify-start  p-2 rounded-xl border shadow-input border-[#E9EAEB] ">
+        {/* <div className="w-[403px] flex items-center gap-3  justify-start  p-2 rounded-xl border shadow-input border-[#E9EAEB] ">
           <img src={SEARCH_INPUT} alt="" />
           <input
             type="text"
             placeholder="Search for a products, brands & categories"
             className="w-full placeholder:text-primary-50 text-sm outline-none text-primary-300"
           />
-        </div>
-        <Button
+        </div> */}
+        <SearchBar />
+        {/* <Button
           title={"Search"}
           handleClick={() => {}}
           btnStyles={"w-fit bg-global-green rounded-xl px-4 py-2"}
           textStyle={"text-white text-[16px] font-medium"}
-        />
+        /> */}
       </div>
       <div className="flex items-center justify-end gap-5">
         <div className="flex items-center gap-x-3">

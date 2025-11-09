@@ -32,7 +32,7 @@ function Products() {
     if (category && selectedCatgory !== "") {
       setSelectedCatgory(category);
     }
-  }, []);
+  }, [category]);
 
   const {
     data: categorizedProduct,
