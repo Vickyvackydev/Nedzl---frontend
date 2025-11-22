@@ -578,7 +578,7 @@ function Overview() {
             </div>
           </div>
         </Modal>
-        <Modal show={true} onClose={() => {}}>
+        <Modal show={false} onClose={() => {}}>
           <div className="w-[70%] flex flex-col gap-y-4">
             <div className="w-full p-5 bg-white shadow-box rounded-xl flex flex-col gap-y-3">
               <div className="w-full ">
