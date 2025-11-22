@@ -1,10 +1,10 @@
 import axios, { AxiosError } from "axios";
 import { QueryClient } from "@tanstack/react-query";
 import { Store } from "../state/store";
-import { reset } from "../state/slices/authReducer";
+// import { reset } from "../state/slices/authReducer";
 
 export const API = axios.create({
-  baseURL: "https://nedzl-backend-production.up.railway.app/",
+  baseURL: "https://nedzl-backend.onrender.com",
 });
 
 API.defaults.headers.common.Accept = "application/json";
@@ -29,9 +29,9 @@ API.interceptors.response.use(
   async (error: AxiosError) => {
     const isAuthRequest = error?.config?.url?.includes("auth/");
     if (error.response?.status === 401 && !isAuthRequest) {
-      Store.dispatch(reset()); // Clear token using Redux action
+      // Store.dispatch(reset());
       // restore initial auth state
-      // window.location.href = "/login";
+      // window.location.href = "/";
     }
     throw error;
   }

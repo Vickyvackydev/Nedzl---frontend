@@ -24,9 +24,10 @@ const appReducer = combineReducers({
 
 const persistedAuthReducer = persistReducer(persistConfig, appReducer);
 const rootReducer: Reducer = (state, action) => {
-  if (action.type === "auths/reset") {
-    state = undefined; // Reset state without calling persistor.purge()
+  if (action.type === "auths/resetAuth") {
+    state = undefined;
   }
+
   return persistedAuthReducer(state, action);
 };
 

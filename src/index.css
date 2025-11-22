@@ -6,12 +6,22 @@ body {
   padding: 0;
   margin: 0;
 }
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
 @theme {
   --shadow-box: 0px 0px 10px 0px #0000001a;
   --shadow-input: 1px 1px 1px 0px #3232470d;
   --shadow-layout-top: 0px 0.5px 5px 0px #00000033;
   --shadow-box-shadow: 0px 0px 5px 0px #0606061f;
-
+  --shadow-button: 0px 1px 3px 0px #2f2b431a;
+  /* --font-geist: "Geist", sans-serif;
+  --font-open-sans: "Open Sans", sans-serif; */
   --color-borderColor: #e5e7ef;
   --color-primary-300: #2a2e34;
   --color-primary-50: #656f7d;
@@ -38,9 +48,18 @@ body {
   scrollbar-color: #687086 #a2adc2; /* thumb and track colors for Firefox */
 }
 
+.geist-family {
+  font-family: "Geist", sans-serif;
+}
+.open-sans-family {
+  font-family: "Open Sans", sans-serif;
+}
 /* Chrome/Edge/Safari */
 .custom-scrollbar-gray::-webkit-scrollbar {
   width: 6px;
+}
+button {
+  cursor: pointer;
 }
 
 .custom-scrollbar-gray::-webkit-scrollbar-thumb {

@@ -11,6 +11,7 @@ export interface ButtonTypeProps {
   rightarrow?: boolean;
   iconStyle?: string;
   disabled?: boolean;
+  loaderSize?: string;
 }
 export interface CardProps {
   id: number;
@@ -118,4 +119,85 @@ export interface StoreSettingsPayload {
   how_do_we_locate_you: string;
   business_hours_from: string;
   business_hours_to: string;
+}
+
+export type Filter = {
+  id: number | string;
+  field: string;
+  value: string | number | null;
+};
+
+interface StatsSeller {
+  total_sellers: number;
+  active_sellers: number;
+  suspended_users: number;
+  deactivated_users: number;
+}
+interface Stats {
+  total_product_listed: number;
+  active_products: number;
+  closed_sold_products: number;
+  flagged_reported_products: number;
+  total_registered_sellers: number;
+}
+
+interface MetricData {
+  month: string;
+  value: number;
+}
+
+interface MetricTypes {
+  customer_signup_metrics: MetricData[];
+  total_sold_products: MetricData[];
+}
+
+export interface DashboardData {
+  stats: Stats;
+  growth: Stats;
+  metrics: MetricTypes;
+}
+
+export interface SellerOverviewType {
+  user_stats: StatsSeller;
+  growth: StatsSeller;
+}
+
+export interface AdminUserDetails {
+  user_details: {
+    id: string;
+    user_name: string;
+    email: string;
+    role: "ADMIN" | "USER" | string;
+    phone_number: string;
+    image_url: string;
+    location: string;
+    status: "ACTIVE" | "INACTIVE" | string;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+  };
+
+  metrics: {
+    total_products_listed: number;
+    active_products: number;
+    sold_products: number;
+    flagged_products: number;
+  };
+
+  store_details: {
+    id: string;
+    business_name: string;
+    about_company: string;
+    store_name: string;
+    address: string;
+    state: string;
+    regoin: string;
+    how_do_we_locate_you: string;
+    business_hours_from: string;
+    business_hours_to: string;
+    user_id: string;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+  };
 }

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ART_WORK,
   CALENDER_GREEN,
@@ -21,31 +21,19 @@ import toast from "react-hot-toast";
 import FullScreenLoader from "../../../components/FullScreenLoader";
 import { ProductType } from "../../../types";
 import {
+  deleteProduct,
   getUserProducts,
   updateProduct,
+  updateProductStatus,
   uploadProduct,
 } from "../../../services/product.service";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
 import { formatText } from "../../../utils";
+import Modal from "../../../components/Modal";
 
 type Tabs = "active" | "closed" | "reviewed";
-const tabs = [
-  {
-    label: "Active",
-    // value: "ACTIVE",
-  },
-  {
-    label: "Closed",
-    // value: "CLOSED",
-    count: `(${0})`,
-  },
-  {
-    label: "Reviewed",
-    // value: "UNDER_REVIEW",
-    count: `(${0})`,
-  },
-];
+
 function Products() {
   const [activeTab, setActiveTab] = useState<Tabs>("active");
   // const [showFields, setShowFields] = useState(false);
@@ -54,12 +42,18 @@ function Products() {
   const [editingProduct, setEditingProduct] = useState<ProductType | null>(
     null
   );
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null
+  );
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [closeProductModal, setCloseProductModal] = useState(false);
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
 
   const showProductFields = useSelector(selectProductFields);
   const dispatch = useDispatch();
   const [images, setImages] = useState<File[]>([]);
   const maxImages = 5;
+  const [loading, setLoading] = useState(false);
 
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [formFields, setFormFields] = useState({
@@ -85,9 +79,26 @@ function Products() {
     queryKey: ["user-products", activeTab],
     queryFn: () =>
       getUserProducts({
-        status: activeTab === "reviewed" ? "UNDER_REVIEW" : activeTab,
+        status: activeTab === "active" ? "ONGOING" : activeTab.toUpperCase(),
       }),
   });
+
+  const tabs = [
+    {
+      label: "Active",
+      // value: "ACTIVE",
+    },
+    {
+      label: "Closed",
+      // value: "CLOSED",
+      // count: `(${userProducts?.data?.total})`,
+    },
+    // {
+    //   label: "Reviewed",
+    //   // value: "UNDER_REVIEW",
+    //   count: `(${0})`,
+    // },
+  ];
 
   const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -224,11 +235,11 @@ function Products() {
     formData.append("brand_name", formFields.brand_name);
 
     if (editingProduct) {
-      // ✅ Editing: send existing URLs + new images
+      //  send existing URLs + new images
       formData.append("image_urls", JSON.stringify(existingImageUrls));
       images.forEach((image) => formData.append("new_images", image));
     } else {
-      // ✅ Creating: only new image uploads
+      //  only new image uploads
       images.forEach((image) => formData.append("new_images", image));
     }
 
@@ -247,7 +258,7 @@ function Products() {
         setEditingProduct(null);
         setExistingImageUrls([]);
         dispatch(setProductFields(false));
-        setActiveTab("reviewed");
+        setActiveTab("active");
         refetch();
       }
     } catch (error: any) {
@@ -285,6 +296,52 @@ function Products() {
   };
 
   const totalImagesCount = existingImageUrls.length + images.length;
+
+  useEffect(() => {
+    if (showProductFields && !editingProduct) {
+      reset();
+      setEditingProduct(null);
+      setExistingImageUrls([]);
+    }
+  }, [showProductFields, editingProduct]);
+
+  const handleDeleteProduct = async () => {
+    setLoading(true);
+
+    try {
+      const response = await deleteProduct(selectedProductId as string);
+      if (response) {
+        toast.success(response?.message);
+        setDeleteModal(false);
+        refetch();
+        setSelectedProductId(null);
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleCloseProduct = async () => {
+    setLoading(true);
+
+    try {
+      const response = await updateProductStatus(
+        selectedProductId as string,
+        "CLOSED"
+      );
+      if (response) {
+        toast.success(response?.message);
+        setCloseProductModal(false);
+        refetch();
+        setSelectedProductId(null);
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -597,7 +654,7 @@ function Products() {
                       : "text-faded-black-light font-medium"
                   }`}
                 >
-                  {t.label.toUpperCase()} {t.count && t.count}
+                  {t.label.toUpperCase()}
                 </span>
                 {activeTab === t.label.toLowerCase() && (
                   <div className="border-b-[3px] border-global-green absolute w-full top-8" />
@@ -645,20 +702,49 @@ function Products() {
                             className="w-[12px] h-[12px]"
                             alt=""
                           />
-                          <span>Live in 18.5 hrs max</span>
+                          <span>Your Product is Live</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-x-3">
+                    <div className="flex items-center gap-x-2">
+                      {/* Edit */}
+                      {activeTab === "active" && (
+                        <button
+                          onClick={() => handleEditProduct(item)}
+                          className="py-1.5 px-4 rounded-lg text-xs font-medium
+                        bg-green-600 text-white hover:bg-green-700 
+                        transition-all duration-200"
+                        >
+                          Edit
+                        </button>
+                      )}
+                      {/* Delete */}
                       <button
-                        onClick={() => handleEditProduct(item)}
-                        className="w-fit py-1 px-4 rounded-lg bg-global-green text-white font-medium text-xs"
+                        onClick={() => {
+                          setSelectedProductId(item?.id as string);
+                          setDeleteModal(true);
+                        }}
+                        className="py-1.5 px-4 rounded-lg text-xs font-medium
+               bg-red-500 text-white hover:bg-red-600 
+               transition-all duration-200"
                       >
-                        Edit
-                      </button>
-                      <button className="w-fit py-1 px-4 rounded-lg bg-[#FF3B30] text-white font-medium text-xs">
                         Delete
                       </button>
+
+                      {/* Close */}
+                      {activeTab === "active" && (
+                        <button
+                          onClick={() => {
+                            setSelectedProductId(item?.id as string);
+                            setCloseProductModal(true);
+                          }}
+                          className="py-1.5 px-4 rounded-lg text-xs font-medium
+                        bg-gray-200 text-gray-700 hover:bg-gray-300
+                        transition-all duration-200"
+                        >
+                          Close
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -706,6 +792,69 @@ function Products() {
         progress={uploadProgress}
         message={editingProduct ? "Updating" : "Creating"}
       />
+      <Modal
+        show={closeProductModal}
+        onClose={() => setCloseProductModal(false)}
+      >
+        <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Close Product?
+          </h3>
+
+          <p className="text-gray-600 text-sm mb-6">
+            Are you sure you want to close this Product? This product would be
+            marked as sold
+          </p>
+
+          <div className="flex justify-end gap-3">
+            <button
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300 transition"
+              onClick={() => setCloseProductModal(false)}
+            >
+              Cancel
+            </button>
+
+            <Button
+              title="Yes, Close"
+              textStyle="text-sm font-medium text-white"
+              btnStyles="px-4 py-2 rounded-lg  bg-gray-800 hover:bg-gray-900 transition"
+              loaderSize={"w-1 h-1"}
+              handleClick={handleCloseProduct}
+              loading={loading}
+            />
+          </div>
+        </div>
+      </Modal>
+      <Modal show={deleteModal} onClose={() => setDeleteModal(false)}>
+        <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Delete Product?
+          </h3>
+
+          <p className="text-gray-600 text-sm mb-6">
+            This action cannot be undone. Do you want to permanently delete this
+            product?
+          </p>
+
+          <div className="flex justify-end gap-3">
+            <button
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300 transition"
+              onClick={() => setDeleteModal(false)}
+            >
+              Cancel
+            </button>
+
+            <Button
+              title="Yes, Delete"
+              textStyle="text-sm font-medium text-white"
+              btnStyles="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition"
+              loaderSize={"w-1 h-1"}
+              handleClick={handleDeleteProduct}
+              loading={loading}
+            />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

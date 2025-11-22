@@ -28,8 +28,8 @@ export const moreDetails = [
 ];
 export const categories = [
   {
-    label: "Electricals / Home appliances",
-    value: "electrical-home-appliances",
+    label: "Electricals Home Appliances",
+    value: "electricals-home-appliances",
   },
   { label: "Furniture", value: "furniture" },
   { label: "Kitchenware", value: "kitchenware" },
@@ -46,6 +46,7 @@ export const categories = [
   { label: "Property", value: "property" },
   { label: "Jobs", value: "jobs" },
   { label: "Food, Agriculture & Farming", value: "food-agriculture-farming" },
+  { label: "Others", value: "others" },
 ];
 
 export const statesInNigeria = [

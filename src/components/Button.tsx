@@ -2,6 +2,7 @@ import { ButtonTypeProps } from "../types";
 // import { PreloaderIcon } from "./Preloader";
 
 function Button(props: ButtonTypeProps) {
+  const loaderSize = props.loaderSize || "w-2 h-2";
   return (
     <button
       type={props.type}
@@ -12,16 +13,16 @@ function Button(props: ButtonTypeProps) {
       {props.loading ? (
         <div className="flex space-x-1">
           <div
-            className="w-2 h-2 bg-white rounded-full animate-preloader-bounce"
+            className={`${loaderSize} bg-white rounded-full animate-preloader-bounce`}
             style={{ animationDelay: "0ms" }}
           ></div>
           <div
-            className="w-2 h-2 bg-white rounded-full animate-preloader-bounce"
-            style={{ animationDelay: "150ms" }}
+            className={`${loaderSize} bg-white rounded-full animate-preloader-bounce`}
+            style={{ animationDelay: "0ms" }}
           ></div>
           <div
-            className="w-2 h-2 bg-white rounded-full animate-preloader-bounce"
-            style={{ animationDelay: "300ms" }}
+            className={`${loaderSize} bg-white rounded-full animate-preloader-bounce`}
+            style={{ animationDelay: "0ms" }}
           ></div>
         </div>
       ) : (

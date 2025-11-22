@@ -57,3 +57,20 @@ export const getProductCategoryCounts = async () => {
   const response = await API.get(`/products/counts`);
   return response?.data?.data;
 };
+export const getFeaturedProducts = async () => {
+  const response = await API.get(`/feature-products`);
+  return response?.data?.data;
+};
+
+export const deleteProduct = async (id: string) => {
+  const response = await API.delete(`/products/${id}`);
+  return response.data;
+};
+
+export const updateProductStatus = async (
+  id: string,
+  status: "CLOSED" | "ONGOING" | "REJECTED"
+) => {
+  const response = await API.patch(`/products/update/${id}/status`, { status });
+  return response.data;
+};

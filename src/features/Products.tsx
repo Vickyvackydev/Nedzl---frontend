@@ -18,6 +18,8 @@ import { motion } from "framer-motion";
 function Products() {
   const [searchParams] = useSearchParams();
   const category = searchParams.get("category");
+  const keyword = searchParams.get("q");
+
   const [selectedCatgory, setSelectedCatgory] = useState(category);
 
   //   const [location, setLocation] = useState("");
@@ -32,7 +34,7 @@ function Products() {
     if (category && selectedCatgory !== "") {
       setSelectedCatgory(category);
     }
-  }, [category]);
+  }, [category, keyword]);
 
   const {
     data: categorizedProduct,
@@ -42,7 +44,8 @@ function Products() {
     queryKey: ["product-category", selectedCatgory],
     queryFn: () =>
       getAllProducts({
-        category_name: selectedCatgory,
+        category_name: selectedCatgory || "",
+        search: keyword || "",
         ...payload,
       }),
   });

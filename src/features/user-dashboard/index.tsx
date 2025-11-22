@@ -32,6 +32,8 @@ import {
   selectProductFields,
   setProductFields,
 } from "../../state/slices/globalReducer";
+import { reset } from "../../state/slices/authReducer";
+import { useNavigate } from "react-router-dom";
 // import { motion } from "framer-motion";
 // import Button from "../../components/Button";
 
@@ -91,6 +93,7 @@ function UserDashboard() {
   const [activeTab, setActiveTab] = useState<TabTypes>("my_account");
   const showProductFields = useSelector(selectProductFields);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   // converts "my_account" to "My Account"
   const formatText = (text: string) =>
     text.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -128,7 +131,13 @@ function UserDashboard() {
               <span>{item.title}</span>
             </div>
           ))}
-          <button className="w-full flex items-center gap-x-2 px-3">
+          <button
+            onClick={() => {
+              dispatch(reset());
+              navigate("/");
+            }}
+            className="w-full flex items-center gap-x-2 px-3"
+          >
             <img src={LOG_OUT_RED} className="w-[20px] h-[20px]" alt="" />
             <span className="text-sm font-medium text-[#FF0000]">Log Out</span>
           </button>

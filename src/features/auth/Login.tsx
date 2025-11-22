@@ -57,7 +57,11 @@ function Login() {
         // setTimeout(() => {
         //   window.location.reload();
         // }, 1000);
-        navigate("/dashboard");
+        if (response?.data?.user?.role === "ADMIN") {
+          navigate("/admin/overview");
+        } else {
+          navigate("/dashboard");
+        }
 
         reset();
       }

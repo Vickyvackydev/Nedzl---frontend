@@ -16,9 +16,26 @@ export default function AccountDropdown() {
   } = useQuery({ queryKey: ["profile"], queryFn: getUserProfile });
 
   const user = userProfile?.data?.user;
+
+  const swicthRoute = (role: string) => {
+    switch (role) {
+      case "ADMIN":
+        navigate("/admin/overview");
+
+        break;
+
+      case "USER":
+        navigate("/dashboard");
+        break;
+
+      default:
+        navigate("/dashboard");
+        break;
+    }
+  };
   const handleClick = () => {
     if (user) {
-      navigate("/dashboard");
+      swicthRoute(user?.role);
     } else {
       setOpen((prev) => !prev);
     }

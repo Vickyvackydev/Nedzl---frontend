@@ -10,7 +10,7 @@ function ProductCard({ item }: { item: ProductType }) {
   return (
     <div
       onClick={() => navigate(`/product-details/${item.id}`)}
-      className="w-full h-full bg-white hover:scale-105 transition-all duration-300 shadow-box p-3 rounded-xl flex flex-col gap-y-2 items-start"
+      className="w-full cursor-pointer h-full bg-white hover:scale-105 transition-all duration-300 shadow-box p-3 rounded-xl flex flex-col gap-y-2 items-start"
     >
       <img
         src={item?.image_urls?.[0] as string}

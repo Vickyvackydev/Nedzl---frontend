@@ -14,11 +14,12 @@ import Button from "../components/Button";
 import ProductRow from "../ui/product-row";
 import { useQuery } from "@tanstack/react-query";
 import {
+  getAllProducts,
   getSellerStoreDetails,
   getSingleProduct,
 } from "../services/product.service";
 import { Link, useLocation } from "react-router-dom";
-import { SingleProductResponse } from "../types";
+import { ProductResponse, SingleProductResponse } from "../types";
 import { formatPrice } from "../utils";
 
 function ProductDetails() {
@@ -46,8 +47,19 @@ function ProductDetails() {
     queryFn: () =>
       getSellerStoreDetails(productDetails?.product.user_id as string),
   });
+  const {
+    data: similarProduct,
+    isLoading,
+    // refetch,
+  } = useQuery({
+    queryKey: ["similar-product", productDetails?.product?.category_name],
+    queryFn: () =>
+      getAllProducts({
+        category_name: productDetails?.product?.category_name || "",
+      }),
+  });
 
-  const category = productDetails?.product.category_name?.replace(/_/g, " ");
+  const category = productDetails?.product.category_name?.replace(/-/g, " ");
 
   const [showSellerNumber, setShowSellerNumber] = useState(false);
 
@@ -63,7 +75,7 @@ function ProductDetails() {
           </Link>
           <span className="text-xs font-semibold text-primary-300">/</span>
           <Link
-            to={`/products?category=${category}`}
+            to={`/products?category=${productDetails?.product.category_name}`}
             className="w-fit h-fit px-2 py-1.5 rounded-full text-xs font-semibold text-primary-300 bg-white shadow-box"
           >
             {category?.charAt(0).toUpperCase() + category?.slice(1)!}
@@ -284,7 +296,13 @@ function ProductDetails() {
           </div>
         </div>
       </div>
-      <ProductRow title="Similar Adverts" data={[]} />
+      <ProductRow
+        title="Similar Adverts"
+        data={similarProduct?.data?.filter(
+          (item: ProductResponse) => item.id !== productDetails?.product?.id
+        )}
+        loading={isLoading}
+      />
     </MainLayout>
   );
 }
