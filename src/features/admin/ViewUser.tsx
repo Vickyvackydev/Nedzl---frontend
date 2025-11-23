@@ -16,6 +16,7 @@ import {
 } from "../../assets";
 // import { PercentageChange } from "../../components/chart";
 import {
+  deleteAdminUser,
   getAdminUserDetails,
   getDashboardProducts,
 } from "../../services/admin.service";
@@ -31,11 +32,16 @@ import { useLocation } from "react-router-dom";
 import moment from "moment";
 import clsx from "clsx";
 import { statusStyles } from "../../components/columns/SellerColumns";
+import Button from "../../components/Button";
+import Modal from "../../components/Modal";
+import toast from "react-hot-toast";
 
 const productsStatus = ["All Listed Products", "Sold Products", "Under Review"];
 function ViewUser() {
   const location = useLocation();
   const userId = location.pathname.split("/").pop();
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const {
     data: userDetails,
     // refetch,
@@ -170,6 +176,20 @@ function ViewUser() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleDeleteUser = async () => {
+    setLoading(true);
+    try {
+      const response = await deleteAdminUser(userId as string);
+      if (response) {
+        toast.success(response.message);
+        window.history.back();
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <DashboardLayout>
       <div className="p-3 geist-family w-full flex flex-col items-start gap-y-3">
@@ -183,7 +203,10 @@ function ViewUser() {
               Back
             </span>
           </button>
-          <button className="w-[142px] h-[40px] rounded-xl bg-[#FF3B301A] flex items-center justify-center gap-x-2">
+          <button
+            onClick={() => setDeleteModal(true)}
+            className="w-[142px] h-[40px] rounded-xl bg-[#FF3B301A] flex items-center justify-center gap-x-2"
+          >
             <img src={TRASH} className="w-[20px] h-[20px]" alt="" />
             <span className="text-[#FF3B30] font-medium text-sm">
               Delete Seller
@@ -542,6 +565,36 @@ function ViewUser() {
             </div>
           )}
         </div>
+        <Modal show={deleteModal} onClose={() => setDeleteModal(false)}>
+          <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Delete User?
+            </h3>
+
+            <p className="text-gray-600 text-sm mb-6">
+              This action cannot be undone. Do you want to permanently delete
+              this user?
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300 transition"
+                onClick={() => setDeleteModal(false)}
+              >
+                Cancel
+              </button>
+
+              <Button
+                title="Yes, Delete"
+                textStyle="text-sm font-medium text-white"
+                btnStyles="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition"
+                loaderSize={"w-1 h-1"}
+                handleClick={handleDeleteUser}
+                loading={loading}
+              />
+            </div>
+          </div>
+        </Modal>
       </div>
     </DashboardLayout>
   );

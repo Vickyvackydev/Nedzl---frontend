@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import {
   ARROW_DOWN,
+  AVATAR,
   CALENDER_ICON,
   CHEVRON_LEFT,
   EMPTY_CART,
@@ -29,7 +30,10 @@ import {
   getDashboardOverview,
   getDashboardProducts,
 } from "../../services/admin.service";
-import { ProductsColumn } from "../../components/columns/ProductColumns";
+import {
+  ProductsColumn,
+  statusStyles,
+} from "../../components/columns/ProductColumns";
 import Modal from "../../components/Modal";
 import {
   selectProduct,
@@ -46,6 +50,9 @@ import {
 } from "../../services/product.service";
 import toast from "react-hot-toast";
 import { filterOptions } from "../../constant";
+import moment from "moment";
+import { useNavigate } from "react-router-dom";
+import clsx from "clsx";
 
 const periodOptions = [
   { label: "Last 7 Days", value: "7d" },
@@ -57,6 +64,7 @@ const periodOptions = [
 function Overview() {
   const productImages = useSelector(selectProductImages);
 
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [currentImage, setCurrentImage] = useState<number | null>(null);
   const productAction = useSelector(selectProductAction);
@@ -181,6 +189,8 @@ function Overview() {
 
   const [isOpen, setIsOpen] = useState(false);
   const productDetails = useSelector(selectProduct);
+  const ui =
+    statusStyles[productDetails?.status] ?? statusStyles["UNDER_REVIEW"];
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -631,6 +641,247 @@ function Overview() {
                   );
                 })}
               </div>
+            </div>
+          </div>
+        </Modal>
+        <Modal
+          show={
+            productDetails !== null &&
+            productAction !== "DELETE" &&
+            productAction !== "CLOSE"
+          }
+          onClose={() => dispatch(setProductDetails(null))}
+        >
+          <div className="bg-white rounded-lg w-full max-w-[595px] geist-family max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+              <h2 className="text-lg font-semibold text-primary-300">
+                Product Details -{" "}
+                <span className="text-emerald-500">
+                  {productDetails?.product_name}
+                </span>
+              </h2>
+              <button
+                onClick={() => dispatch(setProductDetails(null))}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-6">
+              {/* User Info */}
+              <div className="flex items-center justify-between border border-borderColor  rounded-xl p-4">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <img
+                      src={productDetails?.user?.image_url || AVATAR}
+                      className="w-14 h-14 rounded-full object-cover"
+                      alt=""
+                    />
+
+                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white"></div>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-primary-300">
+                      {productDetails?.user?.user_name}
+                    </h3>
+                    {/* <p className="text-sm text-gray-500">
+                            ID: {productDetails?.user?.id}
+                          </p> */}
+                  </div>
+                </div>
+                <button
+                  onClick={() =>
+                    navigate(`/admin/users/${productDetails?.user_id}`)
+                  }
+                  className="px-4 h-[24px] bg-global-green text-white rounded-md text-sm font-normal hover:bg-emerald-600 transition-colors"
+                >
+                  View Details
+                </button>
+              </div>
+
+              {/* Product Information Grid */}
+              <div className="grid grid-cols-2 gap-6 border border-borderColor p-4 rounded-xl">
+                {/* Product Name */}
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Product Name
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary-300 font-medium">
+                      {productDetails?.user?.user_name}
+                    </span>
+                    {/* <button className="text-gray-400 hover:text-gray-600">
+                        <Edit2 size={14} />
+                      </button> */}
+                  </div>
+                </div>
+
+                {/* Category */}
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Category
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary-300 font-medium">
+                      {productDetails?.category_name}
+                    </span>
+                    {/* <button className="text-gray-400 hover:text-gray-600">
+                        <Edit2 size={14} />
+                      </button> */}
+                  </div>
+                </div>
+
+                {/* Sub-Category */}
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Brand
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary-300 font-medium">
+                      {productDetails?.brand_name}
+                    </span>
+                    {/* <button className="text-gray-400 hover:text-gray-600">
+                        <Edit2 size={14} />
+                      </button> */}
+                  </div>
+                </div>
+
+                {/* Product Price */}
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Product Price
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary-300 font-medium">
+                      {productDetails?.product_price?.toLocaleString()}
+                    </span>
+                    {/* <button className="text-gray-400 hover:text-gray-600">
+                        <Edit2 size={14} />
+                      </button> */}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Product Description
+                  </label>
+                  <div className="flex items-start gap-2">
+                    <p
+                      dangerouslySetInnerHTML={{
+                        __html: productDetails?.description,
+                      }}
+                      className="text-primary-300 leading-relaxed"
+                    ></p>
+                    {/* <button className="text-gray-400 hover:text-gray-600 flex-shrink-0">
+                      <Edit2 size={14} />
+                    </button> */}
+                  </div>
+                </div>
+              </div>
+
+              {/* Dates */}
+              <div className="grid grid-cols-2 gap-6 p-4 rounded-xl border border-borderColor">
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Outstanding Details
+                  </label>
+                  <div className="flex items-start gap-2">
+                    <p className="text-primary-300 font-medium">
+                      {productDetails?.outstanding_issues}
+                    </p>
+                    {/* <button className="text-gray-400 hover:text-gray-600 flex-shrink-0">
+                        <Edit2 size={14} />
+                      </button> */}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Category
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary-300 font-medium">
+                      {productDetails?.category_name}
+                    </span>
+                    {/* <button className="text-gray-400 hover:text-gray-600">
+                        <Edit2 size={14} />
+                      </button> */}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Date Listed
+                  </label>
+                  <p className="text-primary-300 font-medium">
+                    {moment(productDetails?.created_at).format("MMM D, YYYY")}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Approved Date:
+                  </label>
+                  <p className="text-primary-300 font-medium">
+                    {moment(productDetails?.created_at).format("MMM D, YYYY")}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Status
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={clsx(
+                        "w-fit flex items-center gap-x-1 justify-center px-3 py-1.5 rounded-md",
+                        ui?.bg
+                      )}
+                    >
+                      <div
+                        className={clsx(
+                          "min-w-[5px] min-h-[5px] rounded-full",
+                          ui?.dot
+                        )}
+                      />
+
+                      <span className={clsx("text-xs font-medium", ui?.text)}>
+                        {productDetails?.status
+                          ?.replace(/_/g, " ")
+                          ?.toLowerCase()}
+                      </span>
+                    </div>
+                    {/* <button className="text-gray-400 hover:text-gray-600">
+                      <Edit2 size={14} />
+                    </button> */}
+                  </div>
+                </div>
+              </div>
+
+              {/* Status */}
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
+              <button
+                onClick={() => dispatch(setProductDetails(null))}
+                className="px-5 py-2 text-primary-300 rounded-xl bg-white border border-gray-300 font-medium hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              {/* <button
+                onClick={() => setDeleteModal(true)}
+                className="px-5 py-2 text-white bg-red-500 rounded-xl  font-medium hover:bg-red-600 transition-colors"
+              >
+                Delete
+              </button>
+              {productDetails?.status !== "CLOSED" && (
+                <button
+                  onClick={() => setCloseProductModal(true)}
+                  className="px-5 py-2 text-white bg-emerald-500 rounded-xl font-medium hover:bg-emerald-600 transition-colors"
+                >
+                  Close
+                </button>
+              )} */}
             </div>
           </div>
         </Modal>

@@ -27,6 +27,7 @@ import { DashboardData, Filter, ProductResponse } from "../../types";
 import useDropdown from "../../hooks/useDropdown";
 import { useQuery } from "@tanstack/react-query";
 import {
+  deleteAdminProduct,
   getAdminFeaturedProducts,
   getDashboardOverview,
   getDashboardProducts,
@@ -46,7 +47,9 @@ import Button from "../../components/Button";
 import Modal from "../../components/Modal";
 import {
   selectProduct,
+  selectProductAction,
   selectProductImages,
+  setProductAction,
   setProductDetails,
   setProductImages,
 } from "../../state/slices/globalReducer";
@@ -54,6 +57,7 @@ import moment from "moment";
 
 import { useNavigate } from "react-router-dom";
 import { filterOptions } from "../../constant";
+import { updateProductStatus } from "../../services/product.service";
 
 interface FeatureResponse {
   category_name: string;
@@ -73,6 +77,7 @@ function ProductManagement() {
   const [selectedPeriod, setSelectedPeriod] = useState("");
   const [currentImage, setCurrentImage] = useState<number | null>(null);
   const productImages = useSelector(selectProductImages);
+  const productAction = useSelector(selectProductAction);
   const {
     data: dashboardOverview,
     isLoading,
@@ -81,6 +86,7 @@ function ProductManagement() {
     queryKey: ["overview-products", selectedPeriod],
     queryFn: () => getDashboardOverview(selectedPeriod),
   });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { data: featureedProducts } = useQuery({
     queryKey: ["admin-featured-products"],
@@ -127,7 +133,8 @@ function ProductManagement() {
     },
   ];
   const [tab, setTab] = useState("all");
-
+  const [closeProductModal, setCloseProductModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const [selectedPeriodLabel, setSelectedPeriodLabel] = useState("");
   const [sorting, setSorting] = useState([]);
   const dateDropdownRef = useRef<HTMLDivElement | null>(null);
@@ -145,7 +152,7 @@ function ProductManagement() {
   const { dropdownRef, dropdowns, closeDropDown, setDropdowns } = useDropdown();
   const {
     data: products,
-    // refetch: refetchProducts,
+    refetch: refetchProducts,
     isLoading: isLoadinProducts,
   } = useQuery({
     queryKey: [
@@ -196,8 +203,8 @@ function ProductManagement() {
 
   const clearFilters = () => {
     setFilters([]);
-    // setAppliedFilters([]);
-    //   refetch();
+    setAppliedFilters([]);
+    refetchProducts();
   };
 
   const handleApplyFilters = () => {
@@ -279,7 +286,43 @@ function ProductManagement() {
       setSelectedProductIds([]);
     }
   }, [selectedFeaturedProducts]);
+  const handleDeleteProduct = async () => {
+    setLoading(true);
 
+    try {
+      const response = await deleteAdminProduct(productDetails?.id as string);
+      if (response) {
+        setProductDetails(null);
+        toast.success(response?.message);
+        setDeleteModal(false);
+        refetchProducts();
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleCloseProduct = async () => {
+    setLoading(true);
+
+    try {
+      const response = await updateProductStatus(
+        productDetails?.id as string,
+        "CLOSED"
+      );
+      if (response) {
+        setProductDetails(null);
+        toast.success(response?.message);
+        setCloseProductModal(false);
+        refetchProducts();
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <DashboardLayout>
       <div className="w-full p-3 sm:p-5 geist-family">
@@ -870,7 +913,11 @@ function ProductManagement() {
         )}
       </div>
       <Modal
-        show={productDetails !== null}
+        show={
+          productDetails !== null &&
+          productAction !== "DELETE" &&
+          productAction !== "CLOSE"
+        }
         onClose={() => dispatch(setProductDetails(null))}
       >
         <div className="bg-white rounded-lg w-full max-w-[595px] geist-family max-h-[90vh] overflow-y-auto">
@@ -1084,23 +1131,25 @@ function ProductManagement() {
           {/* Footer */}
           <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
             <button
-              onClick={() => console.log("Cancel")}
+              onClick={() => dispatch(setProductDetails(null))}
               className="px-5 py-2 text-primary-300 rounded-xl bg-white border border-gray-300 font-medium hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>
             <button
-              onClick={() => console.log("Delete")}
+              onClick={() => setDeleteModal(true)}
               className="px-5 py-2 text-white bg-red-500 rounded-xl  font-medium hover:bg-red-600 transition-colors"
             >
               Delete
             </button>
-            <button
-              onClick={() => console.log("Close")}
-              className="px-5 py-2 text-white bg-emerald-500 rounded-xl font-medium hover:bg-emerald-600 transition-colors"
-            >
-              Close
-            </button>
+            {productDetails?.status !== "CLOSED" && (
+              <button
+                onClick={() => setCloseProductModal(true)}
+                className="px-5 py-2 text-white bg-emerald-500 rounded-xl font-medium hover:bg-emerald-600 transition-colors"
+              >
+                Close
+              </button>
+            )}
           </div>
         </div>
       </Modal>
@@ -1317,6 +1366,80 @@ function ProductManagement() {
                 );
               })}
             </div>
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        show={closeProductModal || productAction === "CLOSE"}
+        onClose={() => setCloseProductModal(false)}
+      >
+        <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Close Product?
+          </h3>
+
+          <p className="text-gray-600 text-sm mb-6">
+            Are you sure you want to close this Product? This product would be
+            marked as sold
+          </p>
+
+          <div className="flex justify-end gap-3">
+            <button
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300 transition"
+              onClick={() => setCloseProductModal(false)}
+            >
+              Cancel
+            </button>
+
+            <Button
+              title="Yes, Close"
+              textStyle="text-sm font-medium text-white"
+              btnStyles="px-4 py-2 rounded-lg  bg-gray-800 hover:bg-gray-900 transition"
+              loaderSize={"w-1 h-1"}
+              handleClick={handleCloseProduct}
+              loading={loading}
+            />
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        show={deleteModal || productAction === "DELETE"}
+        onClose={
+          deleteModal
+            ? () => setDeleteModal(false)
+            : () => dispatch(setProductAction(null))
+        }
+      >
+        <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Delete Product?
+          </h3>
+
+          <p className="text-gray-600 text-sm mb-6">
+            This action cannot be undone. Do you want to permanently delete this
+            product?
+          </p>
+
+          <div className="flex justify-end gap-3">
+            <button
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300 transition"
+              onClick={
+                deleteModal
+                  ? () => setDeleteModal(false)
+                  : () => dispatch(setProductAction(null))
+              }
+            >
+              Cancel
+            </button>
+
+            <Button
+              title="Yes, Delete"
+              textStyle="text-sm font-medium text-white"
+              btnStyles="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition"
+              loaderSize={"w-1 h-1"}
+              handleClick={handleDeleteProduct}
+              loading={loading}
+            />
           </div>
         </div>
       </Modal>
