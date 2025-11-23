@@ -27,22 +27,34 @@ export const getDashboardUsers = async (
   const response = await API.get(`/admin/users`, { params });
   return response?.data;
 };
-export const getDashboardProducts = async (
-  status: string,
-  page: number,
-  search: string,
-  filters: Filter[]
-) => {
+export const getDashboardProducts = async (options: {
+  status?: string;
+  page?: number;
+  search?: string;
+  filters?: Filter[];
+  user_id?: string;
+}) => {
+  const { status, page, search, filters = [], user_id } = options;
+
   const query = buildQueryParams(filters, productsQueryKey);
+
   const params: Record<string, any> = {
     status,
     search,
     page,
+    user_id,
     ...query,
   };
+
+  // Remove undefined values
+  Object.keys(params).forEach(
+    (key) => params[key] === undefined && delete params[key]
+  );
+
   const response = await API.get(`/admin/products`, { params });
   return response?.data;
 };
+
 export const getAdminUserDetails = async (id: string) => {
   const response = await API.get(`/admin/user/${id}`);
   return response?.data?.data;

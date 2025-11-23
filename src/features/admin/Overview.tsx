@@ -122,9 +122,13 @@ function Overview() {
     refetch: refetchProducts,
     isLoading: isLoadinProducts,
   } = useQuery({
-    queryKey: ["dashboard-products", "", currentPage, search, appliedFilters],
+    queryKey: ["dashboard-products", currentPage, search, appliedFilters],
     queryFn: () =>
-      getDashboardProducts("", currentPage, search, appliedFilters),
+      getDashboardProducts({
+        page: currentPage,
+        search: search,
+        filters: appliedFilters,
+      }),
   });
 
   // const filterproducts = products?.data?.filter((item: UserResponse) =>

@@ -83,7 +83,7 @@ function ViewUser() {
   const [sorting, setSorting] = useState([]);
   const dateDropdownRef = useRef<HTMLDivElement | null>(null);
   const [filters, setFilters] = useState<Filter[]>([]);
-  // const [appliedFilters, setAppliedFilters] = useState<Filter[]>([]);
+  const [appliedFilters, setAppliedFilters] = useState<Filter[]>([]);
   const pagesRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   // const [loading, setLoading] = useState(false);
@@ -91,8 +91,8 @@ function ViewUser() {
   const { dropdownRef, dropdowns, closeDropDown, setDropdowns } = useDropdown();
   const {
     data: products,
-    // refetch: refetchProducts,
     isLoading,
+    refetch,
   } = useQuery({
     queryKey: ["dashboard-products", userId, selectedStatus],
     queryFn: () =>
@@ -102,6 +102,9 @@ function ViewUser() {
           selectedStatus === "All Listed Products"
             ? ""
             : selectedStatus.split(" ").join("_").toUpperCase(),
+        page: currentPage,
+        search: search,
+        filters: appliedFilters,
       }),
   });
 
@@ -124,14 +127,14 @@ function ViewUser() {
 
   const clearFilters = () => {
     setFilters([]);
-    // setAppliedFilters([]);
-    //   refetch();
+    setAppliedFilters([]);
+    refetch();
   };
 
   const handleApplyFilters = () => {
-    // setAppliedFilters(filters);
+    setAppliedFilters(filters);
     closeDropDown("filterBox");
-    //   refetch();
+    refetch();
   };
   const handleFilterChange = (
     id: number | string,
@@ -210,10 +213,10 @@ function ViewUser() {
             </div>
 
             {/* Status */}
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-gray-400" />
               <span className="text-gray-500 text-sm">Offline</span>
-            </div>
+            </div> */}
           </div>
 
           {/* PERSONAL INFORMATION */}

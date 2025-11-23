@@ -156,12 +156,12 @@ function ProductManagement() {
       appliedFilters,
     ],
     queryFn: () =>
-      getDashboardProducts(
-        selectedStatus === "All" ? "" : selectedStatus.toUpperCase(),
-        currentPage,
+      getDashboardProducts({
+        status: selectedStatus === "All" ? "" : selectedStatus.toUpperCase(),
+        page: currentPage,
         search,
-        appliedFilters
-      ),
+        filters: appliedFilters,
+      }),
   });
 
   // const filterproducts = products?.data?.filter((item: UserResponse) =>
