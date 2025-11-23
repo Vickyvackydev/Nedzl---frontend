@@ -234,18 +234,10 @@ export const ProductsColumn = [
     },
   }),
 
-  columnHelper.accessor("date", {
+  columnHelper.accessor("photos", {
     header: "Photos",
-    cell: ({ row }: { row: any }) => {
-      const dispatch = useDispatch();
-      return (
-        <button
-          onClick={() => dispatch(setProductImages(row.row.ori))}
-          className=" h-[24px] w-[47px] text-[#FAFAFA] rounded-lg bg-global-green text-xs"
-        >
-          View
-        </button>
-      );
+    cell: (row) => {
+      return <ViewAction row={row} />;
     },
   }),
   columnHelper.accessor("date", {
@@ -290,3 +282,18 @@ export const ProductsColumn = [
     },
   }),
 ];
+
+const ViewAction = ({ row }: { row: { row: { original: any } } }) => {
+  const dispatch = useDispatch();
+
+  return (
+    <button
+      onClick={() => {
+        dispatch(setProductImages(row.row.original.image_urls));
+      }}
+      className=" h-[24px] w-[47px] text-[#FAFAFA] rounded-lg bg-global-green text-xs"
+    >
+      View
+    </button>
+  );
+};

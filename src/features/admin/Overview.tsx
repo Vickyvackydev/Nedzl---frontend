@@ -34,8 +34,10 @@ import Modal from "../../components/Modal";
 import {
   selectProduct,
   selectProductAction,
+  selectProductImages,
   setProductAction,
   setProductDetails,
+  setProductImages,
 } from "../../state/slices/globalReducer";
 import Button from "../../components/Button";
 import {
@@ -52,9 +54,7 @@ const periodOptions = [
 ];
 
 function Overview() {
-  // const [startDate, setStartDate] = useState<Date | null>(null);
-  // const [endDate, setEndDate] = useState<Date | null>(null);
-  // const [exporting, setExporting] = useState(false);
+  const productImages = useSelector(selectProductImages);
 
   const dispatch = useDispatch();
   const [currentImage, setCurrentImage] = useState<number | null>(null);
@@ -579,29 +579,55 @@ function Overview() {
             </div>
           </div>
         </Modal>
-        <Modal show={false} onClose={() => {}}>
-          <div className="w-[70%] flex flex-col gap-y-4">
-            <div className="w-full p-5 bg-white shadow-box rounded-xl flex flex-col gap-y-3">
-              <div className="w-full ">
+        <Modal
+          show={productImages.length > 0}
+          onClose={() => dispatch(setProductImages([]))}
+        >
+          <div className="relative w-full md:w-[70%] flex flex-col gap-y-5">
+            {/* Close Button */}
+            <button
+              onClick={() => dispatch(setProductImages([]))}
+              className="absolute right-3 top-3 z-20 bg-white shadow-md rounded-full p-2 hover:bg-gray-100"
+            >
+              ✕
+            </button>
+
+            {/* Main Image */}
+            <div className="w-full bg-white shadow-box rounded-xl p-5">
+              <div className="w-full">
                 <img
-                  src={
-                    productDetails?.product.image_urls[currentImage as number]
-                  }
-                  className="w-full h-[300px] rounded-xl object-cover"
+                  src={productImages[currentImage as number]}
+                  className="w-full h-[400px] md:h-[450px] rounded-xl object-contain bg-gray-50"
                   alt=""
                 />
               </div>
-              <div className="max-w-full overflow-x-scroll flex items-center gap-x-2">
-                {productDetails?.product?.image_urls?.map(
-                  (img: string, i: number) => (
-                    <img
-                      src={img}
+
+              {/* Thumbnails */}
+              <div className="w-full mt-4 flex items-center gap-x-3 overflow-x-auto pb-2">
+                {productImages.map((img: string, i: number) => {
+                  const isActive = i === currentImage;
+                  return (
+                    <div
+                      key={i}
+                      className={`
+                flex-shrink-0 cursor-pointer rounded-xl overflow-hidden
+                border-2 transition-all duration-200
+                ${
+                  isActive
+                    ? "border-primary-300 scale-105"
+                    : "border-transparent"
+                }
+              `}
                       onClick={() => setCurrentImage(i)}
-                      className="w-full h-[79px] rounded-xl object-cover cursor-pointer"
-                      alt=""
-                    />
-                  )
-                )}
+                    >
+                      <img
+                        src={img}
+                        className="w-[90px] h-[80px] md:w-[110px] md:h-[100px] object-cover"
+                        alt=""
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

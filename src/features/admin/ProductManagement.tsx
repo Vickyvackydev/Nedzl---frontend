@@ -46,7 +46,9 @@ import Button from "../../components/Button";
 import Modal from "../../components/Modal";
 import {
   selectProduct,
+  selectProductImages,
   setProductDetails,
+  setProductImages,
 } from "../../state/slices/globalReducer";
 import moment from "moment";
 
@@ -68,12 +70,14 @@ const productsStatus = ["All", "Active", "Closed", "Rejected"];
 
 function ProductManagement() {
   const [selectedPeriod, setSelectedPeriod] = useState("");
+  const [currentImage, setCurrentImage] = useState<number | null>(null);
+  const productImages = useSelector(selectProductImages);
   const {
     data: dashboardOverview,
     isLoading,
     // refetch,
   } = useQuery<DashboardData>({
-    queryKey: ["overview", selectedPeriod],
+    queryKey: ["overview-products", selectedPeriod],
     queryFn: () => getDashboardOverview(selectedPeriod),
   });
   const navigate = useNavigate();
@@ -98,7 +102,7 @@ function ProductManagement() {
       icon: TOTAL_PRODUCTS,
       title: "Total Products Listed",
       value: dashboardOverview?.stats?.total_product_listed,
-      showRate: true,
+      showRate: dashboardOverview?.growth?.total_product_listed,
     },
 
     {
@@ -106,19 +110,19 @@ function ProductManagement() {
       title: "Active Products",
       value: dashboardOverview?.stats?.active_products,
 
-      showRate: true,
+      showRate: dashboardOverview?.growth?.active_products,
     },
     {
       icon: TOTAL_SOLD_PRODUCTS,
       title: "Closed/Sold Products",
       value: dashboardOverview?.stats?.closed_sold_products,
-      showRate: true,
+      showRate: dashboardOverview?.growth?.closed_sold_products,
     },
     {
       icon: TOTAL_FLAGGED_PRODUCTS,
       title: "Flagged/Reported Products",
       value: dashboardOverview?.stats?.flagged_reported_products,
-      showRate: true,
+      showRate: dashboardOverview?.growth?.flagged_reported_products,
     },
   ];
   const [tab, setTab] = useState("all");
@@ -360,15 +364,8 @@ function ProductManagement() {
                         ? `$${item.value}`
                         : item.value}
                     </span>
-                    {item.showRate && (
-                      // <div className="w-fit h-fit p-1 gap-x-0.5 rounded-3xl bg-[#05B47F1A] flex items-center justify-end">
-                      //   <img src={GOING_UP} className="w-[16px] h-[16px]" alt="" />
-                      //   <span className="text-xs font-medium text-[#05B47F]">
-                      //     {dashboard?.user_growth_rate}%
-                      //   </span>
-                      // </div>
-                      <PercentageChange percentage={0} />
-                    )}
+
+                    <PercentageChange percentage={item?.showRate} />
                   </div>
                 </div>
               ))}
@@ -1260,6 +1257,59 @@ function ProductManagement() {
           />
         </div>
       </CustomModal>
+      <Modal
+        show={productImages.length > 0}
+        onClose={() => dispatch(setProductImages([]))}
+      >
+        <div className="relative w-full md:w-[70%] flex flex-col gap-y-5">
+          {/* Close Button */}
+          <button
+            onClick={() => dispatch(setProductImages([]))}
+            className="absolute right-3 top-3 z-20 bg-white shadow-md rounded-full p-2 hover:bg-gray-100"
+          >
+            ✕
+          </button>
+
+          {/* Main Image */}
+          <div className="w-full bg-white shadow-box rounded-xl p-5">
+            <div className="w-full">
+              <img
+                src={productImages[currentImage as number]}
+                className="w-full h-[400px] md:h-[450px] rounded-xl object-contain bg-gray-50"
+                alt=""
+              />
+            </div>
+
+            {/* Thumbnails */}
+            <div className="w-full mt-4 flex items-center gap-x-3 overflow-x-auto pb-2">
+              {productImages.map((img: string, i: number) => {
+                const isActive = i === currentImage;
+                return (
+                  <div
+                    key={i}
+                    className={`
+                      flex-shrink-0 cursor-pointer rounded-xl overflow-hidden
+                      border-2 transition-all duration-200
+                      ${
+                        isActive
+                          ? "border-primary-300 scale-105"
+                          : "border-transparent"
+                      }
+                    `}
+                    onClick={() => setCurrentImage(i)}
+                  >
+                    <img
+                      src={img}
+                      className="w-[90px] h-[80px] md:w-[110px] md:h-[100px] object-cover"
+                      alt=""
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </Modal>
     </DashboardLayout>
   );
 }
