@@ -21,6 +21,9 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import { ProductResponse, SingleProductResponse } from "../types";
 import { formatPrice } from "../utils";
+import toast from "react-hot-toast";
+import { Copy } from "lucide-react";
+import clsx from "clsx";
 
 function ProductDetails() {
   const [activeTab, setActiveTab] = useState<
@@ -276,19 +279,37 @@ function ProductDetails() {
                 <div className="mt-3 flex flex-col w-full gap-y-2">
                   <Button
                     title={
-                      showSellerNumber
-                        ? (productDetails?.product.user?.phone_number as string)
-                        : "Show Seller Contact"
+                      showSellerNumber ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <span>
+                            {productDetails?.product.user?.phone_number}
+                          </span>
+
+                          <Copy
+                            className={clsx("w-4 h-4 cursor-pointer")}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(
+                                productDetails?.product.user?.phone_number || ""
+                              );
+                              toast.success("Copied to clipboard");
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        "Show Seller Contact"
+                      )
                     }
                     btnStyles="w-full bg-global-green rounded-xl h-[40px]"
-                    textStyle="text-white fon-medium text-sm"
+                    textStyle="text-white font-medium text-sm"
                     handleClick={() => setShowSellerNumber(true)}
                   />
+
                   <Button
                     title="Let Us Handle It"
                     btnStyles="w-full border border-[#E9EAEB] rounded-xl h-[40px]"
                     textStyle="text-primary-300 font-medium text-sm"
-                    handleClick={() => {}}
+                    handleClick={() => toast.success("Coming on Nedzl")}
                   />
                 </div>
               </div>

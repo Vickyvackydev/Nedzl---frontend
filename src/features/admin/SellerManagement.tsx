@@ -43,6 +43,7 @@ import Modal from "../../components/Modal";
 import Button from "../../components/Button";
 // import { API } from "../../config";
 import toast from "react-hot-toast";
+import { filterOptions } from "../../constant";
 
 const periodOptions = [
   { label: "Last 7 Days", value: "7d" },
@@ -96,7 +97,7 @@ function SellerManagement() {
   const [sorting, setSorting] = useState([]);
   const dateDropdownRef = useRef<HTMLDivElement | null>(null);
   const [filters, setFilters] = useState<Filter[]>([]);
-  // const [appliedFilters, setAppliedFilters] = useState<Filter[]>([]);
+  const [appliedFilters, setAppliedFilters] = useState<Filter[]>([]);
   const pagesRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [selectedStatus, setSelectedStatus] = useState("All Sellers");
 
@@ -106,14 +107,22 @@ function SellerManagement() {
   const {
     data: users,
     refetch: refetchusers,
-    // isLoading: isLoadinusers,
+    isLoading: isLoadinusers,
   } = useQuery({
-    queryKey: ["dashboard-users", selectedStatus],
+    queryKey: [
+      "dashboard-users",
+      selectedStatus,
+      currentPage,
+      search,
+      appliedFilters,
+    ],
     queryFn: () =>
-      getDashboardUsers({
-        status:
-          selectedStatus === "All Sellers" ? "" : selectedStatus.toUpperCase(),
-      }),
+      getDashboardUsers(
+        selectedStatus === "All Sellers" ? "" : selectedStatus.toUpperCase(),
+        currentPage,
+        search,
+        appliedFilters
+      ),
   });
 
   // const filterproducts = products?.data?.filter((item: UserResponse) =>
@@ -135,14 +144,14 @@ function SellerManagement() {
 
   const clearFilters = () => {
     setFilters([]);
-    // setAppliedFilters([]);
-    //   refetch();
+    setAppliedFilters([]);
+    refetchusers();
   };
 
   const handleApplyFilters = () => {
-    // setAppliedFilters(filters);
+    setAppliedFilters(filters);
     closeDropDown("filterBox");
-    //   refetch();
+    refetchusers();
   };
   const handleFilterChange = (
     id: number | string,
@@ -360,7 +369,7 @@ function SellerManagement() {
               <FilterBox
                 open={dropdowns.filterBox}
                 filters={filters}
-                filterOptions={[]}
+                filterOptions={filterOptions.users}
                 applyFilter={handleApplyFilters}
                 clearFilters={clearFilters}
                 addFilter={addFilter}
@@ -380,7 +389,7 @@ function SellerManagement() {
                 sorting={sorting}
               />
             </div>
-          ) : isLoading ? (
+          ) : isLoading || isLoadinusers ? (
             <div className="w-full flex h-[50vh] items-center justify-center">
               <Loader2 color="#07b463" size={50} className="animate-spin" />
             </div>
@@ -389,7 +398,7 @@ function SellerManagement() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4 }}
-              className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-gray-200"
+              className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-gray-200 mt-5"
             >
               <img
                 src={EMPTY_CART}

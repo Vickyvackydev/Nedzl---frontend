@@ -45,6 +45,7 @@ import {
   updateProductStatus,
 } from "../../services/product.service";
 import toast from "react-hot-toast";
+import { filterOptions } from "../../constant";
 
 const periodOptions = [
   { label: "Last 7 Days", value: "7d" },
@@ -63,7 +64,7 @@ function Overview() {
   const {
     data: dashboardOverview,
     isLoading,
-    // refetch,
+    refetch,
   } = useQuery<DashboardData>({
     queryKey: ["overview", selectedPeriod],
     queryFn: () => getDashboardOverview(selectedPeriod),
@@ -110,7 +111,7 @@ function Overview() {
   const [sorting, setSorting] = useState([]);
   const dateDropdownRef = useRef<HTMLDivElement | null>(null);
   const [filters, setFilters] = useState<Filter[]>([]);
-  // const [appliedFilters, setAppliedFilters] = useState<Filter[]>([]);
+  const [appliedFilters, setAppliedFilters] = useState<Filter[]>([]);
   const pagesRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const [loading, setLoading] = useState(false);
@@ -119,10 +120,11 @@ function Overview() {
   const {
     data: products,
     refetch: refetchProducts,
-    // isLoading: isLoadinProducts,
+    isLoading: isLoadinProducts,
   } = useQuery({
-    queryKey: ["dashboard-products"],
-    queryFn: getDashboardProducts,
+    queryKey: ["dashboard-products", "", currentPage, search, appliedFilters],
+    queryFn: () =>
+      getDashboardProducts("", currentPage, search, appliedFilters),
   });
 
   // const filterproducts = products?.data?.filter((item: UserResponse) =>
@@ -144,14 +146,14 @@ function Overview() {
 
   const clearFilters = () => {
     setFilters([]);
-    // setAppliedFilters([]);
-    //   refetch();
+    setAppliedFilters([]);
+    refetchProducts();
   };
 
   const handleApplyFilters = () => {
-    // setAppliedFilters(filters);
+    setAppliedFilters(filters);
     closeDropDown("filterBox");
-    //   refetch();
+    refetchProducts();
   };
   const handleFilterChange = (
     id: number | string,
@@ -212,6 +214,7 @@ function Overview() {
         toast.success(response?.message);
         dispatch(setProductAction(null));
         refetchProducts();
+        refetch();
         dispatch(setProductDetails(null));
       }
     } catch (error: any) {
@@ -232,6 +235,7 @@ function Overview() {
         toast.success(response?.message);
         dispatch(setProductAction(null));
         refetchProducts();
+        refetch();
         dispatch(setProductDetails(null));
       }
     } catch (error: any) {
@@ -310,12 +314,6 @@ function Overview() {
                     : item.value}
                 </span>
 
-                {/* // <div className="w-fit h-fit p-1 gap-x-0.5 rounded-3xl bg-[#05B47F1A] flex items-center justify-end">
-                  //   <img src={GOING_UP} className="w-[16px] h-[16px]" alt="" />
-                  //   <span className="text-xs font-medium text-[#05B47F]">
-                  //     {dashboard?.user_growth_rate}%
-                  //   </span>
-                  // </div> */}
                 <PercentageChange percentage={item?.showRate} />
               </div>
             </div>
@@ -374,7 +372,7 @@ function Overview() {
               <FilterBox
                 open={dropdowns.filterBox}
                 filters={filters}
-                filterOptions={[]}
+                filterOptions={filterOptions.products}
                 applyFilter={handleApplyFilters}
                 clearFilters={clearFilters}
                 addFilter={addFilter}
@@ -394,7 +392,7 @@ function Overview() {
                 sorting={sorting}
               />
             </div>
-          ) : isLoading ? (
+          ) : isLoading || isLoadinProducts ? (
             <div className="w-full flex h-[50vh] items-center justify-center">
               <Loader2 color="#07b463" size={50} className="animate-spin" />
             </div>
@@ -403,7 +401,7 @@ function Overview() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4 }}
-              className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-gray-200"
+              className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-gray-200 mt-5"
             >
               <img
                 src={EMPTY_CART}

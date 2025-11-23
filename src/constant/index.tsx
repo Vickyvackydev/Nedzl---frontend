@@ -153,3 +153,8 @@ export const footer = [
     ],
   },
 ];
+
+export const filterOptions = {
+  products: ["Name", "Category", "Status", "Min Price", "Max Price"],
+  users: ["Name", "Phone Number", "Status"],
+};

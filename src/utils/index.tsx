@@ -1,3 +1,5 @@
+import { Filter } from "../types";
+
 export const formatPrice = (num: number): string => {
   if (num >= 1_000_000_000) return `${(num / 1_000_000_000)?.toFixed(1)}B`;
   if (num >= 1_000_000) return `${(num / 1_000_000)?.toFixed(1)}M`;
@@ -15,6 +17,23 @@ export const buildQueryStrings = (params: Record<string, any>) => {
   });
 
   return query.toString();
+};
+export const buildQueryParams = (
+  filters: Filter[],
+  fieldToQueryKey: Record<string | number, string | number>
+): Record<string | number, string | number> => {
+  const queryParams: Record<string | number, string | number> = {};
+
+  filters.forEach((filter) => {
+    if (filter.field && filter.value) {
+      const queryKey = fieldToQueryKey[filter.field];
+      if (queryKey) {
+        queryParams[queryKey] = filter.value;
+      }
+    }
+  });
+
+  return queryParams;
 };
 
 export const formatText = (text: string) =>

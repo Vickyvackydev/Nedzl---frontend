@@ -53,6 +53,7 @@ import {
 import moment from "moment";
 
 import { useNavigate } from "react-router-dom";
+import { filterOptions } from "../../constant";
 
 interface FeatureResponse {
   category_name: string;
@@ -131,7 +132,7 @@ function ProductManagement() {
   const [sorting, setSorting] = useState([]);
   const dateDropdownRef = useRef<HTMLDivElement | null>(null);
   const [filters, setFilters] = useState<Filter[]>([]);
-  // const [appliedFilters, setAppliedFilters] = useState<Filter[]>([]);
+  const [appliedFilters, setAppliedFilters] = useState<Filter[]>([]);
   const pagesRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [boxNumber, setBoxNumber] = useState<number | null>(null);
@@ -147,11 +148,20 @@ function ProductManagement() {
     // refetch: refetchProducts,
     isLoading: isLoadinProducts,
   } = useQuery({
-    queryKey: ["dashboard-products", selectedStatus],
+    queryKey: [
+      "dashboard-products",
+      selectedStatus,
+      currentPage,
+      search,
+      appliedFilters,
+    ],
     queryFn: () =>
-      getDashboardProducts({
-        status: selectedStatus === "All" ? "" : selectedStatus.toUpperCase(),
-      }),
+      getDashboardProducts(
+        selectedStatus === "All" ? "" : selectedStatus.toUpperCase(),
+        currentPage,
+        search,
+        appliedFilters
+      ),
   });
 
   // const filterproducts = products?.data?.filter((item: UserResponse) =>
@@ -426,7 +436,7 @@ function ProductManagement() {
                   <FilterBox
                     open={dropdowns.filterBox}
                     filters={filters}
-                    filterOptions={[]}
+                    filterOptions={filterOptions.products}
                     applyFilter={handleApplyFilters}
                     clearFilters={clearFilters}
                     addFilter={addFilter}

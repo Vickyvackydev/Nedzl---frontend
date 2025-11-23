@@ -1,5 +1,7 @@
 import { API } from "../config";
-import { buildQueryStrings } from "../utils";
+import { Filter } from "../types";
+import { buildQueryParams } from "../utils";
+import { productsQueryKey, usersQueryKey } from "../utils/queryKeys";
 
 export const getDashboardOverview = async (period: string) => {
   const response = await API.get(`/admin/overview?period=${period}`);
@@ -9,14 +11,36 @@ export const getSellerOverview = async (period: string) => {
   const response = await API.get(`/admin/user/overview?period=${period}`);
   return response?.data?.data;
 };
-export const getDashboardUsers = async (filters: Record<string, any>) => {
-  const query = buildQueryStrings(filters);
-  const response = await API.get(`/admin/users?${query}`);
+export const getDashboardUsers = async (
+  status: string,
+  page: number,
+  search: string,
+  filters: Filter[]
+) => {
+  const query = buildQueryParams(filters, usersQueryKey);
+  const params: Record<string, any> = {
+    status,
+    search,
+    page,
+    ...query,
+  };
+  const response = await API.get(`/admin/users`, { params });
   return response?.data;
 };
-export const getDashboardProducts = async (filters: Record<string, any>) => {
-  const query = buildQueryStrings(filters);
-  const response = await API.get(`/admin/products?${query}`);
+export const getDashboardProducts = async (
+  status: string,
+  page: number,
+  search: string,
+  filters: Filter[]
+) => {
+  const query = buildQueryParams(filters, productsQueryKey);
+  const params: Record<string, any> = {
+    status,
+    search,
+    page,
+    ...query,
+  };
+  const response = await API.get(`/admin/products`, { params });
   return response?.data;
 };
 export const getAdminUserDetails = async (id: string) => {

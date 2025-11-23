@@ -3,7 +3,7 @@ import React from "react";
 export interface ButtonTypeProps {
   type?: "button" | "submit";
   loading?: boolean;
-  title: string;
+  title: string | React.ReactNode;
   handleClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   btnStyles: string;
   textStyle: string;
