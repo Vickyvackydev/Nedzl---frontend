@@ -55,16 +55,18 @@ function Overview() {
   // const [startDate, setStartDate] = useState<Date | null>(null);
   // const [endDate, setEndDate] = useState<Date | null>(null);
   // const [exporting, setExporting] = useState(false);
+
   const dispatch = useDispatch();
   const [currentImage, setCurrentImage] = useState<number | null>(null);
   const productAction = useSelector(selectProductAction);
+  const [selectedPeriod, setSelectedPeriod] = useState("");
   const {
     data: dashboardOverview,
     isLoading,
     // refetch,
   } = useQuery<DashboardData>({
-    queryKey: ["overview"],
-    queryFn: getDashboardOverview,
+    queryKey: ["overview", selectedPeriod],
+    queryFn: () => getDashboardOverview(selectedPeriod),
   });
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -73,7 +75,7 @@ function Overview() {
       icon: TOTAL_PRODUCTS,
       title: "Total Products Listed",
       value: dashboardOverview?.stats?.total_product_listed,
-      showRate: true,
+      showRate: dashboardOverview?.growth?.total_product_listed,
     },
 
     {
@@ -81,29 +83,29 @@ function Overview() {
       title: "Active Products",
       value: dashboardOverview?.stats?.active_products,
 
-      showRate: true,
+      showRate: dashboardOverview?.growth?.active_products,
     },
     {
       icon: TOTAL_SOLD_PRODUCTS,
       title: "Closed/Sold Products",
       value: dashboardOverview?.stats?.closed_sold_products,
-      showRate: true,
+      showRate: dashboardOverview?.growth?.closed_sold_products,
     },
     {
       icon: TOTAL_FLAGGED_PRODUCTS,
       title: "Flagged/Reported Products",
       value: dashboardOverview?.stats?.flagged_reported_products,
-      showRate: true,
+      showRate: dashboardOverview?.growth?.flagged_reported_products,
     },
 
     {
       icon: TOTAL_REGISTERED_SELLERS,
       title: "Total Registered Sellers",
       value: dashboardOverview?.stats?.total_registered_sellers,
-      showRate: true,
+      showRate: dashboardOverview?.growth?.total_registered_sellers,
     },
   ];
-  const [selectedPeriod, setSelectedPeriod] = useState("");
+
   const [selectedPeriodLabel, setSelectedPeriodLabel] = useState("");
   const [sorting, setSorting] = useState([]);
   const dateDropdownRef = useRef<HTMLDivElement | null>(null);
@@ -307,15 +309,14 @@ function Overview() {
                     ? `$${item.value}`
                     : item.value}
                 </span>
-                {item.showRate && (
-                  // <div className="w-fit h-fit p-1 gap-x-0.5 rounded-3xl bg-[#05B47F1A] flex items-center justify-end">
+
+                {/* // <div className="w-fit h-fit p-1 gap-x-0.5 rounded-3xl bg-[#05B47F1A] flex items-center justify-end">
                   //   <img src={GOING_UP} className="w-[16px] h-[16px]" alt="" />
                   //   <span className="text-xs font-medium text-[#05B47F]">
                   //     {dashboard?.user_growth_rate}%
                   //   </span>
-                  // </div>
-                  <PercentageChange percentage={0} />
-                )}
+                  // </div> */}
+                <PercentageChange percentage={item?.showRate} />
               </div>
             </div>
           ))}

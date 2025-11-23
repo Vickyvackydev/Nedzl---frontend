@@ -1,12 +1,12 @@
 import { API } from "../config";
 import { buildQueryStrings } from "../utils";
 
-export const getDashboardOverview = async () => {
-  const response = await API.get("/admin/overview");
+export const getDashboardOverview = async (period: string) => {
+  const response = await API.get(`/admin/overview?period=${period}`);
   return response?.data?.data;
 };
-export const getSellerOverview = async () => {
-  const response = await API.get("/admin/user/overview");
+export const getSellerOverview = async (period: string) => {
+  const response = await API.get(`/admin/user/overview?period=${period}`);
   return response?.data?.data;
 };
 export const getDashboardUsers = async (filters: Record<string, any>) => {

@@ -67,13 +67,14 @@ const periodOptions = [
 const productsStatus = ["All", "Active", "Closed", "Rejected"];
 
 function ProductManagement() {
+  const [selectedPeriod, setSelectedPeriod] = useState("");
   const {
     data: dashboardOverview,
     isLoading,
     // refetch,
   } = useQuery<DashboardData>({
-    queryKey: ["overview"],
-    queryFn: getDashboardOverview,
+    queryKey: ["overview", selectedPeriod],
+    queryFn: () => getDashboardOverview(selectedPeriod),
   });
   const navigate = useNavigate();
   const { data: featureedProducts } = useQuery({
@@ -121,7 +122,7 @@ function ProductManagement() {
     },
   ];
   const [tab, setTab] = useState("all");
-  const [selectedPeriod, setSelectedPeriod] = useState("");
+
   const [selectedPeriodLabel, setSelectedPeriodLabel] = useState("");
   const [sorting, setSorting] = useState([]);
   const dateDropdownRef = useRef<HTMLDivElement | null>(null);

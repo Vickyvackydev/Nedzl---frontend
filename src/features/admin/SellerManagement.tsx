@@ -54,9 +54,10 @@ const periodOptions = [
 const sellersStatus = ["All Sellers", "Active", "Suspended", "Deactivated"];
 
 function SellerManagement() {
+  const [selectedPeriod, setSelectedPeriod] = useState("");
   const { data: sellerOverview, isLoading } = useQuery<SellerOverviewType>({
-    queryKey: ["overview-users"],
-    queryFn: getSellerOverview,
+    queryKey: ["overview-users", selectedPeriod],
+    queryFn: () => getSellerOverview(selectedPeriod),
   });
   const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
@@ -67,7 +68,7 @@ function SellerManagement() {
       icon: TOTAL_USERS,
       title: "Total Seller",
       value: sellerOverview?.user_stats?.total_sellers,
-      showRate: true,
+      showRate: sellerOverview?.growth?.total_sellers,
     },
 
     {
@@ -75,22 +76,22 @@ function SellerManagement() {
       title: "Active Users",
       value: sellerOverview?.user_stats?.active_sellers,
 
-      showRate: true,
+      showRate: sellerOverview?.growth?.active_sellers,
     },
     {
       icon: USERS_SUSPENDED,
       title: "Suspended Users",
       value: sellerOverview?.user_stats?.suspended_users,
-      showRate: true,
+      showRate: sellerOverview?.growth?.suspended_users,
     },
     {
       icon: USERS_DEACTIVATED,
       title: "Deactivated Users",
       value: sellerOverview?.user_stats?.deactivated_users,
-      showRate: true,
+      showRate: sellerOverview?.growth?.deactivated_users,
     },
   ];
-  const [selectedPeriod, setSelectedPeriod] = useState("");
+
   const [selectedPeriodLabel, setSelectedPeriodLabel] = useState("");
   const [sorting, setSorting] = useState([]);
   const dateDropdownRef = useRef<HTMLDivElement | null>(null);
@@ -301,15 +302,8 @@ function SellerManagement() {
                     ? `$${item.value}`
                     : item.value}
                 </span>
-                {item.showRate && (
-                  // <div className="w-fit h-fit p-1 gap-x-0.5 rounded-3xl bg-[#05B47F1A] flex items-center justify-end">
-                  //   <img src={GOING_UP} className="w-[16px] h-[16px]" alt="" />
-                  //   <span className="text-xs font-medium text-[#05B47F]">
-                  //     {dashboard?.user_growth_rate}%
-                  //   </span>
-                  // </div>
-                  <PercentageChange percentage={0} />
-                )}
+
+                <PercentageChange percentage={item?.showRate} />
               </div>
             </div>
           ))}
@@ -334,7 +328,7 @@ function SellerManagement() {
         <div className="mt-5 w-full rounded-xl border border-[#E9EAEB] bg-white px-3 sm:px-5 py-3">
           <div className="w-full flex justify-between items-center gap-3 flex-col sm:flex-row">
             <span className="text-[16px] font-semibold text-primary-300">
-              All Sellers
+              {selectedStatus}{" "}
               <span className="text-[#117D06]">
                 ({users?.data?.total || 0})
               </span>
