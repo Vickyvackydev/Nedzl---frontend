@@ -490,7 +490,7 @@ function ProductManagement() {
               </div>
 
               {products?.data?.data?.length > 0 ? (
-                <div className="max-w-[54.2vw] min-w-full mt-2 custom-scrollbar-gray overflow-x-auto">
+                <div className="w-full mt-2 custom-scrollbar-gray overflow-x-auto">
                   <TableComponent
                     DATA={products?.data?.data}
                     // @ts-ignore
@@ -613,10 +613,10 @@ function ProductManagement() {
             <div className="p-3 w-full text-primary-300 font-semibold text-[16px] border-b border-[#E9EAEB]">
               Featured Products
             </div>
-            <div className="p-3 flex w-full items-start gap-x-3">
+            <div className="p-3 flex flex-col lg:flex-row w-full items-start gap-3">
               {/* BOX 1 */}
 
-              <div className=" bg-[#F5F5F5] rounded-xl p-3 w-[30%]">
+              <div className=" bg-[#F5F5F5] rounded-xl p-3 w-full lg:w-[30%]">
                 <div className="w-full flex items-start justify-between">
                   <div className="flex flex-col gap-y-1">
                     <span className="text-[#044706] text-xl font-semibold">
@@ -687,7 +687,7 @@ function ProductManagement() {
 
               {/* BOX 2 */}
               {/* BOX 2 */}
-              <div className="w-[30%] bg-[#F5F5F5] rounded-xl p-3">
+              <div className="w-full lg:w-[30%] bg-[#F5F5F5] rounded-xl p-3">
                 <div className="w-full flex items-start justify-between">
                   <div className="flex flex-col gap-y-1">
                     <span className="text-[#044706] text-xl font-semibold">
@@ -757,7 +757,7 @@ function ProductManagement() {
               </div>
 
               {/* RIGHT SIDE (BOXES 3 & 4) */}
-              <div className="flex flex-col gap-y-3 w-[40%]">
+              <div className="flex flex-col gap-y-3 w-full lg:w-[40%]">
                 {/* BOX 3 */}
 
                 <div className="w-full bg-[#F5F5F5] rounded-xl p-3 h-full">

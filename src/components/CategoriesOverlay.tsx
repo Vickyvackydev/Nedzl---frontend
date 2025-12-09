@@ -101,7 +101,7 @@ export default function CategoriesOverlay() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -400, opacity: 0 }}
               transition={{ type: "spring", damping: 20 }}
-              className="fixed left-4 top-4 bottom-4 w-[320px] bg-white rounded-2xl shadow-xl p-5 z-50 overflow-y-auto"
+              className="fixed left-4 top-4 bottom-4 w-[320px] max-w-[85vw] bg-white rounded-2xl shadow-xl p-5 z-50 overflow-y-auto"
             >
               <h2 className="text-lg font-semibold mb-4 text-gray-800">
                 All Categories

@@ -13,7 +13,7 @@ import CategoriesOverlay from "../components/CategoriesOverlay";
 
 const SkeletonCard = () => (
   <div className="w-full flex flex-col gap-y-2 animate-pulse">
-    <div className="w-[245px] h-[177px] bg-gray-300 rounded-xl" />
+    <div className="w-full md:w-[245px] h-[177px] bg-gray-300 rounded-xl" />
     <div className="w-24 h-4 bg-gray-300 rounded-md" />
   </div>
 );
@@ -54,21 +54,24 @@ function Home() {
   return (
     <MainLayout>
       <div className="font-open-sans">
-        <div className="bg-global-green px-20 py-4 w-full flex items-center justify-between">
+        <div className="bg-global-green px-4 md:px-20 py-4 w-full flex flex-col md:flex-row items-center justify-between gap-y-4 md:gap-y-0">
           <CategoriesOverlay />
-          {categories.slice(0, 6).map((li) => (
-            <Link
-              to={`/products?category=${li.value}`}
-              className="w-fit p-3 text-white text-sm font-medium"
-            >
-              {li.label}
-            </Link>
-          ))}
+          <div className="flex flex-wrap items-center justify-center gap-2 md:contents">
+            {categories.slice(0, 6).map((li) => (
+              <Link
+                key={li.value}
+                to={`/products?category=${li.value}`}
+                className="w-fit p-3 text-white text-sm font-medium"
+              >
+                {li.label}
+              </Link>
+            ))}
+          </div>
         </div>
         {isFeaturedProductNotComplete && (
-          <div className="w-full px-20 mb-10 flex items-start justify-between gap-3 mt-5">
+          <div className="w-full px-4 md:px-20 mb-10 flex flex-col md:flex-row items-start justify-between gap-3 mt-5">
             {/* LEFT TWO BOXES */}
-            <div className="flex items-start h-[650px] gap-x-3">
+            <div className="flex flex-col md:flex-row items-start h-auto md:h-[650px] gap-x-3 gap-y-3 md:gap-y-0 w-full md:w-[50%]">
               {/* BOX 1 */}
               <div className="h-full overflow-y-scroll bg-[#F5F5F5] p-5 rounded-xl">
                 <div className="flex flex-col items-start gap-y-1">
@@ -98,7 +101,7 @@ function Home() {
                           >
                             <img
                               src={item.image_urls?.[0]}
-                              className="w-[245px] h-[177px] rounded-xl object-cover"
+                              className="w-full md:w-[245px] h-[177px] rounded-xl object-cover"
                             />
                             <span className="text-[#313133] font-medium text-[16px]">
                               ₦{item.product_price?.toLocaleString()}
@@ -138,7 +141,7 @@ function Home() {
                           >
                             <img
                               src={item.image_urls?.[0]}
-                              className="w-[245px] h-[177px] rounded-xl object-cover"
+                              className="w-full md:w-[245px] h-[177px] rounded-xl object-cover"
                             />
                             <span className="text-[#313133] font-medium text-[16px]">
                               ₦{item.product_price?.toLocaleString()}
@@ -151,7 +154,7 @@ function Home() {
             </div>
 
             {/* RIGHT TWO BOXES */}
-            <div className="flex flex-col items-start gap-3 w-[50%]">
+            <div className="flex flex-col items-start gap-3 w-full md:w-[50%]">
               {/* BOX 3 */}
               <div className="w-full p-5 bg-[#F5F5F5] rounded-xl flex flex-col items-start gap-3">
                 <div className="flex flex-col items-start gap-y-1">

@@ -178,7 +178,7 @@ function ProductDetails() {
         <LoadingState />
       ) : (
         <>
-          <div className="px-20 py-7 bg-[#F7F7F7]">
+          <div className="px-4 md:px-20 py-7 bg-[#F7F7F7]">
             <div className="w-full flex items-center justify-start gap-x-3">
               <Link
                 to={"/"}
@@ -199,8 +199,8 @@ function ProductDetails() {
                 {productDetails?.product.product_name}
               </div>
             </div>
-            <div className="w-full flex items-start justify-between mt-4 gap-7">
-              <div className="w-[70%] flex flex-col gap-y-4">
+            <div className="w-full flex flex-col md:flex-row items-start justify-between mt-4 gap-7">
+              <div className="w-full md:w-[70%] flex flex-col gap-y-4">
                 <div className="w-full p-5 bg-white shadow-box rounded-xl flex flex-col gap-y-3">
                   <div className="w-full ">
                     <img
@@ -326,7 +326,7 @@ function ProductDetails() {
                   </div>
                 </div>
               </div>
-              <div className="w-[30%] flex flex-col gap-y-4">
+              <div className="w-full md:w-[30%] flex flex-col gap-y-4">
                 <div className="flex items-start p-5 rounded-xl justify-between w-full bg-white shadow-box">
                   <div className="flex flex-col items-start gap-y-1">
                     <span className="text-2xl font-semibold text-primary-300">

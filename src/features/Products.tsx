@@ -95,7 +95,7 @@ function Products() {
 
   return (
     <MainLayout>
-      <div className="px-20 py-7 bg-[#F7F7F7]">
+      <div className="px-4 md:px-20 py-7 bg-[#F7F7F7]">
         <div className="w-full flex items-center justify-start gap-x-3">
           <Link
             to={"/"}
@@ -125,8 +125,8 @@ function Products() {
               : formatText(selectedCatgory as string)}
           </div>
         </div>
-        <div className="w-full flex items-start justify-between gap-x-3 mt-5">
-          <div className="w-[30%] flex flex-col gap-y-3">
+        <div className="w-full flex flex-col md:flex-row items-start justify-between gap-x-3 gap-y-4 md:gap-y-0 mt-5">
+          <div className="w-full md:w-[30%] flex flex-col gap-y-3">
             {/* <div className="w-full rounded-xl shadow-box">
               <div className="w-full p-2.5 bg-global-green text-white rounded-t-xl">
                 <span className="text-start">Location</span>
@@ -199,7 +199,9 @@ function Products() {
                         window.history.replaceState(
                           {},
                           "",
-                          `/products?category=${value}`
+                          section
+                            ? `/products?section=${section}&category=${value}`
+                            : `/products?category=${value}`
                         );
                       }}
                       className="group flex w-full items-center justify-between py-2 px-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-[#F7F7F7]"
@@ -279,7 +281,7 @@ function Products() {
               Clear Filters
             </button>
           </div>
-          <div className="w-[70%] grid grid-cols-3 gap-3">
+          <div className="w-full md:w-[70%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {isLoading ? (
               Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
             ) : categorizedProduct?.data &&

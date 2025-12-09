@@ -7,7 +7,7 @@ import SearchBar from "./SearchBar";
 
 function Header() {
   return (
-    <div className="w-full flex items-center justify-between py-4 px-20">
+    <div className="w-full flex flex-col md:flex-row items-center justify-between py-4 px-4 md:px-20 gap-y-4 md:gap-y-0">
       <Link to={"/"}>
         <img
           src={NEDZL_LOGO_GREEN}
@@ -15,7 +15,7 @@ function Header() {
           alt=""
         />
       </Link>
-      <div className="flex items-center gap-x-2">
+      <div className="flex items-center gap-x-2 w-full md:w-auto justify-center">
         {/* <div className="w-[403px] flex items-center gap-3  justify-start  p-2 rounded-xl border shadow-input border-[#E9EAEB] ">
           <img src={SEARCH_INPUT} alt="" />
           <input
@@ -32,7 +32,7 @@ function Header() {
           textStyle={"text-white text-[16px] font-medium"}
         /> */}
       </div>
-      <div className="flex items-center justify-end gap-5">
+      <div className="flex items-center gap-5 w-full md:w-auto justify-between md:justify-end">
         <div className="flex items-center gap-x-3">
           <img src={NIGERIA_FLAG} className="w-[30px] h-[30px]" alt="" />
           <span className="text-faded-black text-[16px] font-medium">

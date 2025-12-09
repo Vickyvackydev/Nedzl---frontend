@@ -148,7 +148,7 @@ function StoreSettings() {
             setValue={(val) => handleFieldChange("address", val)}
           />
 
-          <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-5">
             <SelectInput
               label="State"
               placeholder="Select state e.g. Lagos"
@@ -213,7 +213,7 @@ function StoreSettings() {
                 />
               </div>
             </div> */}
-            <div className="flex items-center justify-between gap-2 w-full">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-2 w-full">
               <div className="w-full flex items-center border border-[#E5E7EB] rounded-xl overflow-hidden">
                 <div className="bg-[#E6F4EA] px-3 py-2 text-sm text-[#00A36C] font-medium">
                   From

@@ -101,8 +101,8 @@ function UserDashboard() {
   }, []);
   return (
     <MainLayout>
-      <div className="w-full flex items-start gap-4 shadow-box justify-between bg-[#F5F5F5] py-7 px-20">
-        <div className="w-[25%] bg-white rounded-xl flex flex-col p-4 items-start  gap-y-3">
+      <div className="w-full flex flex-col md:flex-row items-start gap-4 shadow-box justify-between bg-[#F5F5F5] py-7 px-4 md:px-20">
+        <div className="w-full md:w-[25%] bg-white rounded-xl flex flex-col p-4 items-start  gap-y-3">
           {SideBarMenus.map((item) => (
             <div
               onClick={() =>
@@ -140,7 +140,7 @@ function UserDashboard() {
             <span className="text-sm font-medium text-[#FF0000]">Log Out</span>
           </button>
         </div>
-        <div className="w-[75%] bg-white rounded-xl">
+        <div className="w-full md:w-[75%] bg-white rounded-xl">
           <div className="w-full p-4 border-b border-[#E9EAEB]">
             {!showProductFields ? (
               <div className="w-full flex items-center justify-between">

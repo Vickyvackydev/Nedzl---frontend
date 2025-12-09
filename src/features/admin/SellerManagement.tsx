@@ -247,7 +247,7 @@ function SellerManagement() {
     <DashboardLayout>
       <div className="w-full p-3 sm:p-5 geist-family">
         {/* <LinkHead title="Admin | Overview" content="" /> */}
-        <div className="w-full flex items-center justify-between gap-y-3 flex-col sm:flex-row">
+        <div className="w-full flex items-center justify-between gap-y-3">
           <div className="flex flex-col items-start">
             <span className="text-lg font-semibold text-[#22282F]">
               Sellers
@@ -318,7 +318,7 @@ function SellerManagement() {
           ))}
         </div>
 
-        <div className="w-[45%] bg-[#00A63E0D] p-1.5 mt-5  rounded-xl flex items-center gap-x-3">
+        <div className="lg:w-[45%] w-full bg-[#00A63E0D] p-1.5 mt-5  rounded-xl flex items-center gap-x-3">
           {sellersStatus.map((item) => (
             <button
               onClick={() => setSelectedStatus(item)}
@@ -335,7 +335,7 @@ function SellerManagement() {
         </div>
 
         <div className="mt-5 w-full rounded-xl border border-[#E9EAEB] bg-white px-3 sm:px-5 py-3">
-          <div className="w-full flex justify-between items-center gap-3 flex-col sm:flex-row">
+          <div className="w-full flex justify-between lg:items-center items-start gap-3 flex-col sm:flex-row">
             <span className="text-[16px] font-semibold text-primary-300">
               {selectedStatus}{" "}
               <span className="text-[#117D06]">
@@ -343,7 +343,7 @@ function SellerManagement() {
               </span>
             </span>
             <div
-              className="flex items-center gap-x-3 relative flex-col sm:flex-row w-full sm:w-auto"
+              className="flex lg:items-center items-start gap-3 relative flex-col sm:flex-row w-full sm:w-auto"
               ref={dropdownRef.filterBox}
             >
               <div className="flex items-center gap-x-2 w-full sm:w-[200px] px-3 py-2 border border-borderColor rounded-xl">
@@ -380,7 +380,7 @@ function SellerManagement() {
           </div>
 
           {users?.data?.data?.length > 0 ? (
-            <div className="max-w-[54.2vw] min-w-full mt-2 custom-scrollbar-gray overflow-x-auto">
+            <div className="w-full mt-2 custom-scrollbar-gray overflow-x-auto">
               <TableComponent
                 DATA={users?.data?.data}
                 // @ts-ignore

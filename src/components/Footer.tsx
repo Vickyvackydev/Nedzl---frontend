@@ -30,22 +30,22 @@ const FooterLinks = ({
 );
 function Footer() {
   return (
-    <div className="w-full h-full bg-[#121212] border-t-[14px] px-20 pt-20 pb-5 border-global-green">
-      <div className="w-full flex items-start justify-between gap-20">
-        <div className="w-full flex flex-col items-start gap-y-20">
+    <div className="w-full h-full bg-[#121212] border-t-[14px] px-4 md:px-20 pt-10 md:pt-20 pb-5 border-global-green">
+      <div className="w-full flex flex-col md:flex-row items-start justify-between gap-10 md:gap-20">
+        <div className="w-full flex flex-col items-start gap-y-10 md:gap-y-20">
           <img
             src={NEDZL_LOGO_GREEN}
             className="w-[130px] h-[33.41px]"
             alt=""
           />
 
-          <div className="w-full flex items-start justify-between">
+          <div className="w-full flex flex-col md:flex-row items-start justify-between gap-y-8 md:gap-y-0">
             <FooterLinks title={footer[0].title} links={footer[0].links} />
             <FooterLinks title={footer[1].title} links={footer[1].links} />
             <FooterLinks title={footer[2].title} links={footer[2].links} />
           </div>
         </div>
-        <div className="w-[65%] flex flex-col gap-y-10 items-start">
+        <div className="w-full md:w-[65%] flex flex-col gap-y-10 items-start">
           <span className="text-white font-normal">
             Our mission is to connect students and communities with an easy,
             secure, and reliable marketplace for buying and selling everyday

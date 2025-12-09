@@ -191,7 +191,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
 
   return (
     <div className="flex items-center gap-3">
-      <div className="relative w-[403px]" ref={dropdownRef}>
+      <div className="relative lg:w-[403px] w-[335px]" ref={dropdownRef}>
         <div className="flex items-center gap-3 justify-start p-2 rounded-xl border shadow-input border-[#E9EAEB] bg-white">
           <img src={SEARCH_INPUT} alt="search" />
           <input
@@ -236,13 +236,13 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
         )}
       </div>
 
-      <button
+      {/* <button
         onClick={handleSearchButtonClick}
         disabled={!query.trim()}
         className="w-fit bg-global-green rounded-xl px-4 py-2 text-white text-[16px] font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-600 transition-colors"
       >
         Search
-      </button>
+      </button> */}
     </div>
   );
 };

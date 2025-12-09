@@ -111,7 +111,7 @@ function Account() {
           }}
         />
       </div>
-      <div className="w-full grid grid-cols-2 gap-x-3 gap-y-5 mt-5 px-4">
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-5 mt-5 px-4">
         <SelectInput
           label="First Name"
           isInput

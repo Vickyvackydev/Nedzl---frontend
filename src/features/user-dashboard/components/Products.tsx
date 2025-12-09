@@ -382,7 +382,7 @@ function Products() {
             value={formFields.product_name}
             setValue={(e) => setFormFields({ ...formFields, product_name: e })}
           />
-          <div className="w-full flex items-center gap-3 justify-between">
+          <div className="w-full flex flex-col md:flex-row items-center gap-3 justify-between">
             <SelectInput
               isInput
               required
@@ -431,7 +431,7 @@ function Products() {
               />
             </div>
           </div>
-          <div className="w-full flex items-center gap-3 justify-between">
+          <div className="w-full flex flex-col md:flex-row items-center gap-3 justify-between">
             <SelectInput
               required
               label="Categories"
@@ -460,7 +460,7 @@ function Products() {
             content={formFields.description}
             onChange={(e) => setFormFields({ ...formFields, description: e })}
           />
-          <div className="w-full flex items-center gap-3 justify-between">
+          <div className="w-full flex flex-col md:flex-row items-center gap-3 justify-between">
             <SelectInput
               required
               label="State"
@@ -484,7 +484,7 @@ function Products() {
               }}
             />
           </div>
-          <div className="w-full flex items-center gap-3 justify-between">
+          <div className="w-full flex flex-col md:flex-row items-center gap-3 justify-between">
             <SelectInput
               required
               label="Condition"
@@ -641,7 +641,7 @@ function Products() {
             </div>
           </div>
           {/* <ImageUploader /> */}
-          <div className="w-full flex items-end justify-end gap-3">
+          <div className="w-full flex items-end justify-end gap-3 pb-20 md:pb-0">
             {editingProduct && (
               <Button
                 title="Cancel"
@@ -693,11 +693,11 @@ function Products() {
             <div className="max-h-[500px] w-full overflow-auto px-4 py-7">
               <div className="flex items-start flex-col gap-y-3 w-full">
                 {userProducts?.data?.data?.map((item: ProductType) => (
-                  <div className="w-full flex items-start justify-between p-3 rounded-lg">
-                    <div className="flex items-start gap-x-2">
+                  <div className="w-full flex flex-col md:flex-row items-start justify-between p-3 rounded-lg gap-y-3">
+                    <div className="w-full flex flex-col md:flex-row items-start gap-2">
                       <img
                         src={item?.image_urls[0] as string}
-                        className="w-[208px] h-[208px] rounded-lg object-cover"
+                        className="w-full md:w-[208px] h-[208px] rounded-lg object-cover"
                         alt=""
                       />
                       <div className="w-full flex flex-col gap-y-2">
@@ -733,7 +733,7 @@ function Products() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-x-2">
+                    <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
                       {/* Edit */}
                       {activeTab === "active" && (
                         <button
@@ -796,10 +796,14 @@ function Products() {
             <div className="w-full flex flex-col items-center gap-y-2 justify-center h-[70vh]">
               <img src={ART_WORK} className="w-[90.1px] h-[100px]" alt="" />
               <span className="text-xl font-semibold text-black text-center">
-                You have not placed any product posted yet!
+                {activeTab === "closed"
+                  ? "You have not closed any product posted yet!"
+                  : "You have not placed any product posted yet!"}
               </span>
               <span className="text-[#555555] font-normal text-sm">
-                All products you have posted would appear here
+                {activeTab === "closed"
+                  ? "All products you have closed would appear here"
+                  : "All products you have posted would appear here"}
               </span>
               <Button
                 title="Post a new product"

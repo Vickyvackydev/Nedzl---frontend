@@ -24,7 +24,7 @@ interface SidebarProps {
   setOpen: any;
 }
 function AdminSidebar(props: SidebarProps) {
-  const { onClose } = props;
+  // const { onClose } = props;
   // const user = useSelector(selectUser);
 
   const dispatch = useDispatch();
@@ -54,17 +54,17 @@ function AdminSidebar(props: SidebarProps) {
         >
           {/* mobile screen section */}
 
-          <div className="w-[250px] shadow-sm h-screen border border-borderColor bg-[#F5F8FF] flex flex-col items-start justify-between">
+          <div className="w-[290px] geist-family shadow-sm h-screen border border-borderColor bg-[#F6F6F6] flex flex-col items-start justify-between">
             <div className="flex items-start px-3 mt-10 flex-col gap-y-11 w-full">
               <img
                 src={NEDZL_LOGO_GREEN}
-                className="w-[200px] h-[30.2px] object-cover -ml-5"
+                className="w-[130px] h-[30.2px] object-cover"
                 alt=""
               />
               <div className="flex flex-col w-full gap-y-4">
                 <Link
                   to="/admin/overview"
-                  onClick={onClose}
+                  // onClick={() => dispatch(setGlobalAudioFileName(""))}
                   className={`flex items-center gap-x-3  ${
                     activeAdminRoute && "bg-global-green shadow-md"
                   } cursor-pointer w-full p-3 rounded-lg `}
@@ -84,16 +84,16 @@ function AdminSidebar(props: SidebarProps) {
                 </Link>
 
                 <Link
-                  to="/admin/user-management"
-                  onClick={onClose}
-                  className={`flex items-center gap-x-3 rounded-lg cursor-pointer  ${
-                    pathname.includes("/user-management") &&
+                  to="/admin/seller-management"
+                  // onClick={() => dispatch(setGlobalAudioFileName(""))}
+                  className={`flex items-center gap-x-3 geist-font rounded-lg cursor-pointer  ${
+                    pathname.includes("/admin/seller-management") &&
                     "bg-global-green shadow-md"
                   } w-full p-3 rounded-lg `}
                 >
                   <img
                     src={
-                      pathname.includes("/user-management")
+                      pathname.includes("/admin/seller-management")
                         ? SELLERS_WHITE
                         : SELLERS_BLACK
                     }
@@ -102,38 +102,69 @@ function AdminSidebar(props: SidebarProps) {
                   />
                   <span
                     className={`text-sm font-medium ${
-                      pathname.includes("/user-management") && "text-white"
+                      pathname.includes("/admin/seller-management") &&
+                      "text-white"
                     }`}
                   >
-                    User Management
+                    Seller Management
+                  </span>
+                </Link>
+                <Link
+                  to="/admin/products-management"
+                  // onClick={() => dispatch(setGlobalAudioFileName(""))}
+                  className={`flex items-center gap-x-3 rounded-lg cursor-pointer  ${
+                    pathname.includes("/admin/products-management") &&
+                    "bg-global-green shadow-md"
+                  } w-full p-3 rounded-lg `}
+                >
+                  <img
+                    src={
+                      pathname.includes("/admin/products-management")
+                        ? PRODUCT_WHITE
+                        : PRODUCT_BLACK
+                    }
+                    className="w-[20px] h-[20px]"
+                    alt=""
+                  />
+                  <span
+                    className={`text-sm font-medium text-nowrap ${
+                      pathname.includes("/admin/products-management") &&
+                      "text-white"
+                    }`}
+                  >
+                    Products Management
                   </span>
                 </Link>
               </div>
             </div>
             <div className="w-full px-3">
-              {/* <Link
-              to="/settings"
-              className={`flex items-center gap-x-3 cursor-pointer  ${
-                pathname === "/settings" && "bg-global-green shadow-md"
-              } w-full p-3 rounded-lg `}
-            >
-              <img
-                src={pathname !== "/settings" ? SETTINGS : SETTINGS_WHITE_ICON}
-                className="w-[20px] h-[20px]"
-                alt=""
-              />
-              <span
-                className={`text-sm font-medium  ${
-                  pathname === "/settings" && "text-white"
-                }`}
+              <Link
+                to="/admin/settings"
+                className={`flex items-center gap-x-3 cursor-pointer  ${
+                  pathname === "/admin/settings" && "bg-global-green shadow-md"
+                } w-full p-3 rounded-lg `}
               >
-                Settings
-              </span>
-            </Link> */}
+                <img
+                  src={
+                    pathname !== "/admin/settings"
+                      ? SETTINGS_BLACK
+                      : SETTINGS_WHITE
+                  }
+                  className="w-[20px] h-[20px]"
+                  alt=""
+                />
+                <span
+                  className={`text-sm font-medium  ${
+                    pathname === "/admin/settings" && "text-white"
+                  }`}
+                >
+                  Settings
+                </span>
+              </Link>
               <Link
                 to="/login"
                 onClick={() => dispatch(reset())}
-                className={`flex items-center rounded-lg gap-x-3 cursor-pointer shadow-md w-full p-3`}
+                className={`flex items-center rounded-lg gap-x-3 cursor-pointer w-full p-3`}
               >
                 <img src={LOG_OUT} className="w-[20px] h-[20px]" alt="" />
                 <span className={`text-sm font-medium`}>Log out</span>
@@ -142,7 +173,7 @@ function AdminSidebar(props: SidebarProps) {
           </div>
         </Transition>
       ) : (
-        <div className="w-[290px] geist-family shadow-sm h-screen border border-borderColor bg-[#F6F6F6] flex flex-col items-start justify-between">
+        <div className="min-w-[290px] geist-family shadow-sm h-screen border border-borderColor bg-[#F6F6F6] flex flex-col items-start justify-between">
           <div className="flex items-start px-3 mt-10 flex-col gap-y-11 w-full">
             <img
               src={NEDZL_LOGO_GREEN}

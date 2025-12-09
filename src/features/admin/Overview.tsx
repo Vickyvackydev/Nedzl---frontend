@@ -263,7 +263,7 @@ function Overview() {
     <DashboardLayout>
       <div className="w-full p-3 sm:p-5 geist-family">
         {/* <LinkHead title="Admin | Overview" content="" /> */}
-        <div className="w-full flex items-center justify-between gap-y-3 flex-col sm:flex-row">
+        <div className="w-full flex items-center justify-between gap-y-3">
           <div className="flex flex-col items-start">
             <span className="text-lg font-semibold text-[#22282F]">
               Dashboard
@@ -333,7 +333,7 @@ function Overview() {
             </div>
           ))}
         </div>
-        <div className="w-full flex items-start gap-3 justify-between">
+        <div className="w-full flex flex-col md:flex-row items-start gap-3 justify-between">
           <SpendingChart
             title={"Customer Signup Metrics"}
             count={dashboardOverview?.stats?.total_registered_sellers as number}
@@ -352,15 +352,15 @@ function Overview() {
           />
         </div>
         <div className="mt-5 w-full rounded-xl border border-[#E9EAEB] bg-white px-3 sm:px-5 py-3">
-          <div className="w-full flex justify-between items-center gap-3 flex-col sm:flex-row">
+          <div className="w-full flex justify-between lg:items-center items-start gap-3 flex-col sm:flex-row">
             <span className="text-[16px] font-semibold text-primary-300">
-              Active Products
+              Active Products{" "}
               <span className="text-[#117D06]">
                 ({products?.data?.total_count || 0})
               </span>
             </span>
             <div
-              className="flex items-center gap-x-3 relative flex-col sm:flex-row w-full sm:w-auto"
+              className="flex lg:items-center items-start gap-3 relative flex-col sm:flex-row w-full sm:w-auto"
               ref={dropdownRef.filterBox}
             >
               <div className="flex items-center gap-x-2 w-full sm:w-[200px] px-3 py-2 border border-borderColor rounded-xl">
@@ -397,7 +397,7 @@ function Overview() {
           </div>
 
           {products?.data?.data?.length > 0 ? (
-            <div className="max-w-[54.2vw] min-w-full mt-2 custom-scrollbar-gray overflow-x-auto">
+            <div className="w-full mt-2 custom-scrollbar-gray overflow-x-auto">
               <TableComponent
                 DATA={products?.data?.data}
                 // @ts-ignore
@@ -652,7 +652,7 @@ function Overview() {
           }
           onClose={() => dispatch(setProductDetails(null))}
         >
-          <div className="bg-white rounded-lg w-full max-w-[595px] geist-family max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg w-full lg:max-w-[595px] max-w-[90%] geist-family max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
               <h2 className="text-lg font-semibold text-primary-300">

@@ -19,7 +19,7 @@ export default function ProductSection({
   onSeeAll,
 }: ProductSectionProps) {
   return (
-    <div className="w-full bg-[#F7F7F7] h-full py-7 px-20 flex flex-col gap-y-5">
+    <div className="w-full bg-[#F7F7F7] h-full py-7 px-4 md:px-20 flex flex-col gap-y-5">
       {/* Header */}
       <div className="w-full flex items-start justify-between">
         <div className="flex items-center gap-x-2">
@@ -36,13 +36,13 @@ export default function ProductSection({
 
       {/* Content */}
       {loading ? (
-        <div className="w-full grid grid-cols-5 gap-3">
+        <div className="w-full grid grid-cols-2 lg:grid-cols-5 gap-3">
           {Array.from({ length: 5 }).map((_, i) => (
             <SkeletonCard key={i} />
           ))}
         </div>
       ) : data && data.length > 0 ? (
-        <div className="w-full grid grid-cols-5 gap-3">
+        <div className="w-full grid grid-cols-2 lg:grid-cols-5 gap-3">
           {data.map((item: ProductType, index: number) => (
             <motion.div
               key={index}

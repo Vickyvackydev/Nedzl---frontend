@@ -48,7 +48,7 @@ export default function DashboardLayout({
       />
 
       {/* Main Content Area */}
-      <div className="flex flex-col w-full lg:w-full h-full">
+      <div className="flex flex-col flex-1 min-w-0 h-full">
         <div className="w-full">
           <AdminHeader setSideNavVisible={setSideNavVisible} />
         </div>
@@ -56,7 +56,7 @@ export default function DashboardLayout({
           ref={contentRef}
           className={`[@media(max-width:767px)]:scrollbar-hide flex-grow overflow-auto ${
             darkmode ? "bg-[#141718]" : "bg-white"
-          } lg:pb-20 lg:w-full md:w-full sm:w-full`}
+          } lg:pb-20 w-full`}
         >
           {children}
         </div>

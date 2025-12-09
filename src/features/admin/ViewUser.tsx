@@ -16,6 +16,7 @@ import {
 } from "../../assets";
 // import { PercentageChange } from "../../components/chart";
 import {
+  deleteAdminProduct,
   deleteAdminUser,
   getAdminUserDetails,
   getDashboardProducts,
@@ -25,19 +26,35 @@ import useDropdown from "../../hooks/useDropdown";
 import FilterBox from "../../components/FilterBox";
 import TableComponent from "../../components/TableComponent";
 import { AdminUserDetails, Filter } from "../../types";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { ProductsColumn } from "../../components/columns/ProductColumns";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import moment from "moment";
 import clsx from "clsx";
 import { statusStyles } from "../../components/columns/SellerColumns";
 import Button from "../../components/Button";
 import Modal from "../../components/Modal";
 import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectProduct,
+  selectProductAction,
+  selectProductImages,
+  setProductAction,
+  setProductDetails,
+  setProductImages,
+} from "../../state/slices/globalReducer";
+import { updateProductStatus } from "../../services/product.service";
 
 const productsStatus = ["All Listed Products", "Sold Products", "Under Review"];
 function ViewUser() {
+  const productImages = useSelector(selectProductImages);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const productDetails = useSelector(selectProduct);
+  const [currentImage, setCurrentImage] = useState<number | null>(null);
+  const productAction = useSelector(selectProductAction);
   const location = useLocation();
   const userId = location.pathname.split("/").pop();
   const [deleteModal, setDeleteModal] = useState(false);
@@ -190,6 +207,46 @@ function ViewUser() {
       setLoading(false);
     }
   };
+
+  const handleDeleteProduct = async () => {
+    setLoading(true);
+
+    try {
+      const response = await deleteAdminProduct(productDetails?.id as string);
+      if (response) {
+        toast.success(response?.message);
+        dispatch(setProductAction(null));
+        refetch();
+        refetch();
+        dispatch(setProductDetails(null));
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleCloseProduct = async () => {
+    setLoading(true);
+
+    try {
+      const response = await updateProductStatus(
+        productDetails?.id as string,
+        "CLOSED"
+      );
+      if (response) {
+        toast.success(response?.message);
+        dispatch(setProductAction(null));
+        refetch();
+        dispatch(setProductDetails(null));
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="p-3 geist-family w-full flex flex-col items-start gap-y-3">
@@ -388,12 +445,12 @@ function ViewUser() {
             </div>
           ))}
         </div>
-        <div className="w-[45%] bg-[#00A63E0D] p-1.5 mt-5  rounded-xl flex items-center gap-x-3">
+        <div className="lg:w-[45%] w-full bg-[#00A63E0D] p-1.5 mt-5  rounded-xl flex items-center gap-x-3">
           {productsStatus.map((item) => (
             <button
               onClick={() => setSelectedStatus(item)}
               className={clsx(
-                "w-full h-[40px] text-sm cursor-pointer rounded-xl  font-medium",
+                "w-full h-[40px] text-sm text-nowrap cursor-pointer rounded-xl  font-medium",
                 selectedStatus === item
                   ? "bg-[#FFFFFF] text-global-green"
                   : "bg-none text-[#656F7D] "
@@ -404,7 +461,7 @@ function ViewUser() {
           ))}
         </div>
         <div className="w-full rounded-xl border border-[#E9EAEB] bg-white px-3 sm:px-5 py-3">
-          <div className="w-full flex justify-between items-center gap-3 flex-col sm:flex-row">
+          <div className="w-full flex justify-between lg:items-center items-start gap-3 flex-col sm:flex-row">
             <span className="text-[16px] font-semibold text-primary-300">
               Active Products
               <span className="text-[#117D06]">
@@ -412,7 +469,7 @@ function ViewUser() {
               </span>
             </span>
             <div
-              className="flex items-center gap-x-3 relative flex-col sm:flex-row w-full sm:w-auto"
+              className="flex lg:items-center items-start gap-3 relative flex-col sm:flex-row w-full sm:w-auto"
               ref={dropdownRef.filterBox}
             >
               <div className="flex items-center gap-x-2 w-full sm:w-[200px] px-3 py-2 border border-borderColor rounded-xl">
@@ -449,7 +506,7 @@ function ViewUser() {
           </div>
 
           {products?.data?.data?.length > 0 ? (
-            <div className="max-w-[54.2vw] min-w-full mt-2 custom-scrollbar-gray overflow-x-auto">
+            <div className="w-full mt-2 custom-scrollbar-gray overflow-x-auto">
               <TableComponent
                 DATA={products?.data?.data}
                 // @ts-ignore
@@ -565,6 +622,378 @@ function ViewUser() {
             </div>
           )}
         </div>
+        <Modal
+          show={productAction && productAction === "CLOSE"}
+          onClose={() => {
+            dispatch(setProductAction(null));
+            dispatch(setProductDetails(null));
+          }}
+        >
+          <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Close Product?
+            </h3>
+
+            <p className="text-gray-600 text-sm mb-6">
+              Are you sure you want to close this Product? This product would be
+              marked as sold
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300 transition"
+                onClick={() => {
+                  dispatch(setProductAction(null));
+                  dispatch(setProductDetails(null));
+                }}
+              >
+                Cancel
+              </button>
+
+              <Button
+                title="Yes, Close"
+                textStyle="text-sm font-medium text-white"
+                btnStyles="px-4 py-2 rounded-lg  bg-gray-800 hover:bg-gray-900 transition"
+                loaderSize={"w-1 h-1"}
+                handleClick={handleCloseProduct}
+                loading={loading}
+              />
+            </div>
+          </div>
+        </Modal>
+        <Modal
+          show={productAction && productAction === "DELETE"}
+          onClose={() => {
+            dispatch(setProductAction(null));
+            dispatch(setProductDetails(null));
+          }}
+        >
+          <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Delete Product?
+            </h3>
+
+            <p className="text-gray-600 text-sm mb-6">
+              This action cannot be undone. Do you want to permanently delete
+              this product?
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300 transition"
+                onClick={() => {
+                  dispatch(setProductDetails(null));
+                  dispatch(setProductAction(null));
+                }}
+              >
+                Cancel
+              </button>
+
+              <Button
+                title="Yes, Delete"
+                textStyle="text-sm font-medium text-white"
+                btnStyles="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition"
+                loaderSize={"w-1 h-1"}
+                handleClick={handleDeleteProduct}
+                loading={loading}
+              />
+            </div>
+          </div>
+        </Modal>
+        <Modal
+          show={productImages?.length > 0 || false}
+          onClose={() => dispatch(setProductImages([]))}
+        >
+          <div className="relative w-full md:w-[70%] flex flex-col gap-y-5">
+            {/* Close Button */}
+            <button
+              onClick={() => dispatch(setProductImages([]))}
+              className="absolute right-3 top-3 z-20 bg-white shadow-md rounded-full p-2 hover:bg-gray-100"
+            >
+              ✕
+            </button>
+
+            {/* Main Image */}
+            <div className="w-full bg-white shadow-box rounded-xl p-5">
+              <div className="w-full">
+                <img
+                  src={productImages?.[currentImage as number]}
+                  className="w-full h-[400px] md:h-[450px] rounded-xl object-contain bg-gray-50"
+                  alt=""
+                />
+              </div>
+
+              {/* Thumbnails */}
+              <div className="w-full mt-4 flex items-center gap-x-3 overflow-x-auto pb-2">
+                {productImages?.map((img: string, i: number) => {
+                  const isActive = i === currentImage;
+                  return (
+                    <div
+                      key={i}
+                      className={`
+                        flex-shrink-0 cursor-pointer rounded-xl overflow-hidden
+                        border-2 transition-all duration-200
+                        ${
+                          isActive
+                            ? "border-primary-300 scale-105"
+                            : "border-transparent"
+                        }
+                      `}
+                      onClick={() => setCurrentImage(i)}
+                    >
+                      <img
+                        src={img}
+                        className="w-[90px] h-[80px] md:w-[110px] md:h-[100px] object-cover"
+                        alt=""
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </Modal>
+        <Modal
+          show={
+            productDetails !== null &&
+            productAction !== "DELETE" &&
+            productAction !== "CLOSE"
+          }
+          onClose={() => dispatch(setProductDetails(null))}
+        >
+          <div className="bg-white rounded-lg w-full lg:max-w-[595px] max-w-[90%] geist-family max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+              <h2 className="text-lg font-semibold text-primary-300">
+                Product Details -{" "}
+                <span className="text-emerald-500">
+                  {productDetails?.product_name}
+                </span>
+              </h2>
+              <button
+                onClick={() => dispatch(setProductDetails(null))}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-6">
+              {/* User Info */}
+              <div className="flex items-center justify-between border border-borderColor  rounded-xl p-4">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <img
+                      src={productDetails?.user?.image_url || AVATAR}
+                      className="w-14 h-14 rounded-full object-cover"
+                      alt=""
+                    />
+
+                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white"></div>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-primary-300">
+                      {productDetails?.user?.user_name}
+                    </h3>
+                    {/* <p className="text-sm text-gray-500">
+                                    ID: {productDetails?.user?.id}
+                                  </p> */}
+                  </div>
+                </div>
+                <button
+                  onClick={() =>
+                    navigate(`/admin/users/${productDetails?.user_id}`)
+                  }
+                  className="px-4 h-[24px] bg-global-green text-white rounded-md text-sm font-normal hover:bg-emerald-600 transition-colors"
+                >
+                  View Details
+                </button>
+              </div>
+
+              {/* Product Information Grid */}
+              <div className="grid grid-cols-2 gap-6 border border-borderColor p-4 rounded-xl">
+                {/* Product Name */}
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Product Name
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary-300 font-medium">
+                      {productDetails?.user?.user_name}
+                    </span>
+                    {/* <button className="text-gray-400 hover:text-gray-600">
+                                <Edit2 size={14} />
+                              </button> */}
+                  </div>
+                </div>
+
+                {/* Category */}
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Category
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary-300 font-medium">
+                      {productDetails?.category_name}
+                    </span>
+                    {/* <button className="text-gray-400 hover:text-gray-600">
+                                <Edit2 size={14} />
+                              </button> */}
+                  </div>
+                </div>
+
+                {/* Sub-Category */}
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Brand
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary-300 font-medium">
+                      {productDetails?.brand_name}
+                    </span>
+                    {/* <button className="text-gray-400 hover:text-gray-600">
+                                <Edit2 size={14} />
+                              </button> */}
+                  </div>
+                </div>
+
+                {/* Product Price */}
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Product Price
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary-300 font-medium">
+                      {productDetails?.product_price?.toLocaleString()}
+                    </span>
+                    {/* <button className="text-gray-400 hover:text-gray-600">
+                                <Edit2 size={14} />
+                              </button> */}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Product Description
+                  </label>
+                  <div className="flex items-start gap-2">
+                    <p
+                      dangerouslySetInnerHTML={{
+                        __html: productDetails?.description,
+                      }}
+                      className="text-primary-300 leading-relaxed"
+                    ></p>
+                    {/* <button className="text-gray-400 hover:text-gray-600 flex-shrink-0">
+                              <Edit2 size={14} />
+                            </button> */}
+                  </div>
+                </div>
+              </div>
+
+              {/* Dates */}
+              <div className="grid grid-cols-2 gap-6 p-4 rounded-xl border border-borderColor">
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Outstanding Details
+                  </label>
+                  <div className="flex items-start gap-2">
+                    <p className="text-primary-300 font-medium">
+                      {productDetails?.outstanding_issues}
+                    </p>
+                    {/* <button className="text-gray-400 hover:text-gray-600 flex-shrink-0">
+                                <Edit2 size={14} />
+                              </button> */}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Category
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary-300 font-medium">
+                      {productDetails?.category_name}
+                    </span>
+                    {/* <button className="text-gray-400 hover:text-gray-600">
+                                <Edit2 size={14} />
+                              </button> */}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Date Listed
+                  </label>
+                  <p className="text-primary-300 font-medium">
+                    {moment(productDetails?.created_at).format("MMM D, YYYY")}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Approved Date:
+                  </label>
+                  <p className="text-primary-300 font-medium">
+                    {moment(productDetails?.created_at).format("MMM D, YYYY")}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Status
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={clsx(
+                        "w-fit flex items-center gap-x-1 justify-center px-3 py-1.5 rounded-md",
+                        ui?.bg
+                      )}
+                    >
+                      <div
+                        className={clsx(
+                          "min-w-[5px] min-h-[5px] rounded-full",
+                          ui?.dot
+                        )}
+                      />
+
+                      <span className={clsx("text-xs font-medium", ui?.text)}>
+                        {productDetails?.status
+                          ?.replace(/_/g, " ")
+                          ?.toLowerCase()}
+                      </span>
+                    </div>
+                    {/* <button className="text-gray-400 hover:text-gray-600">
+                              <Edit2 size={14} />
+                            </button> */}
+                  </div>
+                </div>
+              </div>
+
+              {/* Status */}
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
+              <button
+                onClick={() => dispatch(setProductDetails(null))}
+                className="px-5 py-2 text-primary-300 rounded-xl bg-white border border-gray-300 font-medium hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              {/* <button
+                        onClick={() => setDeleteModal(true)}
+                        className="px-5 py-2 text-white bg-red-500 rounded-xl  font-medium hover:bg-red-600 transition-colors"
+                      >
+                        Delete
+                      </button>
+                      {productDetails?.status !== "CLOSED" && (
+                        <button
+                          onClick={() => setCloseProductModal(true)}
+                          className="px-5 py-2 text-white bg-emerald-500 rounded-xl font-medium hover:bg-emerald-600 transition-colors"
+                        >
+                          Close
+                        </button>
+                      )} */}
+            </div>
+          </div>
+        </Modal>
         <Modal show={deleteModal} onClose={() => setDeleteModal(false)}>
           <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-sm">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">

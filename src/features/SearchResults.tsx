@@ -70,7 +70,7 @@ function SearchResults() {
 
   return (
     <MainLayout>
-      <div className="px-20 py-7 bg-[#F7F7F7]">
+      <div className="px-4 md:px-20 py-7 bg-[#F7F7F7]">
         {/* Breadcrumb */}
         <div className="w-full flex items-center justify-start gap-x-3 mb-6">
           <Link
@@ -186,7 +186,7 @@ function SearchResults() {
         </div>
 
         {/* Products Grid */}
-        <div className="w-full grid grid-cols-5 gap-3">
+        <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
           {isLoading ? (
             Array.from({ length: 10 }).map((_, i) => <SkeletonCard key={i} />)
           ) : categorizedProduct?.data &&
@@ -204,7 +204,7 @@ function SearchResults() {
               )
             )
           ) : (
-            <div className="col-span-5 text-center py-16">
+            <div className="col-span-2 md:col-span-3 lg:col-span-5 text-center py-16">
               <div className="max-w-md mx-auto">
                 <svg
                   className="w-24 h-24 mx-auto text-gray-300 mb-4"
