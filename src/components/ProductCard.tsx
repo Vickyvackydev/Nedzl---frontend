@@ -46,7 +46,9 @@ function ProductCard({ item }: { item: ProductType }) {
       </div>
       <div className="flex items-center gap-x-2">
         <img src={LOCATION} className="w-[20px] h-[20px]" alt="" />
-        <span className="text-faded-black text-sm">{item?.state}</span>
+        <span className="text-faded-black text-sm">
+          {item?.state?.charAt(0).toUpperCase() + item?.state?.slice(1)}
+        </span>
       </div>
     </div>
   );

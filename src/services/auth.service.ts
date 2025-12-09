@@ -11,6 +11,11 @@ export const login = async (payload: { email: string; password: string }) => {
   return (await response).data;
 };
 
+export const verifyEmail = async (token: string) => {
+  const response = await API.post(`/auth/verify-email?token=${token}`);
+  return response.data;
+};
+
 export const updateUser = async (formData: FormData) => {
   const response = await API.patch("/users/update", formData, {
     headers: { "Content-Type": "multipart/formdata" },

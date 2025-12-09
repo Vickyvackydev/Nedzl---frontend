@@ -16,6 +16,9 @@ import SellerManagement from "./features/admin/SellerManagement";
 import ViewUser from "./features/admin/ViewUser";
 import PrivateRoute from "./PrivateRoute";
 import { useEffect } from "react";
+import CheckEmailVerification from "./features/auth/CheckEmailVerification";
+import EmailVerifiedSuccess from "./features/auth/EmailVerificaionSuccess";
+import EmailVerificationLoading from "./features/auth/VerifyEmail";
 
 function App() {
   const location = useLocation();
@@ -31,11 +34,16 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/email-sent" element={<CheckEmailVerification />} />
+        <Route path="/auth/verify/success" element={<EmailVerifiedSuccess />} />
+        <Route path="/auth/verify" element={<EmailVerificationLoading />} />
 
         <Route path="/" element={<Home />} />
         <Route path="/product-details/:id" element={<ProductDetails />} />
         <Route path="/products" element={<Products />} />
+
         <Route path="/search" element={<SearchResults />} />
+
         <Route
           path="/dashboard"
           element={

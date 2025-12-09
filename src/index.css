@@ -63,6 +63,9 @@ button {
   cursor: pointer;
 }
 
+button:disabled {
+  cursor: not-allowed;
+}
 .custom-scrollbar-gray::-webkit-scrollbar-thumb {
   /* background-color: #1d4ed8; */
   border-radius: 9999px;

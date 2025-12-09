@@ -5,8 +5,6 @@ import {
   ADS_BLACK,
   ADS_WHITE,
   ARROW_BACK,
-  INBOX_BLACK,
-  INBOX_WHITE,
   LOG_OUT_RED,
   REVIEW_BLACK,
   REVIEW_WHITE,
@@ -23,7 +21,7 @@ import {
 import Account from "./components/Account";
 import Products from "./components/Products";
 import StoreSettings from "./components/StoreSettings";
-import InBox from "./components/InBox";
+// import InBox from "./components/InBox";
 import CustomerReview from "./components/CustomerReview";
 import MyReview from "./components/MyReview";
 import Settings from "./components/Settings";
@@ -64,12 +62,12 @@ const SideBarMenus = [
     inactive_icon: STORE_SETTINGS_BLACK,
     component: <StoreSettings />,
   },
-  {
-    title: "Inbox",
-    active_icon: INBOX_WHITE,
-    inactive_icon: INBOX_BLACK,
-    component: <InBox />,
-  },
+  // {
+  //   title: "Inbox",
+  //   active_icon: INBOX_WHITE,
+  //   inactive_icon: INBOX_BLACK,
+  //   component: <InBox />,
+  // },
   {
     title: "Customer Reviews",
     active_icon: REVIEW_WHITE,

@@ -201,3 +201,29 @@ export interface AdminUserDetails {
     deleted_at: string | null;
   };
 }
+
+// export interface ReviewRequestType {
+//   experience: string;
+//   user_id: string | null;
+//   product_id: string;
+//   review_title: string;
+//   customer_name: string;
+//   review: string;
+//   images: string[];
+//   is_public: boolean;
+// }
+export interface ReviewResponseType {
+  id: string;
+  experience: string;
+  user_id: string | null;
+  product_id: string;
+  review_title: string;
+  customer_name: string;
+  review: string;
+  images: string[];
+  is_public: boolean;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  product_details: ProductResponse;
+}

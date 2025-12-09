@@ -16,6 +16,7 @@ function Register() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [checked, setChecked] = useState(false);
 
   const [formInput, setFormInput] = useState({
@@ -52,8 +53,7 @@ function Register() {
   const disbled = formInput.user_name === "";
   formInput.email === "" ||
     !passwordPattern.test(formInput.password) ||
-    formInput.phone_number === "" ||
-    !checked;
+    formInput.phone_number === "";
 
   const passwordChecker = {
     uppercase: /[A-Z]/.test(formInput.password),
@@ -91,7 +91,7 @@ function Register() {
       const response = await register(payload);
       if (response) {
         toast.success(response.message);
-        window.history.pushState({}, "", "/login");
+        window.history.pushState({}, "", "/email-sent");
         setTimeout(() => {
           window.location.reload();
         }, 1000);
@@ -300,7 +300,7 @@ function Register() {
                   <img src={PAD_LOCK} className="w-[20px] h-[20px]" alt="" />
 
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type={showConfirmPassword ? "text" : "password"}
                     name="confirm_password"
                     value={formInput.confirm_password}
                     onChange={handleInputChange}
@@ -308,17 +308,17 @@ function Register() {
                     className="bg-transparent placeholder:text-sm  w-full outline-none text-primary-300"
                   />
                 </div>
-                {showPassword ? (
+                {showConfirmPassword ? (
                   <span
                     className="cursor-pointer "
-                    onClick={() => setShowPassword(false)}
+                    onClick={() => setShowConfirmPassword(false)}
                   >
                     <FaEyeSlash color="#808080" />
                   </span>
                 ) : (
                   <span
                     className="cursor-pointer"
-                    onClick={() => setShowPassword(true)}
+                    onClick={() => setShowConfirmPassword(true)}
                   >
                     <FaEye color="#808080" />
                   </span>
@@ -359,7 +359,7 @@ function Register() {
             <Button
               title={"Create Account"}
               loading={loading}
-              disabled={loading || disbled}
+              disabled={loading || disbled || !checked}
               btnStyles={"bg-global-green rounded-lg w-full mt-5 h-[45px]"}
               textStyle={"text-white text-[16px] text-semibold"}
               handleClick={handleRegister}

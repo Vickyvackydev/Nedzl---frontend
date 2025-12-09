@@ -9,12 +9,14 @@ interface ProductSectionProps {
   title: string;
   data: any[];
   loading?: boolean;
+  onSeeAll?: () => void;
 }
 
 export default function ProductSection({
   title,
   data,
   loading = false,
+  onSeeAll,
 }: ProductSectionProps) {
   return (
     <div className="w-full bg-[#F7F7F7] h-full py-7 px-20 flex flex-col gap-y-5">
@@ -24,7 +26,7 @@ export default function ProductSection({
           <div className="w-[5px] h-[27px] bg-global-green rounded-3xl" />
           <span className="text-xl font-semibold text-[#313133]">{title}</span>
         </div>
-        <button className="flex items-center gap-x-2">
+        <button onClick={onSeeAll} className="flex items-center gap-x-2">
           <span className="text-[#555555] text-[16px] font-semibold">
             See all
           </span>

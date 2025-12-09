@@ -1317,7 +1317,7 @@ function ProductManagement() {
         </div>
       </CustomModal>
       <Modal
-        show={productImages.length > 0}
+        show={productImages?.length > 0 || false}
         onClose={() => dispatch(setProductImages([]))}
       >
         <div className="relative w-full md:w-[70%] flex flex-col gap-y-5">
@@ -1333,7 +1333,7 @@ function ProductManagement() {
           <div className="w-full bg-white shadow-box rounded-xl p-5">
             <div className="w-full">
               <img
-                src={productImages[currentImage as number]}
+                src={productImages?.[currentImage as number]}
                 className="w-full h-[400px] md:h-[450px] rounded-xl object-contain bg-gray-50"
                 alt=""
               />
@@ -1341,7 +1341,7 @@ function ProductManagement() {
 
             {/* Thumbnails */}
             <div className="w-full mt-4 flex items-center gap-x-3 overflow-x-auto pb-2">
-              {productImages.map((img: string, i: number) => {
+              {productImages?.map((img: string, i: number) => {
                 const isActive = i === currentImage;
                 return (
                   <div

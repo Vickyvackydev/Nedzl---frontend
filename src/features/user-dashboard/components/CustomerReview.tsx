@@ -1,7 +1,66 @@
 // import React from "react";
 
+import { useQuery } from "@tanstack/react-query";
+import { getSellerReviews } from "../../../services/reviews.service";
+
+import { NO_CHAT } from "../../../assets";
+
+import { ReviewResponseType } from "../../../types";
+import { formatTimeElapsed } from "../../../utils";
+import { LoadingState } from "../../ProductDetails";
+
 function CustomerReview() {
-  return <div>CustomerReview CustomerReview</div>;
+  const { data: customerReviews, isLoading } = useQuery({
+    queryKey: ["customer-review"],
+    queryFn: () => getSellerReviews(),
+  });
+
+  return (
+    <div className="w-full h-full">
+      {customerReviews?.data?.length > 0 ? (
+        <div className="w-full flex flex-col gap-y-3 p-4">
+          {customerReviews?.data?.map((review: ReviewResponseType) => (
+            <div className="w-full border border-borderColor p-3 rounded-xl flex flex-col gap-2">
+              <span className="text-primary-50 font-medium text-xs">
+                {formatTimeElapsed(review?.created_at)}
+              </span>
+              <span className="text-[16px] font-semibold text-primary-300">
+                {review?.review_title}
+              </span>
+              <p className="text-sm font-normal text-primary-300">
+                {review?.review}
+              </p>
+              '
+              <div className="w-full gap-x-2 flex items-center justify-start border border-borderColor p-2.5 rounded-xl">
+                <img
+                  src={review?.product_details?.image_urls?.[0]}
+                  className="w-[50px] h-[50px] rounded object-cover"
+                  alt=""
+                />
+                <span className="text-[16px] font-semibold text-primary-300">
+                  {review?.product_details?.product_name}
+                </span>
+              </div>
+              '
+            </div>
+          ))}
+        </div>
+      ) : isLoading ? (
+        <LoadingState />
+      ) : (
+        <div className="w-full flex flex-col items-center gap-y-2 justify-center h-[70vh]">
+          <img src={NO_CHAT} className="w-[90.1px] h-[100px]" alt="" />
+          <span className="text-xl font-semibold text-black text-center">
+            You don't have any Feedbacks
+          </span>
+          <span className="text-[#555555] font-normal text-sm w-[417px] text-center">
+            No feedback yet — ask your customers to leave a review by copying
+            and sharing your link.
+          </span>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default CustomerReview;

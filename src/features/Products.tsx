@@ -19,6 +19,7 @@ function Products() {
   const [searchParams] = useSearchParams();
   const category = searchParams.get("category");
   const keyword = searchParams.get("q");
+  const section = searchParams.get("section");
 
   const [selectedCatgory, setSelectedCatgory] = useState(category);
 
@@ -46,6 +47,7 @@ function Products() {
       getAllProducts({
         category_name: selectedCatgory || "",
         search: keyword || "",
+        section: section?.split("-")?.join("_") || "",
         ...payload,
       }),
   });
@@ -106,16 +108,21 @@ function Products() {
             // to={`/products?category=${category}`}
             className="w-fit h-fit flex items-center  gap-x-2 px-2 py-1.5 rounded-full text-xs font-semibold text-primary-300 bg-white shadow-box"
           >
-            <span className="text-[#808080]">
-              {categoriesWithCount
-                ?.find(
-                  (item) => item.label === formatText(selectedCatgory as string)
-                )
-                ?.count.toString()
-                ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0}{" "}
-              Ads
-            </span>
-            <span>{formatText(selectedCatgory as string)}</span>
+            {selectedCatgory && (
+              <span className="text-[#808080]">
+                {categoriesWithCount
+                  ?.find(
+                    (item) =>
+                      item.label === formatText(selectedCatgory as string)
+                  )
+                  ?.count.toString()
+                  ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0}{" "}
+                Ads
+              </span>
+            )}
+            {!selectedCatgory
+              ? formatText(section as string)
+              : formatText(selectedCatgory as string)}
           </div>
         </div>
         <div className="w-full flex items-start justify-between gap-x-3 mt-5">
@@ -159,21 +166,23 @@ function Products() {
               {/* Scrollable content area */}
               <div className="p-2.5 flex flex-col gap-y-1 max-h-[350px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#E5E5E5] scrollbar-track-transparent">
                 {/* Active Category */}
-                <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-[#F7F7F7] sticky top-0 z-10">
-                  <span className="text-primary-500 font-semibold text-[16px]">
-                    {formatText(selectedCatgory as string)}
-                  </span>
-                  <span className="w-fit h-fit px-2 py-1 text-xs font-semibold text-[#808080] rounded-3xl bg-white">
-                    {categoriesWithCount
-                      ?.find(
-                        (item) =>
-                          item.label === formatText(selectedCatgory as string)
-                      )
-                      ?.count.toString()
-                      ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0}{" "}
-                    Ads
-                  </span>
-                </div>
+                {selectedCatgory && (
+                  <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-[#F7F7F7] sticky top-0 z-10">
+                    <span className="text-primary-500 font-semibold text-[16px]">
+                      {formatText(selectedCatgory as string)}
+                    </span>
+                    <span className="w-fit h-fit px-2 py-1 text-xs font-semibold text-[#808080] rounded-3xl bg-white">
+                      {categoriesWithCount
+                        ?.find(
+                          (item) =>
+                            item.label === formatText(selectedCatgory as string)
+                        )
+                        ?.count.toString()
+                        ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0}{" "}
+                      Ads
+                    </span>
+                  </div>
+                )}
 
                 {/* Subcategories list */}
                 {categoriesWithCount

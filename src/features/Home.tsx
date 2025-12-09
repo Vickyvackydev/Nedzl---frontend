@@ -10,7 +10,6 @@ import {
 } from "../services/product.service";
 import { categories } from "../constant";
 import CategoriesOverlay from "../components/CategoriesOverlay";
-import { ProductType } from "../types";
 
 const SkeletonCard = () => (
   <div className="w-full flex flex-col gap-y-2 animate-pulse">
@@ -25,17 +24,24 @@ const SkeletonHorizontalCard = () => (
 
 function Home() {
   const {
-    data: products,
+    data: todayProducts,
     isLoading,
     // refetch,
-  } = useQuery({ queryKey: ["all-products"], queryFn: getAllProducts });
+  } = useQuery({
+    queryKey: ["all-today-products", "todays_deal"],
+    queryFn: () => getAllProducts({ section: "todays_deal" }),
+  });
+  const { data: forYouProducts } = useQuery({
+    queryKey: ["all-for-you-products", "for_you"],
+    queryFn: () => getAllProducts({ section: "for_you" }),
+  });
   const { data: featureedProducts, isLoading: loadingFeaturedProducts } =
     useQuery({ queryKey: ["featured-products"], queryFn: getFeaturedProducts });
 
-  const todaysDeal = products?.data?.filter((item: ProductType) => {
-    const updatedDate = new Date(item.updated_at).toISOString().split("T")[0];
-    return updatedDate === new Date().toISOString().split("T")[0];
-  });
+  // const todaysDeal = products?.data?.filter((item: ProductType) => {
+  //   const updatedDate = new Date(item.updated_at).toISOString().split("T")[0];
+  //   return updatedDate === new Date().toISOString().split("T")[0];
+  // });
 
   const isFeaturedProductNotComplete =
     featureedProducts?.[0]?.products.length > 0 &&
@@ -233,10 +239,20 @@ function Home() {
           </div>
         )}
       </div>
-      {todaysDeal?.length > 0 && (
-        <ProductRow title="Today deal" data={todaysDeal} loading={isLoading} />
+      {todayProducts?.data?.length > 0 && (
+        <ProductRow
+          title="Today deal"
+          data={todayProducts?.data}
+          loading={isLoading}
+          onSeeAll={() => navigate(`/products?section=todays-deal`)}
+        />
       )}
-      <ProductRow title="For you" data={products?.data} loading={isLoading} />
+      <ProductRow
+        title="For you"
+        data={forYouProducts?.data}
+        loading={isLoading}
+        onSeeAll={() => navigate(`/products?section=for-you`)}
+      />
     </MainLayout>
   );
 }

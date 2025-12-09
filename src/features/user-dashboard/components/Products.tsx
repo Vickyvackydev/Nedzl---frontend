@@ -204,6 +204,33 @@ function Products() {
   };
 
   const handleCreateProduct = async () => {
+    // Validation
+    const requiredFields = [
+      { key: "product_name", label: "Product Name" },
+      { key: "product_price", label: "Product Price" },
+      { key: "market_price_from", label: "Market Price From" },
+      { key: "market_price_to", label: "Market Price To" },
+      { key: "category_name", label: "Category" },
+      { key: "state", label: "State" },
+      { key: "address_in_state", label: "Address" },
+      { key: "description", label: "Description" },
+      { key: "condition", label: "Condition" },
+      { key: "is_negotiable", label: "Negotiable status" },
+      { key: "brand_name", label: "Brand Name" },
+    ];
+
+    for (const field of requiredFields) {
+      if (!formFields[field.key as keyof typeof formFields]) {
+        toast.error(`${field.label} is required`);
+        return;
+      }
+    }
+
+    if (totalImagesCount < 2) {
+      toast.error("Please add at least 2 photos");
+      return;
+    }
+
     setIsCreatingProduct(true);
 
     const formData = new FormData();
@@ -772,7 +799,7 @@ function Products() {
                 You have not placed any product posted yet!
               </span>
               <span className="text-[#555555] font-normal text-sm">
-                All products you have posted would appear her
+                All products you have posted would appear here
               </span>
               <Button
                 title="Post a new product"
