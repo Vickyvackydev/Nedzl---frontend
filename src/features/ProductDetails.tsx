@@ -61,10 +61,11 @@ function ProductDetails() {
     // isLoading: loadingStoreSettings,
     // refetch,
   } = useQuery({
-    queryKey: ["store-settings", productDetails?.product.user_id],
+    queryKey: ["store-details", productDetails?.product.user_id],
     queryFn: () =>
       getSellerStoreDetails(productDetails?.product.user_id as string),
   });
+
   const {
     data: similarProduct,
     isLoading,
@@ -383,7 +384,7 @@ function ProductDetails() {
                       </div>
                       <div className="flex flex-col items-start gap-y-1">
                         <span className="text-[16px] font-semibold text-primary-300">
-                          {storeDetails?.store_settings?.business_name ||
+                          {storeDetails?.data?.business_name ||
                             productDetails?.product.user?.user_name}
                         </span>
                         <div className="flex items-center gap-x-2">
@@ -392,8 +393,11 @@ function ProductDetails() {
                             className="w-[16px] h-[16px]"
                             alt=""
                           />
+
                           <span className="text-[#75757A] text-xs font-medium">
-                            Verified
+                            {productDetails?.product.user?.is_verified
+                              ? "Verified"
+                              : "Not Verified"}
                           </span>
                         </div>
                         <div className="flex items-center gap-x-2">

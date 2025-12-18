@@ -11,6 +11,7 @@ import {
   OPTIONS_VERTICAL,
   SUSPEND,
   TRASH,
+  VERIFIED,
 } from "../../assets";
 import { motion, AnimatePresence } from "framer-motion";
 import moment from "moment";
@@ -152,6 +153,19 @@ const ActionButton = ({ row }: { row: { row: { original: any } } }) => {
                 ? "Unsuspended User"
                 : "Suspend User"}
             </button>
+            {!row.row.original.user?.is_verified && (
+              <button
+                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-[#00AD200D] gap-2"
+                onClick={() => {
+                  dispatch(setUserAction("VERIFY"));
+                  dispatch(setUserId(row.row.original.user?.id));
+                }}
+              >
+                <img src={VERIFIED} alt="eye" className="w-[20px] h-[20px]" />
+                Verify User
+              </button>
+            )}
+
             <button
               className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-[#00AD200D] gap-2"
               onClick={() => {

@@ -20,7 +20,9 @@ export default function EmailVerificationLoading() {
         error.response?.data?.message ||
           "Email verification failed. Please try again."
       );
-      navigate("/login");
+      if (error?.response?.status === 403) {
+        navigate("/login");
+      }
     }
   };
 

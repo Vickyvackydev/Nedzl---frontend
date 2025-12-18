@@ -1,22 +1,28 @@
 // import React from "react";
 import { BAR, HELP, NEDZL_LOGO_GREEN, NIGERIA_FLAG } from "../assets";
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import AccountDropdown from "./AccountDropdown";
 import SearchBar from "./SearchBar";
 // import { useMediaQuery } from "../hooks";
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile } from "../services/auth.service";
 import { useSidebar } from "../context/SidebarContext";
+import { Store } from "../state/store";
 
 function Header() {
   // const mobile = useMediaQuery("(max-width: 640px)");
   const { toggleSidebar } = useSidebar();
+  const location = useLocation();
   const {
     data: userProfile,
     // isLoading,
     // refetch,
-  } = useQuery({ queryKey: ["profile"], queryFn: getUserProfile });
+  } = useQuery({
+    queryKey: ["profile"],
+    queryFn: getUserProfile,
+    enabled: !!Store.getState().auths.token,
+  });
   const user = userProfile?.data?.user;
   return (
     <div className="w-full flex flex-col md:flex-row items-center justify-between py-4 px-4 md:px-20 gap-y-4 md:gap-y-0">
@@ -31,12 +37,14 @@ function Header() {
           </Link>
         </div>
         <div className="lg:hidden flex items-center gap-x-2">
-          <button
-            onClick={toggleSidebar}
-            className="h-[40px] w-[40px] rounded-lg bg-[#F7F7F7] flex items-center justify-center"
-          >
-            <img src={BAR} alt="" />
-          </button>
+          {location.pathname === "/dashboard" && (
+            <button
+              onClick={toggleSidebar}
+              className="h-[40px] w-[40px] rounded-lg bg-[#F7F7F7] flex items-center justify-center"
+            >
+              <img src={BAR} alt="" />
+            </button>
+          )}
           <AccountDropdown user={user} />
           <button className="h-[40px] w-[40px] rounded-lg bg-[#F7F7F7] flex items-center justify-center">
             <img src={HELP} alt="" />

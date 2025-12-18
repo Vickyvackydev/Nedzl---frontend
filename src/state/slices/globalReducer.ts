@@ -12,6 +12,7 @@ interface GlobalTypes {
     | "ACTIVATE"
     | "DEACTIVATE"
     | "DELETE"
+    | "VERIFY"
     | null;
   productDetails: ProductResponse | null;
   productAction: "CLOSE" | "DELETE" | null;
@@ -38,7 +39,13 @@ export const GlobalSlice = createSlice({
     setUserAction: (
       state,
       action: PayloadAction<
-        "SUSPEND" | "UNSUSPEND" | "ACTIVATE" | "DEACTIVATE" | "DELETE" | null
+        | "SUSPEND"
+        | "UNSUSPEND"
+        | "ACTIVATE"
+        | "DEACTIVATE"
+        | "DELETE"
+        | "VERIFY"
+        | null
       >
     ) => {
       state.userAction = action.payload;

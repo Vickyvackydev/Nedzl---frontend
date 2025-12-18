@@ -105,6 +105,7 @@ export interface User {
   phone_number: string;
   image_url: string;
   location: string;
+  is_verified: boolean;
   created_at: string; // ISO date string
   updated_at: string; // ISO date string
   deleted_at: string | null;
@@ -172,6 +173,7 @@ export interface AdminUserDetails {
     image_url: string;
     location: string;
     status: "ACTIVE" | "INACTIVE" | string;
+    is_verified: boolean;
     created_at: string;
     updated_at: string;
     deleted_at: string | null;

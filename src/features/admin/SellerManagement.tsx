@@ -28,6 +28,7 @@ import {
   getDashboardUsers,
   getSellerOverview,
   updateUserStatus,
+  verifyUser,
 } from "../../services/admin.service";
 
 import { SellerColumn } from "../../components/columns/SellerColumns";
@@ -223,6 +224,9 @@ function SellerManagement() {
         break;
     }
   };
+  const actionTitle =
+    userAction &&
+    userAction?.charAt(0)?.toUpperCase() + userAction?.slice(1)?.toLowerCase();
   const handleUpdateUserStatus = async () => {
     setLoading(true);
     const statusUpdate = status();
@@ -232,6 +236,23 @@ function SellerManagement() {
         userAction === "DELETE"
           ? await deleteAdminUser(userId as string)
           : await updateUserStatus(userId as string, statusUpdate);
+      if (response) {
+        toast.success(response?.message);
+        dispatch(setUserAction(null));
+        refetchusers();
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleVerifyUser = async () => {
+    setLoading(true);
+
+    try {
+      const response = await verifyUser(userId as string);
+
       if (response) {
         toast.success(response?.message);
         dispatch(setUserAction(null));
@@ -500,11 +521,12 @@ function SellerManagement() {
         >
           <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-sm">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Delete User?
+              {actionTitle} User?
             </h3>
 
             <p className="text-gray-600 text-sm mb-6">
-              This action cannot be undone. Do you want to permanently delete
+              This action cannot be undone. Do you want to permanently{" "}
+              {actionTitle?.toLowerCase()}
               this user?
             </p>
 
@@ -517,15 +539,19 @@ function SellerManagement() {
               </button>
 
               <Button
-                title={`Yes, ${
-                  userAction &&
-                  userAction?.charAt(0)?.toUpperCase() +
-                    userAction?.slice(1)?.toLowerCase()
-                }`}
+                title={`Yes, ${actionTitle}`}
                 textStyle="text-sm font-medium text-white"
-                btnStyles="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition"
+                btnStyles={`px-4 py-2 rounded-lg transition ${
+                  userAction === "VERIFY"
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-red-600 hover:bg-red-700"
+                }`}
                 loaderSize={"w-1 h-1"}
-                handleClick={handleUpdateUserStatus}
+                handleClick={
+                  userAction === "VERIFY"
+                    ? handleVerifyUser
+                    : handleUpdateUserStatus
+                }
                 loading={loading}
               />
             </div>

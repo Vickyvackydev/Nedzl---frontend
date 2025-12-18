@@ -78,7 +78,12 @@ export const updateUserStatus = async (
   id: string,
   status: "DEACTIVATED" | "SUSPENDED" | "ACTIVE"
 ) => {
-  const response = await API.patch(`/users/update/${id}/status`, { status });
+  const response = await API.patch(`/users/verify/${id}/status`, { status });
+  return response.data;
+};
+
+export const verifyUser = async (id: string) => {
+  const response = await API.post(`/users/verify/${id}`);
   return response.data;
 };
 export const deleteAdminProduct = async (id: string) => {
