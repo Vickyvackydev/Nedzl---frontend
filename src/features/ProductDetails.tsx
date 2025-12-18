@@ -327,9 +327,9 @@ function ProductDetails() {
                 </div>
               </div>
               <div className="w-full md:w-[30%] flex flex-col gap-y-4">
-                <div className="flex items-start p-5 rounded-xl justify-between w-full bg-white shadow-box">
+                <div className="flex flex-wrap items-start p-5 rounded-xl justify-between w-full bg-white shadow-box">
                   <div className="flex flex-col items-start gap-y-1">
-                    <span className="text-2xl font-semibold text-primary-300">
+                    <span className="text-2xl text-nowrap font-semibold text-primary-300">
                       ₦{" "}
                       {productDetails?.product.product_price
                         ?.toString()
@@ -444,7 +444,9 @@ function ProductDetails() {
                         title="Let Us Handle It"
                         btnStyles="w-full border border-[#E9EAEB] rounded-xl h-[40px]"
                         textStyle="text-primary-300 font-medium text-sm"
-                        handleClick={() => toast.success("Coming on Nedzl")}
+                        handleClick={() =>
+                          toast.success("Coming soon on Nedzl")
+                        }
                       />
                     </div>
                   </div>

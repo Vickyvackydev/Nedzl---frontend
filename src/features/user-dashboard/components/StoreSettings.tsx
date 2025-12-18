@@ -34,6 +34,7 @@ function StoreSettings() {
   };
 
   const userId = useSelector(selectUserId);
+  // console.log(userId);
 
   const {
     data: storeDetails,
@@ -78,18 +79,17 @@ function StoreSettings() {
   };
 
   useEffect(() => {
-    if (storeDetails !== undefined) {
+    if (storeDetails) {
       setFormFields({
-        businessName: storeDetails?.store_settings?.business_name,
-        aboutCompany: storeDetails?.store_settings?.about_company,
-        storeName: storeDetails?.store_settings?.store_name,
-        address: storeDetails?.store_settings?.address,
-        state: storeDetails?.store_settings?.state,
-        region: storeDetails?.store_settings?.region,
-        how_do_we_locate_you:
-          storeDetails?.store_settings?.how_do_we_locate_you,
-        businessHoursFrom: storeDetails?.store_settings?.business_hours_from,
-        businessHoursTo: storeDetails?.store_settings?.business_hours_from,
+        businessName: storeDetails?.data?.business_name,
+        aboutCompany: storeDetails?.data?.about_company,
+        storeName: storeDetails?.data?.store_name,
+        address: storeDetails?.data?.address,
+        state: storeDetails?.data?.state,
+        region: storeDetails?.data?.region,
+        how_do_we_locate_you: storeDetails?.data?.how_do_we_locate_you,
+        businessHoursFrom: storeDetails?.data?.business_hours_from,
+        businessHoursTo: storeDetails?.data?.business_hours_to,
       });
     }
   }, [storeDetails]);

@@ -76,10 +76,12 @@ export default function CategoriesOverlay() {
       {/* All Categories Button */}
       <div
         onClick={() => setOpen(true)}
-        className="w-fit px-7 border cursor-pointer border-white rounded-xl p-2 flex items-center gap-x-2"
+        className="w-fit px-7 border cursor-pointer border-white rounded-xl py-2 flex justify-center items-center gap-x-2"
       >
         <img src={BAR_WHITE} className="w-[24px] h-[24px]" alt="" />
-        <span className="text-sm font-medium text-white">All categories</span>
+        <span className="text-sm text-nowrap font-medium text-white">
+          All categories
+        </span>
       </div>
 
       {/* Overlay */}
@@ -103,7 +105,7 @@ export default function CategoriesOverlay() {
               transition={{ type: "spring", damping: 20 }}
               className="fixed left-4 top-4 bottom-4 w-[320px] max-w-[85vw] bg-white rounded-2xl shadow-xl p-5 z-50 overflow-y-auto"
             >
-              <h2 className="text-lg font-semibold mb-4 text-gray-800">
+              <h2 className="text-lg text-nowrap font-semibold mb-4 text-gray-800">
                 All Categories
               </h2>
 

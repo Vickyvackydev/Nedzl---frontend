@@ -3,19 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { USER } from "../assets";
 import { useNavigate } from "react-router-dom";
 
-import { useQuery } from "@tanstack/react-query";
-import { getUserProfile } from "../services/auth.service";
+// import { useQuery } from "@tanstack/react-query";
+// import { getUserProfile } from "../services/auth.service";
 
-export default function AccountDropdown() {
+export default function AccountDropdown({ user }: any) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const {
-    data: userProfile,
-    // isLoading,
-    // refetch,
-  } = useQuery({ queryKey: ["profile"], queryFn: getUserProfile });
-
-  const user = userProfile?.data?.user;
 
   const swicthRoute = (role: string) => {
     switch (role) {
@@ -46,7 +39,7 @@ export default function AccountDropdown() {
       {/* Account button */}
       <button
         onClick={handleClick}
-        className="flex items-center gap-x-3 cursor-pointer focus:outline-none"
+        className="lg:flex hidden items-center gap-x-3 cursor-pointer focus:outline-none"
       >
         <img
           src={user?.image_url || USER}
@@ -56,6 +49,12 @@ export default function AccountDropdown() {
         <span className="text-faded-black text-[16px] font-medium">
           {user ? user.name?.split(" ")[0] : "Account"}
         </span>
+      </button>
+      <button
+        onClick={handleClick}
+        className="h-[40px] w-[40px] rounded-lg bg-[#F7F7F7] lg:hidden flex items-center justify-center"
+      >
+        <img src={USER} alt="" />
       </button>
 
       {/* Dropdown menu (only when no user is logged in) */}

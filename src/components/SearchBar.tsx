@@ -236,13 +236,13 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
         )}
       </div>
 
-      {/* <button
+      <button
         onClick={handleSearchButtonClick}
         disabled={!query.trim()}
-        className="w-fit bg-global-green rounded-xl px-4 py-2 text-white text-[16px] font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-600 transition-colors"
+        className="w-[90px] lg:flex items-center justify-center hidden bg-global-green rounded-xl h-[40px] text-white text-[16px] font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-600 transition-colors"
       >
         Search
-      </button> */}
+      </button>
     </div>
   );
 };

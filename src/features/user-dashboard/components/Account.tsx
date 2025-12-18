@@ -67,10 +67,10 @@ function Account() {
   };
 
   useEffect(() => {
-    if (userProfile) {
-      dispatch(setUserId(userProfile?.user?.id));
+    if (user) {
+      dispatch(setUserId(user?.id));
     }
-  }, [userProfile]);
+  }, [user]);
 
   return (
     <div className="w-full flex items-center flex-col justify-center py-10">

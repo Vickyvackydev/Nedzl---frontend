@@ -19,6 +19,8 @@ import { useEffect } from "react";
 import CheckEmailVerification from "./features/auth/CheckEmailVerification";
 import EmailVerifiedSuccess from "./features/auth/EmailVerificaionSuccess";
 import EmailVerificationLoading from "./features/auth/VerifyEmail";
+import NotFound from "./features/NotFound";
+import { SidebarProvider } from "./context/SidebarContext";
 
 function App() {
   const location = useLocation();
@@ -29,7 +31,7 @@ function App() {
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }, [pathname]);
   return (
-    <>
+    <SidebarProvider>
       <Toaster position="top-left" />
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -85,8 +87,9 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
-    </>
+    </SidebarProvider>
   );
 }
 

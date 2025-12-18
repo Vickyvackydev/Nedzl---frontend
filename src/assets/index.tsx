@@ -108,3 +108,4 @@ export { default as FEND_FOOTER_LOGO } from "../assets/images/fend-footer.svg";
 export { default as REVIEW_AVATAR } from "../assets/images/review-avatar.svg";
 export { default as RED_BTN } from "../assets/images/red-btn.svg";
 export { default as NO_CHAT } from "../assets/images/no-chat.svg";
+export { default as BAR } from "../assets/icons/bar.svg";

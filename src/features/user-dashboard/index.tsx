@@ -87,11 +87,15 @@ const SideBarMenus = [
     component: <Settings />,
   },
 ];
+import { useSidebar } from "../../context/SidebarContext";
+
 function UserDashboard() {
   const [activeTab, setActiveTab] = useState<TabTypes>("my_account");
   const showProductFields = useSelector(selectProductFields);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isSidebarOpen, closeSidebar } = useSidebar();
+
   // converts "my_account" to "My Account"
   const formatText = (text: string) =>
     text.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -99,46 +103,75 @@ function UserDashboard() {
   useEffect(() => {
     dispatch(setProductFields(false));
   }, []);
+
+  const SidebarContent = () => (
+    <>
+      {SideBarMenus.map((item) => (
+        <div
+          key={item.title}
+          onClick={() => {
+            setActiveTab(
+              item.title.split(" ").join("_").toLowerCase() as TabTypes
+            );
+            closeSidebar();
+          }}
+          className={clsx(
+            "flex items-center cursor-pointer gap-x-2 text-sm font-medium px-4 py-3 rounded-xl w-full",
+            activeTab === item.title.split(" ").join("_").toLowerCase()
+              ? "bg-global-green text-white"
+              : "bg-transparent text-primary-300"
+          )}
+        >
+          <img
+            src={
+              activeTab === item.title.split(" ").join("_").toLowerCase()
+                ? item.active_icon
+                : item.inactive_icon
+            }
+            className="w-[20px] h-[20px]"
+            alt=""
+          />
+          <span>{item.title}</span>
+        </div>
+      ))}
+      <button
+        onClick={() => {
+          dispatch(reset());
+          navigate("/");
+          closeSidebar();
+        }}
+        className="w-full flex items-center gap-x-2 px-3"
+      >
+        <img src={LOG_OUT_RED} className="w-[20px] h-[20px]" alt="" />
+        <span className="text-sm font-medium text-[#FF0000]">Log Out</span>
+      </button>
+    </>
+  );
+
   return (
     <MainLayout>
-      <div className="w-full flex flex-col md:flex-row items-start gap-4 shadow-box justify-between bg-[#F5F5F5] py-7 px-4 md:px-20">
-        <div className="w-full md:w-[25%] bg-white rounded-xl flex flex-col p-4 items-start  gap-y-3">
-          {SideBarMenus.map((item) => (
-            <div
-              onClick={() =>
-                setActiveTab(
-                  item.title.split(" ").join("_").toLowerCase() as TabTypes
-                )
-              }
-              className={clsx(
-                "flex items-center cursor-pointer gap-x-2  text-sm font-medium px-4 py-3 rounded-xl w-full",
-                activeTab === item.title.split(" ").join("_").toLowerCase()
-                  ? "bg-global-green text-white"
-                  : "bg-transparent text-primary-300"
-              )}
-            >
-              <img
-                src={
-                  activeTab === item.title.split(" ").join("_").toLowerCase()
-                    ? item.active_icon
-                    : item.inactive_icon
-                }
-                className="w-[20px] h-[20px]"
-                alt=""
-              />
-              <span>{item.title}</span>
-            </div>
-          ))}
-          <button
-            onClick={() => {
-              dispatch(reset());
-              navigate("/");
-            }}
-            className="w-full flex items-center gap-x-2 px-3"
-          >
-            <img src={LOG_OUT_RED} className="w-[20px] h-[20px]" alt="" />
-            <span className="text-sm font-medium text-[#FF0000]">Log Out</span>
-          </button>
+      <div className="w-full flex flex-col md:flex-row items-start gap-4 shadow-box justify-between bg-[#F5F5F5] py-7 px-4 md:px-20 relative">
+        {/* Mobile Sidebar Overlay */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            onClick={closeSidebar}
+          />
+        )}
+
+        {/* Mobile Sidebar Drawer */}
+        <div
+          className={clsx(
+            "fixed inset-y-0 left-0 z-50 w-[70%] max-w-[300px] bg-white transform transition-transform duration-300 ease-in-out md:hidden flex flex-col p-4 gap-y-3 overflow-y-auto",
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          )}
+        >
+          <SidebarContent />
+        </div>
+
+        {/* Desktop Sidebar */}
+        <div className="hidden md:flex w-full md:w-[25%] bg-white rounded-xl flex-col p-4 items-start gap-y-3">
+          <SidebarContent />
         </div>
         <div className="w-full md:w-[75%] bg-white rounded-xl">
           <div className="w-full p-4 border-b border-[#E9EAEB]">

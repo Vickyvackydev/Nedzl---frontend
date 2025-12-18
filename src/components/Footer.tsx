@@ -13,55 +13,83 @@ import Button from "./Button";
 const FooterLinks = ({
   title,
   links,
+  className,
 }: {
   title: string;
   links: Array<{ title: string; link: string }>;
+  className?: string; // Added className prop
 }) => (
-  <div className="flex flex-col gap-y-5">
+  <div className={`flex flex-col gap-y-5 ${className}`}>
     <span className="text-global-green font-semibold text-[16px]">{title}</span>
     <ul className="flex flex-col gap-y-5">
       {links.map((item) => (
-        <Link to={item.link} className="text-sm font-normal text-white">
+        <Link
+          key={item.title} // Added key
+          to={item.link}
+          className="text-sm font-normal text-white"
+        >
           {item.title}
         </Link>
       ))}
     </ul>
   </div>
 );
+
 function Footer() {
   return (
     <div className="w-full h-full bg-[#121212] border-t-[14px] px-4 md:px-20 pt-10 md:pt-20 pb-5 border-global-green">
-      <div className="w-full flex flex-col md:flex-row items-start justify-between gap-10 md:gap-20">
-        <div className="w-full flex flex-col items-start gap-y-10 md:gap-y-20">
+      <div className="w-full grid grid-cols-2 gap-x-4 gap-y-8 md:flex md:flex-row items-start justify-between md:gap-20">
+        {/* LEFT COLUMN WRAPPER */}
+        <div className="contents md:flex md:w-full md:flex-col items-start md:gap-y-20">
           <img
             src={NEDZL_LOGO_GREEN}
-            className="w-[130px] h-[33.41px]"
+            className="w-[130px] h-[33.41px] col-span-2 order-1 md:order-none"
             alt=""
           />
 
-          <div className="w-full flex flex-col md:flex-row items-start justify-between gap-y-8 md:gap-y-0">
-            <FooterLinks title={footer[0].title} links={footer[0].links} />
-            <FooterLinks title={footer[1].title} links={footer[1].links} />
-            <FooterLinks title={footer[2].title} links={footer[2].links} />
+          {/* This wrapper also needs to be 'contents' on mobile so its children participate in the main grid */}
+          <div className="contents md:w-full md:flex md:flex-row items-start justify-between md:gap-y-0">
+            <FooterLinks
+              title={footer[0].title}
+              links={footer[0].links}
+              className="col-span-1 order-3 md:order-none"
+            />
+            <FooterLinks
+              title={footer[1].title}
+              links={footer[1].links}
+              className="col-span-1 order-4 md:order-none"
+            />
+            <FooterLinks
+              title={footer[2].title}
+              links={footer[2].links}
+              className="col-span-1 order-5 md:order-none"
+            />
           </div>
         </div>
-        <div className="w-full md:w-[65%] flex flex-col gap-y-10 items-start">
-          <span className="text-white font-normal">
+
+        {/* RIGHT COLUMN WRAPPER */}
+        <div className="contents md:w-[65%] md:flex md:flex-col md:gap-y-10 items-start">
+          <span className="text-white font-normal col-span-2 order-2 md:order-none">
             Our mission is to connect students and communities with an easy,
             secure, and reliable marketplace for buying and selling everyday
             essentials.
           </span>
-          <div className="flex flex-col gap-y-3">
+          <div className="flex flex-col gap-y-3 col-span-1 order-6 md:order-none">
             <span className="text-global-green font-semibold text-[16px]">
               Join us on
             </span>
-            <div className="flex items-center gap-x-7">
-              {[FACEBOOK, INSTAGRAM, TWITTER, DISCORD].map((img) => (
-                <img src={img} className="w-[24px] h-[24px]" alt="" />
+            <div className="flex items-center lg:gap-x-7 gap-x-4">
+              {[FACEBOOK, INSTAGRAM, TWITTER, DISCORD].map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  className="w-[24px] h-[24px]"
+                  alt=""
+                />
               ))}
             </div>
           </div>
-          <div className="flex flex-col gap-y-3">
+          <div className="flex flex-col gap-y-3 col-span-2 order-7 md:order-none">
             <span className="text-global-green font-semibold text-[16px]">
               Stay Updated
             </span>
