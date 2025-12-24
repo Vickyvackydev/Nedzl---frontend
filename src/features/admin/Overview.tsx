@@ -648,7 +648,8 @@ function Overview() {
           show={
             productDetails !== null &&
             productAction !== "DELETE" &&
-            productAction !== "CLOSE"
+            productAction !== "CLOSE" &&
+            productAction !== "OPEN"
           }
           onClose={() => dispatch(setProductDetails(null))}
         >
