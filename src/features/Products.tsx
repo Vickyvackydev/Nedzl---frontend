@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import MainLayout from "../layout/MainLayout";
 import { Link, useSearchParams } from "react-router-dom";
-import { ARROW_DOWN, DOUBLE_DIRECT, LINE, FILTER__, TIMES } from "../assets";
+import { DOUBLE_DIRECT, LINE, FILTER__, TIMES } from "../assets";
 import {
   categories,
   statesInNigeria,
@@ -18,7 +18,7 @@ import ProductCard from "../components/ProductCard";
 import { formatText } from "../utils";
 import { SkeletonCard } from "../ui/product-row";
 import { motion, AnimatePresence } from "framer-motion";
-import clsx from "clsx";
+// import clsx from "clsx";
 import { LocationDropdown } from "../components/LocationDropdown";
 import Pagination from "../components/Pagination";
 
