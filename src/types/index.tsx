@@ -67,6 +67,7 @@ export interface ProductType {
   condition: string;
   status?: string;
   image_urls: File[] | string[];
+  university?: string;
   created_at: string;
   updated_at: string;
 }
@@ -89,6 +90,7 @@ export interface ProductResponse {
   user_id: string;
   brand_name: string;
   user: User;
+  university?: string;
   created_at: string; // ISO date string
   updated_at: string; // ISO date string
   deleted_at: string | null;

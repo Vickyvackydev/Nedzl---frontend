@@ -88,10 +88,11 @@ function ProductManagement() {
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { data: featureedProducts } = useQuery({
-    queryKey: ["admin-featured-products"],
-    queryFn: getAdminFeaturedProducts,
-  });
+  const { data: featureedProducts, refetch: refetchFeaturedProducts } =
+    useQuery({
+      queryKey: ["admin-featured-products"],
+      queryFn: getAdminFeaturedProducts,
+    });
   const dispatch = useDispatch();
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -164,7 +165,12 @@ function ProductManagement() {
     ],
     queryFn: () =>
       getDashboardProducts({
-        status: selectedStatus === "All" ? "" : selectedStatus.toUpperCase(),
+        status:
+          selectedStatus === "All"
+            ? ""
+            : selectedStatus.toUpperCase() === "ACTIVE"
+            ? "ONGOING"
+            : selectedStatus.toUpperCase(),
         page: currentPage,
         search,
         filters: appliedFilters,
@@ -263,6 +269,7 @@ function ProductManagement() {
         setFields({ category_name: "", description: "" });
         setBoxNumber(null);
         setProductSelectModal(false);
+        refetchFeaturedProducts();
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.message);
@@ -315,6 +322,8 @@ function ProductManagement() {
         setProductDetails(null);
         toast.success(response?.message);
         setCloseProductModal(false);
+        dispatch(setProductAction(null));
+        dispatch(setProductDetails(null));
         refetchProducts();
       }
     } catch (error: any) {
@@ -423,7 +432,7 @@ function ProductManagement() {
                 </div>
               ))}
             </div>
-            <div className="w-[45%] bg-[#00A63E0D] p-1.5 mt-5  rounded-xl flex items-center gap-x-3">
+            <div className="lg:w-[45%] w-full bg-[#00A63E0D] p-1.5 mt-5  rounded-xl flex items-center gap-x-3">
               {productsStatus.map((item) => (
                 <button
                   onClick={() => setSelectedStatus(item)}
@@ -1057,7 +1066,7 @@ function ProductManagement() {
                 </label>
                 <div className="flex items-start gap-2">
                   <p className="text-primary-300 font-medium">
-                    {productDetails?.outstanding_issues}
+                    {productDetails?.outstanding_issues || "-"}
                   </p>
                   {/* <button className="text-gray-400 hover:text-gray-600 flex-shrink-0">
                 <Edit2 size={14} />
@@ -1361,7 +1370,11 @@ function ProductManagement() {
       </Modal>
       <Modal
         show={closeProductModal || productAction === "CLOSE"}
-        onClose={() => setCloseProductModal(false)}
+        onClose={() => {
+          dispatch(setProductAction(null));
+          dispatch(setProductDetails(null));
+          setCloseProductModal(false);
+        }}
       >
         <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -1376,7 +1389,11 @@ function ProductManagement() {
           <div className="flex justify-end gap-3">
             <button
               className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300 transition"
-              onClick={() => setCloseProductModal(false)}
+              onClick={() => {
+                dispatch(setProductAction(null));
+                dispatch(setProductDetails(null));
+                setCloseProductModal(false);
+              }}
             >
               Cancel
             </button>

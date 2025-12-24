@@ -36,19 +36,22 @@ export default function ProductSection({
 
       {/* Content */}
       {loading ? (
-        <div className="w-full grid grid-cols-2 lg:grid-cols-5 gap-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <SkeletonCard key={i} />
+        <div className="w-full flex overflow-x-auto gap-3 pb-4 no-scrollbar">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="min-w-[200px] md:min-w-[240px]">
+              <SkeletonCard />
+            </div>
           ))}
         </div>
       ) : data && data.length > 0 ? (
-        <div className="w-full grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="w-full flex overflow-x-auto gap-3 pb-4 no-scrollbar">
           {data.map((item: ProductType, index: number) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: index * 0.05 }}
+              className="min-w-[200px] md:min-w-[240px]"
             >
               <ProductCard item={item} />
             </motion.div>

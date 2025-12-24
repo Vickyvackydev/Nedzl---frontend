@@ -30,7 +30,7 @@ interface RichTextEditorProps {
 export default function RichTextEditor({
   content = "",
   onChange,
-  placeholder = "Start writing your blog post here...",
+  placeholder = "Start writing your product details here...",
 }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [
@@ -42,11 +42,16 @@ export default function RichTextEditor({
       OrderedList,
       ListItem,
       Placeholder.configure({
-        placeholder,
+        placeholder: ({ node }) => {
+          if (node.type.name === "heading") {
+            return `Header ${node.attrs.level}`;
+          }
+          return placeholder;
+        },
         emptyEditorClass: "is-editor-empty",
       }),
     ],
-    content,
+    content: content?.trim() ? content : undefined,
     onUpdate: ({ editor }) => onChange?.(editor.getHTML()),
     editorProps: {
       attributes: {
@@ -193,6 +198,7 @@ export default function RichTextEditor({
       <div className="min-h-[250px]">
         <EditorContent
           editor={editor}
+          placeholder={placeholder}
           className="prose prose-sm max-w-none p-4 focus-within:outline-none"
         />
       </div>

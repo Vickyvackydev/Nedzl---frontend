@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { selectUser } from "../state/slices/authReducer";
 // import { useLocation } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
-import { NELS, NOTIFICATIONS } from "../assets";
+import { AVATAR, NOTIFICATIONS } from "../assets";
 
 function AdminHeader({
   setSideNavVisible,
@@ -74,7 +74,7 @@ function AdminHeader({
         </button>
         <div className="lg:flex hidden items-center gap-x-2  border-[#E5E5E5] border-l pl-2">
           <img
-            src={NELS}
+            src={AVATAR}
             className="w-[40px] h-[40px] rounded-full object-cover"
             alt=""
           />

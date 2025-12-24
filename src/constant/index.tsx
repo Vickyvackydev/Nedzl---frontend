@@ -28,8 +28,12 @@ export const moreDetails = [
 ];
 export const categories = [
   {
-    label: "Electricals Home Appliances",
-    value: "electricals-home-appliances",
+    label: "Electricals",
+    value: "electricals",
+  },
+  {
+    label: "Home Appliances",
+    value: "home-appliances",
   },
   { label: "Furniture", value: "furniture" },
   { label: "Kitchenware", value: "kitchenware" },
@@ -41,6 +45,8 @@ export const categories = [
   { label: "Animals & Pets", value: "animals-pets" },
   { label: "Commercial Equipment", value: "commercial-equipment" },
   { label: "Babies & Kids", value: "babies-kids" },
+  { label: "Gadgets", value: "gadgets" },
+  { label: "Electronics", value: "electronics" },
   { label: "Leisure & Activities", value: "leisure-activities" },
   { label: "Seeking Work CVs", value: "seeking-work-cvs" },
   { label: "Property", value: "property" },
@@ -90,6 +96,61 @@ export const statesInNigeria = [
     label: "Federal Capital Territory (FCT)",
     value: "federal-capital-territory",
   },
+];
+export const universitiesInNigeria = [
+  { label: "Ahmadu Bello University", value: "ahmadu-bello-university" },
+  { label: "University of Lagos (UNILAG)", value: "university-of-lagos" },
+  { label: "University of Ibadan (UI)", value: "university-of-ibadan" },
+  {
+    label: "University of Nigeria, Nsukka (UNN)",
+    value: "university-of-nigeria",
+  },
+  {
+    label: "Obafemi Awolowo University (OAU)",
+    value: "obafemi-awolowo-university",
+  },
+  { label: "University of Benin (UNIBEN)", value: "university-of-benin" },
+  {
+    label: "University of Port Harcourt (UNIPORT)",
+    value: "university-of-port-harcourt",
+  },
+  { label: "University of Ilorin (UNILORIN)", value: "university-of-ilorin" },
+  {
+    label: "Nnamdi Azikiwe University (UNIZIK)",
+    value: "nnamdi-azikiwe-university",
+  },
+  { label: "Bayero University Kano (BUK)", value: "bayero-university-kano" },
+  { label: "University of Abuja (UNIABUJA)", value: "university-of-abuja" },
+  {
+    label: "Federal University of Technology, Akure (FUTA)",
+    value: "federal-university-of-technology-akure",
+  },
+  {
+    label: "Federal University of Technology, Minna (FUTMINNA)",
+    value: "federal-university-of-technology-minna",
+  },
+  {
+    label: "Federal University of Technology, Owerri (FUTO)",
+    value: "federal-university-of-technology-owerri",
+  },
+  { label: "University of Jos (UNIJOS)", value: "university-of-jos" },
+  { label: "University of Calabar (UNICAL)", value: "university-of-calabar" },
+  {
+    label: "University of Maiduguri (UNIMAID)",
+    value: "university-of-maiduguri",
+  },
+  { label: "University of Uyo (UNIUYO)", value: "university-of-uyo" },
+  { label: "Lagos State University (LASU)", value: "lagos-state-university" },
+  { label: "Covenant University", value: "covenant-university" },
+  { label: "Babcock University", value: "babcock-university" },
+  { label: "Landmark University", value: "landmark-university" },
+  {
+    label: "Afe Babalola University (ABUAD)",
+    value: "afe-babalola-university",
+  },
+  { label: "Pan-Atlantic University", value: "pan-atlantic-university" },
+  { label: "Nile University of Nigeria", value: "nile-university-of-nigeria" },
+  { label: "Others", value: "others" },
 ];
 
 export const footer = [

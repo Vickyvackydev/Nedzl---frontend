@@ -41,11 +41,13 @@ function Footer() {
       <div className="w-full grid grid-cols-2 gap-x-4 gap-y-8 md:flex md:flex-row items-start justify-between md:gap-20">
         {/* LEFT COLUMN WRAPPER */}
         <div className="contents md:flex md:w-full md:flex-col items-start md:gap-y-20">
-          <img
-            src={NEDZL_LOGO_GREEN}
-            className="w-[130px] h-[33.41px] col-span-2 order-1 md:order-none"
-            alt=""
-          />
+          <Link to={"/"}>
+            <img
+              src={NEDZL_LOGO_GREEN}
+              className="w-[130px] h-[33.41px] col-span-2 order-1 md:order-none"
+              alt=""
+            />
+          </Link>
 
           {/* This wrapper also needs to be 'contents' on mobile so its children participate in the main grid */}
           <div className="contents md:w-full md:flex md:flex-row items-start justify-between md:gap-y-0">

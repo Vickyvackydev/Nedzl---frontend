@@ -1,4 +1,4 @@
-// import React from "react";
+import { useRef, useEffect } from "react";
 import MainLayout from "../layout/MainLayout";
 // import { LEXUS } from "../assets";
 import { Link, useNavigate } from "react-router-dom";
@@ -38,6 +38,41 @@ function Home() {
   const { data: featureedProducts, isLoading: loadingFeaturedProducts } =
     useQuery({ queryKey: ["featured-products"], queryFn: getFeaturedProducts });
 
+  const box1Ref = useRef<HTMLDivElement>(null);
+  const box2Ref = useRef<HTMLDivElement>(null);
+  const box3Ref = useRef<HTMLDivElement>(null);
+  const box4Ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (loadingFeaturedProducts || !featureedProducts) return;
+
+    const scrollInterval = setInterval(() => {
+      [box1Ref, box2Ref].forEach((ref) => {
+        if (ref.current) {
+          const { scrollTop, scrollHeight, clientHeight } = ref.current;
+          if (scrollTop + clientHeight >= scrollHeight - 10) {
+            ref.current.scrollTo({ top: 0, behavior: "smooth" });
+          } else {
+            ref.current.scrollBy({ top: 220, behavior: "smooth" });
+          }
+        }
+      });
+
+      [box3Ref, box4Ref].forEach((ref) => {
+        if (ref.current) {
+          const { scrollLeft, scrollWidth, clientWidth } = ref.current;
+          if (scrollLeft + clientWidth >= scrollWidth - 10) {
+            ref.current.scrollTo({ left: 0, behavior: "smooth" });
+          } else {
+            ref.current.scrollBy({ left: 265, behavior: "smooth" });
+          }
+        }
+      });
+    }, 5000);
+
+    return () => clearInterval(scrollInterval);
+  }, [loadingFeaturedProducts, featureedProducts]);
+
   // const todaysDeal = products?.data?.filter((item: ProductType) => {
   //   const updatedDate = new Date(item.updated_at).toISOString().split("T")[0];
   //   return updatedDate === new Date().toISOString().split("T")[0];
@@ -73,7 +108,10 @@ function Home() {
             {/* LEFT TWO BOXES */}
             <div className="flex flex-col md:flex-row items-start h-auto md:h-[650px] gap-x-3 gap-y-3 md:gap-y-0 w-full md:w-[50%]">
               {/* BOX 1 */}
-              <div className="h-full overflow-y-scroll bg-[#F5F5F5] p-5 rounded-xl">
+              <div
+                ref={box1Ref}
+                className="h-full overflow-y-scroll bg-[#F5F5F5] p-5 rounded-xl no-scrollbar"
+              >
                 <div className="flex flex-col items-start gap-y-1">
                   <span className="text-[#044706] font-semibold text-xl">
                     {featureedProducts?.[0]?.category_name}
@@ -113,7 +151,10 @@ function Home() {
               </div>
 
               {/* BOX 2 */}
-              <div className="h-full overflow-y-scroll bg-[#F5F5F5] p-5 rounded-xl">
+              <div
+                ref={box2Ref}
+                className="h-full overflow-y-scroll bg-[#F5F5F5] p-5 rounded-xl no-scrollbar"
+              >
                 <div className="flex flex-col items-start gap-y-1">
                   <span className="text-[#044706] font-semibold text-xl">
                     {featureedProducts?.[1]?.category_name}
@@ -166,7 +207,10 @@ function Home() {
                   </span>
                 </div>
 
-                <div className="flex gap-5 overflow-x-scroll w-full mt-4">
+                <div
+                  ref={box3Ref}
+                  className="flex gap-5 overflow-x-scroll w-full mt-4 no-scrollbar"
+                >
                   {loadingFeaturedProducts
                     ? [1, 2, 3, 4, 5].map((i) => (
                         <SkeletonHorizontalCard key={i} />
@@ -208,7 +252,10 @@ function Home() {
                   </span>
                 </div>
 
-                <div className="flex gap-5 overflow-x-scroll w-full mt-4">
+                <div
+                  ref={box4Ref}
+                  className="flex gap-5 overflow-x-scroll w-full mt-4 no-scrollbar"
+                >
                   {loadingFeaturedProducts
                     ? [1, 2, 3, 4, 5].map((i) => (
                         <SkeletonHorizontalCard key={i} />
@@ -244,7 +291,7 @@ function Home() {
       </div>
       {todayProducts?.data?.length > 0 && (
         <ProductRow
-          title="Today deal"
+          title="Today's deal"
           data={todayProducts?.data}
           loading={isLoading}
           onSeeAll={() => navigate(`/products?section=todays-deal`)}

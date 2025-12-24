@@ -14,7 +14,11 @@ import {
 } from "../../../state/slices/globalReducer";
 import SelectInput from "../../../components/SelectInput";
 import RichTextEditor from "../../../components/RichTextEditor";
-import { categories, statesInNigeria } from "../../../constant";
+import {
+  categories,
+  statesInNigeria,
+  universitiesInNigeria,
+} from "../../../constant";
 
 import { FiEdit2, FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
@@ -31,6 +35,7 @@ import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
 import { formatText } from "../../../utils";
 import Modal from "../../../components/Modal";
+import { Ban } from "lucide-react";
 
 type Tabs = "active" | "closed" | "reviewed";
 
@@ -46,9 +51,12 @@ function Products() {
     null
   );
   const [deleteModal, setDeleteModal] = useState(false);
-  const [closeProductModal, setCloseProductModal] = useState(false);
+  // const [closeProductModal, setCloseProductModal] = useState(false);
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
-
+  const [productActionModal, setProductActionModal] = useState(false);
+  const [productAction, setProductAction] = useState<
+    "ONGOING" | "CLOSED" | null
+  >(null);
   const showProductFields = useSelector(selectProductFields);
   const dispatch = useDispatch();
   const [images, setImages] = useState<File[]>([]);
@@ -69,6 +77,7 @@ function Products() {
     condition: "",
     is_negotiable: "",
     brand_name: "",
+    university: "",
   });
 
   const {
@@ -103,31 +112,33 @@ function Products() {
   const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
-    const files = Array.from(e.target.files);
+    const selectedFiles = Array.from(e.target.files);
 
-    const validFiles = files.filter(
+    const validFiles = selectedFiles.filter(
       (file) => file.type === "image/jpeg" || file.type === "image/jpg"
     );
 
-    if (validFiles.length < files.length) {
+    if (validFiles.length < selectedFiles.length) {
       toast.error("Only JPG/JPEG images are allowed");
-      return;
+      if (validFiles.length === 0) return;
     }
 
     const availableSlots =
       maxImages - (existingImageUrls.length + images.length);
+
     if (availableSlots <= 0) {
       toast.error(`Maximum of ${maxImages} images is allowed`);
       return;
     }
 
-    const filesToAdd = validFiles.slice(0, availableSlots);
-    const totalFiles = [...images, ...filesToAdd];
-    setImages(totalFiles);
-
     if (validFiles.length > availableSlots) {
-      toast.error(`Only ${availableSlots} more image(s) can be added`);
+      toast.error(
+        `Maximum of ${maxImages} images is allowed. Only ${availableSlots} more image(s) can be added.`
+      );
     }
+
+    const filesToAdd = validFiles.slice(0, availableSlots);
+    setImages((prev) => [...prev, ...filesToAdd]);
   };
 
   const handleRemoveImage = (index: number) => {
@@ -181,6 +192,7 @@ function Products() {
       condition: product.condition || "",
       is_negotiable: product.is_negotiable ? "yes" : "no",
       brand_name: (product as any).brand_name || "",
+      university: (product as any).university || "",
     });
 
     // Handle existing images (URLs)
@@ -217,6 +229,7 @@ function Products() {
       { key: "condition", label: "Condition" },
       { key: "is_negotiable", label: "Negotiable status" },
       { key: "brand_name", label: "Brand Name" },
+      { key: "university", label: "University" },
     ];
 
     for (const field of requiredFields) {
@@ -260,6 +273,7 @@ function Products() {
     formData.append("address_in_state", formFields.address_in_state);
     formData.append("outstanding_issues", formFields.outstanding_issues);
     formData.append("brand_name", formFields.brand_name);
+    formData.append("university", formFields.university);
 
     if (editingProduct) {
       //  send existing URLs + new images
@@ -309,6 +323,7 @@ function Products() {
       condition: "",
       is_negotiable: "",
       brand_name: "",
+      university: "",
     });
 
     setImages([]);
@@ -349,19 +364,20 @@ function Products() {
       setLoading(false);
     }
   };
-  const handleCloseProduct = async () => {
+  const handleProductAction = async () => {
     setLoading(true);
 
     try {
       const response = await updateProductStatus(
         selectedProductId as string,
-        "CLOSED"
+        productAction as "CLOSED" | "ONGOING" | "REJECTED"
       );
       if (response) {
         toast.success(response?.message);
-        setCloseProductModal(false);
+        setProductActionModal(false);
         refetch();
         setSelectedProductId(null);
+        setActiveTab("active");
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.message);
@@ -507,13 +523,24 @@ function Products() {
               }}
             />
           </div>
+          <div className="w-full flex flex-col md:flex-row items-center gap-3 justify-between">
+            <SelectInput
+              required
+              label="University (Student only)"
+              options={universitiesInNigeria}
+              value={formatText(formFields.university)}
+              placeholder="Please select your university"
+              setValue={(e) => setFormFields({ ...formFields, university: e })}
+            />
+            <div className="w-full hidden md:block" />
+          </div>
           <div className="w-full flex flex-col gap-y-2">
             <div className="w-full flex items-center justify-between">
               <span className="text-primary-300 font-medium text-sm">
                 Outstanding issues (optional)
               </span>
               <span className="text-sm font-medium text-[#808080]">
-                0 / 850
+                {formFields.outstanding_issues?.length || 0} / 250
               </span>
             </div>
             <div className="w-full bg-[#FFF1F0] p-3 rounded-xl flex items-start justify-start gap-x-2">
@@ -534,6 +561,7 @@ function Products() {
                 })
               }
               value={formFields.outstanding_issues}
+              maxLength={250}
               placeholder="Enter outstanding Issues"
               className="w-full p-3 resize-none outline-none rounded-xl border border-borderColor text-sm placeholder:text-[#808080]"
               id=""
@@ -723,17 +751,32 @@ function Products() {
                             Created {moment(item.created_at).format("D/MM")}
                           </span>
                         </div>
-                        <div className="w-fit h-fit border border-[#E9EAEB] flex items-center gap-x-2 rounded-lg p-1.5 text-xs font-medium text-primary-300">
-                          <img
-                            src={CLOCK_GREEN}
-                            className="w-[12px] h-[12px]"
-                            alt=""
-                          />
-                          <span>Your Product is Live</span>
+
+                        <div
+                          className={`w-fit h-fit border border-[#E9EAEB] flex items-center gap-x-2 rounded-lg p-1.5 text-xs font-medium text-primary-300 ${
+                            activeTab === "active"
+                              ? "text-global-green"
+                              : "text-red-500"
+                          }`}
+                        >
+                          {activeTab === "active" ? (
+                            <img
+                              src={CLOCK_GREEN}
+                              className="w-[12px] h-[12px]"
+                              alt=""
+                            />
+                          ) : (
+                            <Ban className="w-[12px] h-[12px]" color="red" />
+                          )}
+                          <span>
+                            {activeTab === "active"
+                              ? "Your Product is Live"
+                              : "This Product has being closed and won't appear on sales"}
+                          </span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                    <div className="flex lg:flex-nowrap flex-wrap items-center gap-2 w-full md:w-auto">
                       {/* Edit */}
                       {activeTab === "active" && (
                         <button
@@ -743,6 +786,20 @@ function Products() {
                         transition-all duration-200"
                         >
                           Edit
+                        </button>
+                      )}
+                      {activeTab === "closed" && (
+                        <button
+                          onClick={() => {
+                            setSelectedProductId(item?.id as string);
+                            setProductAction("ONGOING");
+                            setProductActionModal(true);
+                          }}
+                          className="py-1.5 px-4 rounded-lg text-nowrap text-xs font-medium
+                        bg-green-600 text-white hover:bg-green-700 
+                        transition-all duration-200"
+                        >
+                          Re-Open
                         </button>
                       )}
                       {/* Delete */}
@@ -763,7 +820,8 @@ function Products() {
                         <button
                           onClick={() => {
                             setSelectedProductId(item?.id as string);
-                            setCloseProductModal(true);
+                            setProductAction("CLOSED");
+                            setProductActionModal(true);
                           }}
                           className="py-1.5 px-4 rounded-lg text-xs font-medium
                         bg-gray-200 text-gray-700 hover:bg-gray-300
@@ -824,33 +882,42 @@ function Products() {
         message={editingProduct ? "Updating" : "Creating"}
       />
       <Modal
-        show={closeProductModal}
-        onClose={() => setCloseProductModal(false)}
+        show={productActionModal}
+        onClose={() => setProductActionModal(false)}
       >
         <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Close Product?
+            {productAction === "CLOSED" ? "Close" : "Re-Open"} Product?
           </h3>
 
           <p className="text-gray-600 text-sm mb-6">
-            Are you sure you want to close this Product? This product would be
-            marked as sold
+            Are you sure you want to{" "}
+            {productAction === "CLOSED" ? "close" : "re-open"} this Product?
+            This product would{" "}
+            {productAction === "CLOSED"
+              ? "be marked as sold"
+              : "be back on sale"}
           </p>
 
           <div className="flex justify-end gap-3">
             <button
               className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300 transition"
-              onClick={() => setCloseProductModal(false)}
+              onClick={() => setProductActionModal(false)}
             >
               Cancel
             </button>
 
             <Button
-              title="Yes, Close"
+              title={productAction === "CLOSED" ? "Close" : "Re-Open"}
               textStyle="text-sm font-medium text-white"
-              btnStyles="px-4 py-2 rounded-lg  bg-gray-800 hover:bg-gray-900 transition"
+              disabled={loading}
+              btnStyles={`px-4 py-2 rounded-lg   transition ${
+                productAction === "CLOSED"
+                  ? "bg-gray-800 hover:bg-gray-900"
+                  : "bg-green-600 hover:bg-green-700"
+              }`}
               loaderSize={"w-1 h-1"}
-              handleClick={handleCloseProduct}
+              handleClick={handleProductAction}
               loading={loading}
             />
           </div>

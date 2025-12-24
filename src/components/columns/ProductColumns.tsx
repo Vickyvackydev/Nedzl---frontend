@@ -268,7 +268,17 @@ export const ProductsColumn = [
           />
 
           <span className={clsx("text-xs font-medium", ui.text)}>
-            {row.row.original.status.replace(/_/g, " ")?.toLowerCase()}
+            {row.row.original.status.replace(/_/g, " ")?.toLowerCase() ===
+            "ongoing"
+              ? "Active"
+              : row.row.original.status
+                  .replace(/_/g, " ")
+                  ?.charAt(0)
+                  .toUpperCase() +
+                row.row.original.status
+                  .replace(/_/g, " ")
+                  ?.slice(1)
+                  .toLowerCase()}
           </span>
         </div>
       );

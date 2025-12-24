@@ -4,7 +4,7 @@ import { Store } from "../state/store";
 // import { reset } from "../state/slices/authReducer";
 
 export const API = axios.create({
-  baseURL: "https://nedzl-backend.onrender.com",
+  baseURL: "https://api.nedzl.com",
 });
 
 API.defaults.headers.common.Accept = "application/json";

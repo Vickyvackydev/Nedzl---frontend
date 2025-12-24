@@ -107,15 +107,15 @@ function ProductDetails() {
   const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
-    const files = Array.from(e.target.files);
+    const selectedFiles = Array.from(e.target.files);
 
-    const validFiles = files.filter(
+    const validFiles = selectedFiles.filter(
       (file) => file.type === "image/jpeg" || file.type === "image/jpg"
     );
 
-    if (validFiles.length < files.length) {
+    if (validFiles.length < selectedFiles.length) {
       toast.error("Only JPG/JPEG images are allowed");
-      return;
+      if (validFiles.length === 0) return;
     }
 
     const availableSlots = maxImages - images.length;
@@ -124,13 +124,14 @@ function ProductDetails() {
       return;
     }
 
-    const filesToAdd = validFiles.slice(0, availableSlots);
-    const totalFiles = [...images, ...filesToAdd];
-    setImages(totalFiles);
-
     if (validFiles.length > availableSlots) {
-      toast.error(`Only ${availableSlots} more image(s) can be added`);
+      toast.error(
+        `Maximum of ${maxImages} images is allowed. Only ${availableSlots} more image(s) can be added.`
+      );
     }
+
+    const filesToAdd = validFiles.slice(0, availableSlots);
+    setImages((prev) => [...prev, ...filesToAdd]);
   };
 
   const handleRemoveImage = (index: number) => {
@@ -257,7 +258,10 @@ function ProductDetails() {
                         alt=""
                       />
                       <span className="text-[#75757A] font-normal text-sm">
-                        {productDetails?.product.address_in_state}, 1 hour ago
+                        {productDetails?.product.address_in_state},{" "}
+                        {formatTimeElapsed(
+                          productDetails?.product?.created_at as string
+                        )}
                       </span>
                     </div>
                     <div className="flex items-center justify-start gap-x-2">

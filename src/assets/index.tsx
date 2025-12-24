@@ -93,6 +93,7 @@ export { default as LIST_PRODUCT } from "../assets/icons/list-products.svg";
 export { default as GO_BACK } from "../assets/icons/eva_arrow-back-fill.svg";
 export { default as GREEN_PENCIL } from "../assets/icons/green-pencil.svg";
 export { default as TIMES } from "../assets/icons/Frame (5).svg";
+export { default as OPTIMIZED } from "../assets/images/optimized.png";
 
 // end
 export { default as FEND_LOGO } from "../assets/images/fend-logo.svg";
