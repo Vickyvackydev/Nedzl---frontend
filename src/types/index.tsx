@@ -99,6 +99,17 @@ export interface SingleProductResponse {
   product: ProductResponse;
 }
 
+export interface PaginatedProductResponse {
+  data: ProductResponse[];
+  limit: number;
+  nextPageUrl: string | null;
+  page: number;
+  pages: { page: number; url: string }[];
+  prevPageUrl: string | null;
+  total: number;
+  totalpages: number;
+}
+
 export interface User {
   id: string;
   user_name: string;

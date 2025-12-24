@@ -2,7 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import MainLayout from "../layout/MainLayout";
 import { Link, useSearchParams } from "react-router-dom";
 import { ARROW_DOWN, DOUBLE_DIRECT, LINE, FILTER__, TIMES } from "../assets";
-import { categories, statesInNigeria } from "../constant";
+import {
+  categories,
+  statesInNigeria,
+  universitiesInNigeria,
+} from "../constant";
 import Button from "../components/Button";
 import {
   getAllProducts,
@@ -14,6 +18,9 @@ import ProductCard from "../components/ProductCard";
 import { formatText } from "../utils";
 import { SkeletonCard } from "../ui/product-row";
 import { motion, AnimatePresence } from "framer-motion";
+import clsx from "clsx";
+import { LocationDropdown } from "../components/LocationDropdown";
+import Pagination from "../components/Pagination";
 
 function Products() {
   const [searchParams] = useSearchParams();
@@ -23,8 +30,12 @@ function Products() {
 
   const [selectedCatgory, setSelectedCatgory] = useState(category);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(12);
+
   //   const [location, setLocation] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedUniversity, setSelectedUniversity] = useState("");
   const [payload, setPayload] = useState({});
   const [priceRange, setPriceRange] = useState({
     min: "",
@@ -44,12 +55,21 @@ function Products() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["product-category", selectedCatgory],
+    queryKey: [
+      "product-category",
+      selectedCatgory,
+      keyword,
+      section,
+      payload,
+      currentPage,
+    ],
     queryFn: () =>
       getAllProducts({
         category_name: selectedCatgory || "",
         search: keyword || "",
         section: section?.split("-")?.join("_") || "",
+        page: currentPage,
+        limit: limit,
         ...payload,
       }),
   });
@@ -79,10 +99,12 @@ function Products() {
   const handleApplyFilters = () => {
     const filters = {
       state: selectedLocation,
+      university: selectedUniversity,
       min_price: Number(priceRange.min.replace(/,/g, "")),
       max_price: Number(priceRange.max.replace(/,/g, "")),
     };
     setPayload(filters);
+    setCurrentPage(1);
     refetch();
     setIsFilterOpen(false);
   };
@@ -92,6 +114,8 @@ function Products() {
     setPriceRange({ min: "", max: "" });
     setSelectedCatgory(category);
     setSelectedLocation("");
+    setSelectedUniversity("");
+    setCurrentPage(1);
 
     refetch();
     setIsFilterOpen(false);
@@ -100,8 +124,18 @@ function Products() {
   const FilterContent = () => (
     <div className="flex flex-col gap-y-3">
       <LocationDropdown
-        selectedLocation={formatText(selectedLocation)}
-        setSelectedLocation={setSelectedLocation}
+        selected={formatText(selectedLocation)}
+        setSelected={setSelectedLocation}
+        listing={statesInNigeria}
+        placeholder="Select Location"
+        type="Location"
+      />
+      <LocationDropdown
+        selected={formatText(selectedUniversity)}
+        setSelected={setSelectedUniversity}
+        listing={universitiesInNigeria}
+        placeholder="Select University"
+        type="University"
       />
       <div className="w-full bg-white rounded-xl">
         {/* Header */}
@@ -143,6 +177,7 @@ function Products() {
                 onClick={() => {
                   const value = item.value;
                   setSelectedCatgory(value);
+                  setCurrentPage(1);
                   window.history.replaceState(
                     {},
                     "",
@@ -294,6 +329,20 @@ function Products() {
             )}
           </div>
         </div>
+
+        {/* Pagination */}
+        {categorizedProduct?.totalpages > 1 && (
+          <div className="w-full flex justify-end mt-4">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={categorizedProduct?.totalpages}
+              onPageChange={(page) => {
+                setCurrentPage(page);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Mobile Filter Bottom Sheet */}
@@ -333,75 +382,3 @@ function Products() {
 }
 
 export default Products;
-
-export function LocationDropdown({
-  selectedLocation,
-  setSelectedLocation,
-}: {
-  selectedLocation: string;
-  setSelectedLocation: (str: string) => void;
-}) {
-  //   const [selectedState, setSelectedState] = useState("Anambra");
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className="w-full rounded-xl shadow-box">
-      {/* Header */}
-      <div className="w-full p-2.5 bg-global-green text-white rounded-t-xl">
-        <span className="text-start">Location</span>
-      </div>
-
-      {/* Dropdown container */}
-      <div className="w-full bg-white p-2.5 rounded-b-xl relative">
-        <div
-          onClick={() => setIsOpen((prev) => !prev)}
-          className="border p-2.5 border-[#E9EAEB] rounded-xl flex items-center justify-between w-full cursor-pointer"
-        >
-          <div className="flex flex-col gap-y-1">
-            <span className="text-sm font-semibold text-primary-300">
-              Select Location
-            </span>
-            {selectedLocation ? (
-              <span className="w-fit h-fit p-1 text-xs text-primary-300 font-semibold rounded-3xl bg-[#F7F7F7] capitalize">
-                {selectedLocation}
-              </span>
-            ) : (
-              <span className="w-fit h-fit text-xs text-primary-300 font-semibold  capitalize">
-                Select a state
-              </span>
-            )}
-          </div>
-          <img
-            src={ARROW_DOWN}
-            className={`w-[20px] h-[20px] transition-transform duration-200 ${
-              isOpen ? "rotate-180" : ""
-            }`}
-            alt=""
-          />
-        </div>
-
-        {/* Dropdown list */}
-        {isOpen && (
-          <div className="absolute z-50 mt-4 w-full bg-white border left-0 border-[#E9EAEB] rounded-xl shadow-md max-h-60 overflow-y-auto">
-            {statesInNigeria.map((state) => (
-              <div
-                key={state.value}
-                onClick={() => {
-                  setSelectedLocation(state.value);
-                  setIsOpen(false);
-                }}
-                className={`px-3 py-2 text-sm text-primary-300 cursor-pointer hover:bg-[#F7F7F7] capitalize ${
-                  selectedLocation === state.label
-                    ? "bg-[#07B4631A] text-global-green font-semibold"
-                    : ""
-                }`}
-              >
-                {state.label}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
