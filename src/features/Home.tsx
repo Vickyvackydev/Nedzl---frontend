@@ -106,11 +106,11 @@ function Home() {
         {isFeaturedProductNotComplete && (
           <div className="w-full px-4 md:px-20 mb-10 flex flex-col md:flex-row items-start justify-between gap-3 mt-5">
             {/* LEFT TWO BOXES */}
-            <div className="flex flex-col md:flex-row items-start h-auto md:h-[650px] gap-x-3 gap-y-3 md:gap-y-0 w-full md:w-[50%]">
+            <div className="flex w-full flex-col md:flex-row items-start h-auto md:h-[650px] gap-x-3 gap-y-3 md:gap-y-0  md:w-[50%]">
               {/* BOX 1 */}
               <div
                 ref={box1Ref}
-                className="h-full overflow-y-scroll bg-[#F5F5F5] p-5 rounded-xl no-scrollbar"
+                className="w-full h-full overflow-y-scroll bg-[#F5F5F5] p-5 rounded-xl no-scrollbar"
               >
                 <div className="flex flex-col items-start gap-y-1">
                   <span className="text-[#044706] font-semibold text-xl">
@@ -153,7 +153,7 @@ function Home() {
               {/* BOX 2 */}
               <div
                 ref={box2Ref}
-                className="h-full overflow-y-scroll bg-[#F5F5F5] p-5 rounded-xl no-scrollbar"
+                className="w-full h-full overflow-y-scroll bg-[#F5F5F5] p-5 rounded-xl no-scrollbar"
               >
                 <div className="flex flex-col items-start gap-y-1">
                   <span className="text-[#044706] font-semibold text-xl">
