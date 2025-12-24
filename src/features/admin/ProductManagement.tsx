@@ -316,7 +316,7 @@ function ProductManagement() {
     try {
       const response = await updateProductStatus(
         productDetails?.id as string,
-        productAction
+        productAction === "OPEN" ? "ONGOING" : "CLOSED"
       );
       if (response) {
         setProductDetails(null);
