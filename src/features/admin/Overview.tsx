@@ -237,13 +237,14 @@ function Overview() {
       setLoading(false);
     }
   };
-  const handleCloseProduct = async () => {
+
+  const handleProductAction = async () => {
     setLoading(true);
 
     try {
       const response = await updateProductStatus(
         productDetails?.id as string,
-        "CLOSED"
+        productAction
       );
       if (response) {
         toast.success(response?.message);
@@ -514,7 +515,7 @@ function Overview() {
           )}
         </div>
         <Modal
-          show={productAction && productAction === "CLOSE"}
+          show={productAction === "CLOSE" || productAction === "OPEN"}
           onClose={() => {
             dispatch(setProductAction(null));
             dispatch(setProductDetails(null));
@@ -522,12 +523,16 @@ function Overview() {
         >
           <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-sm">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Close Product?
+              {productAction === "CLOSED" ? "Close" : "Re-Open"} Product?
             </h3>
 
             <p className="text-gray-600 text-sm mb-6">
-              Are you sure you want to close this Product? This product would be
-              marked as sold
+              Are you sure you want to{" "}
+              {productAction === "CLOSED" ? "close" : "re-open"} this Product?
+              This product would{" "}
+              {productAction === "CLOSED"
+                ? "be marked as sold"
+                : "be back on sale"}
             </p>
 
             <div className="flex justify-end gap-3">
@@ -542,11 +547,16 @@ function Overview() {
               </button>
 
               <Button
-                title="Yes, Close"
+                title={productAction === "CLOSED" ? "Close" : "Re-Open"}
                 textStyle="text-sm font-medium text-white"
-                btnStyles="px-4 py-2 rounded-lg  bg-gray-800 hover:bg-gray-900 transition"
+                disabled={loading}
+                btnStyles={`px-4 py-2 rounded-lg   transition ${
+                  productAction === "CLOSED"
+                    ? "bg-gray-800 hover:bg-gray-900"
+                    : "bg-green-600 hover:bg-green-700"
+                }`}
                 loaderSize={"w-1 h-1"}
-                handleClick={handleCloseProduct}
+                handleClick={handleProductAction}
                 loading={loading}
               />
             </div>

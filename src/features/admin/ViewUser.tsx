@@ -412,8 +412,18 @@ function ViewUser() {
                 <p className="text-xs text-gray-500 mb-1">
                   Verification Status
                 </p>
-                <span className="text-green-600 font-medium text-sm">
-                  ● Verified
+                <span
+                  className={clsx(
+                    "text-green-600 font-medium text-sm",
+                    userDetails?.user_details?.is_verified
+                      ? "text-green-600"
+                      : "text-red-600"
+                  )}
+                >
+                  ●{" "}
+                  {userDetails?.user_details?.is_verified
+                    ? "Verified"
+                    : "Not Verified"}
                 </span>
               </div>
 

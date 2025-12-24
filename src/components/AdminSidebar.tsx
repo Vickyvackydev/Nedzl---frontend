@@ -173,7 +173,7 @@ function AdminSidebar(props: SidebarProps) {
           </div>
         </Transition>
       ) : (
-        <div className="min-w-[290px] geist-family shadow-sm h-screen border border-borderColor bg-[#F6F6F6] flex flex-col items-start justify-between">
+        <div className="min-w-[250px] geist-family shadow-sm h-screen border border-borderColor bg-[#F6F6F6] flex flex-col items-start justify-between">
           <div className="flex items-start px-3 mt-10 flex-col gap-y-11 w-full">
             <img
               src={NEDZL_LOGO_GREEN}

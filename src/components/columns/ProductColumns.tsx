@@ -132,6 +132,18 @@ const ActionButton = ({ row }: { row: { row: { original: any } } }) => {
                 Close Product
               </button>
             )}
+            {row.row.original.status === "CLOSED" && (
+              <button
+                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-[#00AD200D] gap-2"
+                onClick={() => {
+                  dispatch(setProductAction("OPEN"));
+                  dispatch(setProductDetails(row.row.original));
+                }}
+              >
+                <img src={TAG} alt="eye" className="w-[20px] h-[20px]" />
+                Re-Open Product
+              </button>
+            )}
 
             <button
               onClick={() => {
