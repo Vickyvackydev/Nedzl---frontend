@@ -74,3 +74,7 @@ export const updateProductStatus = async (
   const response = await API.patch(`/products/update/${id}/status`, { status });
   return response.data;
 };
+export const toggleLike = async (id: string) => {
+  const response = await API.post(`/products/${id}/toggle-like`);
+  return response.data;
+};

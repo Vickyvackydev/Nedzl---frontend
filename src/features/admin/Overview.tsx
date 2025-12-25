@@ -471,7 +471,7 @@ function Overview() {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`flex items-center justify-center min-w-[40px] h-[40px] rounded-xl border text-[13px] transition-all duration-300 ${
+                      className={`flex items-center justify-center min-w-[40px] h-[40px] rounded-xl border border-gray-300 text-[13px] transition-all duration-300 ${
                         products?.data?.meta?.page === pageNum
                           ? "bg-green-600 text-white border-green-600"
                           : "text-[#2A2E34] hover:bg-green-600 hover:text-white"

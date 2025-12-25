@@ -85,6 +85,9 @@ export interface ProductResponse {
   address_in_state: string;
   outstanding_issues: string;
   image_urls: string[];
+  likes: number;
+  views: number;
+  is_liked_by_me: boolean;
   status: "UNDER_REVIEW" | "APPROVED" | "REJECTED" | string; // extendable
   condition: "brand-new" | "used" | string;
   user_id: string;

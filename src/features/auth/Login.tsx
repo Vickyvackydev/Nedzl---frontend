@@ -4,7 +4,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import { motion } from "framer-motion";
 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../../layout/Authlayout";
 import { NEDZL_LOGO_GREEN, PAD_LOCK } from "../../assets";
 import Button from "../../components/Button";
@@ -81,11 +81,13 @@ function Login() {
           className="lg:w-[30rem] w-full h-auto lg:mt-0 mt-10 shadow-box rounded-lg lg:p-10 p-5 flex flex-col justify-center gap-y-6 items-center"
         >
           <div className="flex flex-col items-center justify-center gap-y-2 ">
-            <img
-              src={NEDZL_LOGO_GREEN}
-              className="w-[130px] h-[33.41px]"
-              alt=""
-            />
+            <Link to="/">
+              <img
+                src={NEDZL_LOGO_GREEN}
+                className="w-[130px] h-[33.41px]"
+                alt=""
+              />
+            </Link>
             <span className="text-2xl font-bold text-primary-300">
               Welcome Back
             </span>

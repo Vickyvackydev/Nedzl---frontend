@@ -175,11 +175,13 @@ function AdminSidebar(props: SidebarProps) {
       ) : (
         <div className="min-w-[250px] geist-family shadow-sm h-screen border border-borderColor bg-[#F6F6F6] flex flex-col items-start justify-between">
           <div className="flex items-start px-3 mt-10 flex-col gap-y-11 w-full">
-            <img
-              src={NEDZL_LOGO_GREEN}
-              className="w-[130px] h-[30.2px] object-cover"
-              alt=""
-            />
+            <Link to={"/"}>
+              <img
+                src={NEDZL_LOGO_GREEN}
+                className="w-[130px] h-[30.2px] object-cover"
+                alt=""
+              />
+            </Link>
             <div className="flex flex-col w-full gap-y-4">
               <Link
                 to="/admin/overview"

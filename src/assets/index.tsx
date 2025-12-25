@@ -20,6 +20,7 @@ export { default as LOCATION } from "../assets/images/location.svg";
 export { default as OUTLINE_EYE } from "../assets/icons/outline-eye.svg";
 export { default as OUTLINE_LOCATION } from "../assets/icons/outline-location.svg";
 export { default as HEART } from "../assets/icons/heart.svg";
+export { default as RED_HEART } from "../assets/icons/red-heart.svg";
 export { default as SHARE } from "../assets/icons/share.svg";
 export { default as PROFILE } from "../assets/images/profile.png";
 export { default as VERIFIED } from "../assets/images/verified.svg";

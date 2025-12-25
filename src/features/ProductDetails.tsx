@@ -6,6 +6,7 @@ import {
   OUTLINE_LOCATION,
   PROFILE,
   RED_BTN,
+  RED_HEART,
   REVIEW_AVATAR,
   SHARE,
   SINGLE_USER,
@@ -19,8 +20,9 @@ import {
   getAllProducts,
   getSellerStoreDetails,
   getSingleProduct,
+  toggleLike,
 } from "../services/product.service";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   ProductResponse,
   ReviewResponseType,
@@ -37,11 +39,23 @@ import clsx from "clsx";
 import Modal from "../components/Modal";
 import SelectInput from "../components/SelectInput";
 import { createReview, getPublicReviews } from "../services/reviews.service";
+import { Store } from "../state/store";
+import {
+  FacebookShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+  LinkedinShareButton,
+  FacebookIcon,
+  WhatsappIcon,
+  LinkedinIcon,
+  XIcon,
+} from "react-share";
 
 function ProductDetails() {
   const [activeTab, setActiveTab] = useState<
     "product-details" | "outstanding-issues"
   >("product-details");
+  const navigate = useNavigate();
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedExperience, setSelectedExperience] = useState<
@@ -99,6 +113,7 @@ function ProductDetails() {
   const category = productDetails?.product.category_name?.replace(/-/g, " ");
   const maxImages = 5;
   const [showSellerNumber, setShowSellerNumber] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [reviewFields, setReviewFields] = useState({
     review_title: "",
     customer_name: "",
@@ -174,6 +189,27 @@ function ProductDetails() {
     }
   };
 
+  const [liked, setLiked] = useState(productDetails?.product?.is_liked_by_me);
+  const [likesCount, setLikesCount] = useState(
+    productDetails?.product?.likes || 0
+  );
+
+  const handleToggleLike = async () => {
+    if (!productDetails?.product?.id) return;
+    setLiked(!liked);
+    setLikesCount(liked ? likesCount - 1 : likesCount + 1);
+    try {
+      const response = await toggleLike(productDetails?.product?.id);
+      if (response) {
+        setLiked(!liked);
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
+      setLiked(liked);
+      setLikesCount(likesCount);
+    }
+  };
+
   return (
     <MainLayout>
       {isLoadingProductDetails ? (
@@ -229,20 +265,41 @@ function ProductDetails() {
                         {productDetails?.product.product_name}
                       </span>
                       <div className="flex items-center justify-end gap-x-3">
-                        <div className="w-[32px] h-[32px] rounded-full border-[0.67px] border-[#DADADA] flex items-center justify-center">
-                          <img
-                            src={HEART}
-                            className="w-[16px] h-[16px]"
-                            alt=""
-                          />
-                        </div>
-                        <div className="w-[32px] h-[32px] rounded-full border-[0.67px] border-[#DADADA] flex items-center justify-center">
+                        {Store.getState().auths?.token && (
+                          <div className="flex items-center gap-1">
+                            <button
+                              title="Like"
+                              onClick={handleToggleLike}
+                              className="w-[32px] h-[32px] rounded-full border-[0.67px] border-[#DADADA] flex items-center justify-center"
+                            >
+                              {liked ? (
+                                <img
+                                  src={RED_HEART}
+                                  className="w-[16px] h-[16px]"
+                                  alt=""
+                                />
+                              ) : (
+                                <img
+                                  src={HEART}
+                                  className="w-[16px] h-[16px]"
+                                  alt=""
+                                />
+                              )}
+                            </button>
+                            <span className="text-xs">{likesCount || 0}</span>
+                          </div>
+                        )}
+                        <button
+                          title="Share"
+                          onClick={() => setIsShareModalOpen(true)}
+                          className="w-[32px] h-[32px] rounded-full border-[0.67px] border-[#DADADA] flex items-center justify-center"
+                        >
                           <img
                             src={SHARE}
                             className="w-[16px] h-[16px]"
                             alt=""
                           />
-                        </div>
+                        </button>
                       </div>
                     </div>
                     <span className="text-sm font-normal text-faded-black-light">
@@ -271,7 +328,7 @@ function ProductDetails() {
                         alt=""
                       />
                       <span className="text-[#75757A] font-normal text-sm">
-                        514
+                        {productDetails?.product.views}
                       </span>
                     </div>
                     <div className="w-fit h-fit bg-[#07B4631A]  rounded-lg p-1.5 text-xs font-medium text-global-green">
@@ -468,6 +525,11 @@ function ProductDetails() {
               (item: ProductResponse) => item.id !== productDetails?.product?.id
             )}
             loading={isLoading}
+            onSeeAll={() =>
+              navigate(
+                `/products?category=${productDetails?.product?.category_name}`
+              )
+            }
           />
           <Modal
             show={showFeedbacksModal}
@@ -731,6 +793,93 @@ function ProductDetails() {
                   btnStyles="px-5 h-[40px] bg-global-green rounded-xl  hover:bg-emerald-600 transition-colors"
                   textStyle="text-white font-medium"
                 />
+              </div>
+            </div>
+          </Modal>
+          <Modal
+            show={isShareModalOpen}
+            onClose={() => setIsShareModalOpen(false)}
+          >
+            <div className="bg-white rounded-xl p-6 w-[90%] max-w-sm geist-family">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-lg font-semibold text-primary-300">
+                  Share this product
+                </h3>
+                <button
+                  onClick={() => setIsShareModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <p className="text-sm text-faded-black-light mb-6">
+                Spread the word about this amazing discovery!
+              </p>
+
+              <div className="flex items-center justify-between gap-2 py-4">
+                <div className="flex flex-col items-center gap-y-1">
+                  <WhatsappShareButton
+                    url={window.location.href}
+                    title={productDetails?.product.product_name}
+                    separator=":: "
+                  >
+                    <WhatsappIcon size={45} round />
+                  </WhatsappShareButton>
+                  <span className="text-[10px] text-primary-300 font-medium">
+                    WhatsApp
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-center gap-y-1">
+                  <FacebookShareButton
+                    url={window.location.href}
+                    title={productDetails?.product.product_name}
+                  >
+                    <FacebookIcon size={45} round />
+                  </FacebookShareButton>
+                  <span className="text-[10px] text-primary-300 font-medium">
+                    Facebook
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-center gap-y-1">
+                  <TwitterShareButton
+                    url={window.location.href}
+                    title={productDetails?.product.product_name}
+                  >
+                    <XIcon size={45} round />
+                  </TwitterShareButton>
+                  <span className="text-[10px] text-primary-300 font-medium">
+                    Twitter
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-center gap-y-1">
+                  <LinkedinShareButton
+                    url={window.location.href}
+                    title={productDetails?.product.product_name}
+                  >
+                    <LinkedinIcon size={45} round />
+                  </LinkedinShareButton>
+                  <span className="text-[10px] text-primary-300 font-medium">
+                    LinkedIn
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-6 flex items-center gap-2 p-3 border border-borderColor rounded-xl bg-[#F7F7F7]">
+                <span className="text-xs text-primary-300 truncate flex-1 font-medium">
+                  {window.location.href}
+                </span>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast.success("Link copied to clipboard!");
+                  }}
+                  className="text-global-green text-xs font-bold px-2 py-1 hover:bg-emerald-50 rounded-lg transition-colors"
+                >
+                  Copy
+                </button>
               </div>
             </div>
           </Modal>

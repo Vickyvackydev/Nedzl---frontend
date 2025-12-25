@@ -50,6 +50,10 @@ function Products() {
     }
   }, [category, keyword]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
+
   const {
     data: categorizedProduct,
     isLoading,
@@ -107,6 +111,7 @@ function Products() {
     setCurrentPage(1);
     refetch();
     setIsFilterOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const resetFilters = () => {
@@ -119,6 +124,7 @@ function Products() {
 
     refetch();
     setIsFilterOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const FilterContent = () => (
@@ -178,6 +184,7 @@ function Products() {
                   const value = item.value;
                   setSelectedCatgory(value);
                   setCurrentPage(1);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
                   window.history.replaceState(
                     {},
                     "",
@@ -338,7 +345,6 @@ function Products() {
               totalPages={categorizedProduct?.totalpages}
               onPageChange={(page) => {
                 setCurrentPage(page);
-                window.scrollTo({ top: 0, behavior: "smooth" });
               }}
             />
           </div>
