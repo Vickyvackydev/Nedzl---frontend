@@ -28,6 +28,7 @@ import useDropdown from "../../hooks/useDropdown";
 import { useQuery } from "@tanstack/react-query";
 import {
   deleteAdminProduct,
+  deleteFeaturedProducts,
   getAdminFeaturedProducts,
   getDashboardOverview,
   getDashboardProducts,
@@ -58,6 +59,7 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { filterOptions } from "../../constant";
 import { updateProductStatus } from "../../services/product.service";
+import Pagination from "../../components/Pagination";
 
 interface FeatureResponse {
   category_name: string;
@@ -88,6 +90,7 @@ function ProductManagement() {
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [deleting, setDeleting] = useState(false);
   const { data: featureedProducts, refetch: refetchFeaturedProducts } =
     useQuery({
       queryKey: ["admin-featured-products"],
@@ -100,6 +103,7 @@ function ProductManagement() {
     useState<FeatureResponse | null>(null);
   const [productSelectModal, setProductSelectModal] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [modalPage, setModalPage] = useState(1);
   const productDetails: ProductResponse = useSelector(selectProduct);
 
   const ui =
@@ -159,7 +163,7 @@ function ProductManagement() {
     queryKey: [
       "dashboard-products",
       selectedStatus,
-      currentPage,
+      productSelectModal ? modalPage : currentPage,
       search,
       appliedFilters,
     ],
@@ -171,7 +175,7 @@ function ProductManagement() {
             : selectedStatus.toUpperCase() === "ACTIVE"
             ? "ONGOING"
             : selectedStatus.toUpperCase(),
-        page: currentPage,
+        page: productSelectModal ? modalPage : currentPage,
         search,
         filters: appliedFilters,
       }),
@@ -330,6 +334,22 @@ function ProductManagement() {
       toast.error(error?.response?.data?.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteAllFeaturedProduct = async () => {
+    setDeleting(true);
+
+    try {
+      const response = await deleteFeaturedProducts();
+      if (response) {
+        toast.success(response?.message);
+        refetchFeaturedProducts();
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message);
+    } finally {
+      setDeleting(false);
     }
   };
   return (
@@ -572,7 +592,7 @@ function ProductManagement() {
                         <button
                           key={pageNum}
                           onClick={() => setCurrentPage(pageNum)}
-                          className={`flex items-center justify-center min-w-[40px] h-[40px] rounded-xl border text-[13px] transition-all duration-300 ${
+                          className={`flex items-center justify-center min-w-[40px] h-[40px] rounded-xl border border-gray-300 text-[13px] transition-all duration-300 ${
                             products?.data?.meta?.page === pageNum
                               ? "bg-green-600 text-white border-green-600"
                               : "text-[#2A2E34] hover:bg-green-600 hover:text-white"
@@ -920,6 +940,15 @@ function ProductManagement() {
             </div>
           </div>
         )}
+        <div className="flex items-end justify-end mt-5">
+          <button
+            onClick={handleDeleteAllFeaturedProduct}
+            disabled={deleting}
+            className="px-5 py-2 text-white bg-red-500 rounded-xl  font-medium hover:bg-red-600 flex items-end self-end transition-colors"
+          >
+            {deleting ? "Deleting..." : "Reset"}
+          </button>
+        </div>
       </div>
       <Modal
         show={
@@ -1224,7 +1253,7 @@ function ProductManagement() {
       >
         <div className="w-full max-h-[400px] overflow-y-auto">
           {products?.data?.data?.length > 0 ? (
-            <div className="p-5 grid grid-cols-3 gap-3 w-full">
+            <div className="p-5 grid lg:grid-cols-3 grid-cols-2 gap-3 w-full">
               {products?.data?.data?.map((item: ProductResponse) => (
                 <div
                   onClick={() => handleToggleIds(item.id)}
@@ -1306,24 +1335,108 @@ function ProductManagement() {
             </motion.div>
           )}
         </div>
-        <div className="w-full flex items-center justify-end gap-x-3 p-5">
-          <button className="w-fit cursor-pointer text-sm font-medium text-primary-300 px-4 py-2.5 border border-[#E9EAEB] rounded-xl">
-            Close
-          </button>
+        <div className="flex items-center justify-between p-5 w-full">
+          {products?.data?.data?.length > 0 && (
+            <div className="w-full flex items-center justify-start">
+              <div className="flex items-center gap-x-4">
+                {/* Previous Button */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setModalPage(() =>
+                      Math.max(1, products?.data?.meta?.page - 1)
+                    )
+                  }
+                  disabled={products?.meta?.page === 1}
+                  className={`border border-[#E5E7EF] rounded-xl min-w-[40px] px-4 min-h-[40px] hidden lg:flex items-center justify-center transition-all ${
+                    products?.data?.meta?.page === 1
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-[#F0FDF4]"
+                  }`}
+                >
+                  <img
+                    src={CHEVRON_LEFT}
+                    className="w-[20px] h-[20px]"
+                    alt="Previous"
+                  />
+                </button>
 
-          <Button
-            title="Save"
-            loading={updating}
-            btnStyles="w-fit cursor-pointer px-4 h-[40px] bg-global-green rounded-xl"
-            textStyle="text-sm font-medium text-white"
-            // disabled={
-            //   ((boxNumber === 1 || boxNumber === 2) &&
-            //     selectedProductIds.length < 3) ||
-            //   ((boxNumber === 3 || boxNumber === 4) &&
-            //     selectedProductIds.length < 2)
-            // }
-            handleClick={handleUpdateFeaturedProducts}
-          />
+                {/* Page Numbers */}
+                <div
+                  className={`flex items-center gap-x-2 ${
+                    products?.data?.meta?.totalPages > 6
+                      ? "max-w-[250px] sm:max-w-[300px] overflow-x-auto scrollbar-hide"
+                      : ""
+                  }`}
+                >
+                  {Array.from(
+                    { length: products?.data?.meta?.totalPages || 0 },
+                    (_, i) => i + 1
+                  ).map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      onClick={() => setModalPage(pageNum)}
+                      className={`flex items-center justify-center min-w-[40px] h-[40px] rounded-xl border border-gray-300 text-[13px] transition-all duration-300 ${
+                        products?.data?.meta?.page === pageNum
+                          ? "bg-green-600 text-white border-green-600"
+                          : "text-[#2A2E34] hover:bg-green-600 hover:text-white"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Next Button */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setModalPage(() =>
+                      Math.min(
+                        products?.data?.meta?.totalPages,
+                        products?.meta?.page + 1
+                      )
+                    )
+                  }
+                  disabled={
+                    products?.data?.meta?.page ===
+                    products?.data?.meta?.totalPages
+                  }
+                  className={`border border-[#E5E7EF] rounded-xl min-w-[40px] px-4 min-h-[40px] hidden lg:flex items-center justify-center transition-all ${
+                    products?.data?.meta?.page ===
+                    products?.data?.meta?.totalPages
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-[#F0FDF4]"
+                  }`}
+                >
+                  <img
+                    src={CHEVRON_LEFT}
+                    className="w-[20px] h-[20px] scale-x-[-1]"
+                    alt="Next"
+                  />
+                </button>
+              </div>
+            </div>
+          )}
+          <div className="gap-x-3 flex items-center ">
+            <button className="w-fit cursor-pointer text-sm font-medium text-primary-300 px-4 py-2.5 border border-[#E9EAEB] rounded-xl">
+              Close
+            </button>
+
+            <Button
+              title="Save"
+              loading={updating}
+              btnStyles="w-fit cursor-pointer px-4 h-[40px] bg-global-green rounded-xl"
+              textStyle="text-sm font-medium text-white"
+              // disabled={
+              //   ((boxNumber === 1 || boxNumber === 2) &&
+              //     selectedProductIds.length < 3) ||
+              //   ((boxNumber === 3 || boxNumber === 4) &&
+              //     selectedProductIds.length < 2)
+              // }
+              handleClick={handleUpdateFeaturedProducts}
+            />
+          </div>
         </div>
       </CustomModal>
       <Modal

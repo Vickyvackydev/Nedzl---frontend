@@ -73,6 +73,10 @@ export const getAdminFeaturedProducts = async () => {
   const response = await API.get(`/admin/feature-products`);
   return response?.data?.data;
 };
+export const deleteFeaturedProducts = async () => {
+  const response = await API.delete(`/admin/feature-products`);
+  return response?.data;
+};
 
 export const updateUserStatus = async (
   id: string,
