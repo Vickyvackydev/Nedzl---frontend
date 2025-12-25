@@ -81,7 +81,7 @@ function ProductManagement() {
   const productAction = useSelector(selectProductAction);
   const {
     data: dashboardOverview,
-    isLoading,
+    // isLoading,
     // refetch,
   } = useQuery<DashboardData>({
     queryKey: ["overview-products", selectedPeriod],
@@ -527,7 +527,7 @@ function ProductManagement() {
                     sorting={sorting}
                   />
                 </div>
-              ) : isLoadingproducts ? (
+              ) : isLoadinProducts ? (
                 <div className="w-full flex h-[50vh] items-center justify-center">
                   <Loader2 color="#07b463" size={50} className="animate-spin" />
                 </div>
