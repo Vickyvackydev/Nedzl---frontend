@@ -59,7 +59,6 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { filterOptions } from "../../constant";
 import { updateProductStatus } from "../../services/product.service";
-import Pagination from "../../components/Pagination";
 
 interface FeatureResponse {
   category_name: string;
