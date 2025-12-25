@@ -73,7 +73,7 @@ function Account() {
   }, [user]);
 
   return (
-    <div className="w-full flex items-center flex-col justify-center py-10">
+    <div className="w-full flex items-center gap-y-3 flex-col justify-center py-10">
       <div className="w-[100px] h-[100px] rounded-full border relative bg-[#07B4630D] flex justify-center items-center border-dotted border-global-green">
         <img
           src={

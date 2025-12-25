@@ -221,13 +221,14 @@ function Products() {
             <span className="text-primary-300 font-medium text-sm">Min</span>
             <input
               type="text"
+              inputMode="decimal"
               value={priceRange.min}
               onChange={(val) => {
                 const numeric = val.target.value.replace(/\D/g, "");
                 const formatted = numeric.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 setPriceRange({ ...priceRange, min: formatted });
               }}
-              className="outline-none bg-transparent text-sm w-full"
+              className="outline-none bg-transparent text-base w-full"
               placeholder="0.00"
             />
           </div>
@@ -235,13 +236,14 @@ function Products() {
             <span className="text-primary-300 font-medium text-sm">Max</span>
             <input
               type="text"
+              inputMode="decimal"
               value={priceRange.max}
               onChange={(val) => {
                 const numeric = val.target.value.replace(/\D/g, "");
                 const formatted = numeric.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 setPriceRange({ ...priceRange, max: formatted });
               }}
-              className="outline-none bg-transparent text-sm w-full"
+              className="outline-none bg-transparent text-base w-full"
               placeholder="0.00"
             />
           </div>

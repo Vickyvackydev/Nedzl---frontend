@@ -197,7 +197,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
           <input
             type="text"
             placeholder="Search for a products, brands & categories"
-            className="w-full placeholder:text-primary-50 text-sm outline-none text-primary-300"
+            className="w-full placeholder:text-primary-50 text-base outline-none text-primary-300"
             value={query}
             onChange={handleInputChange}
             onFocus={() => query && setShowDropdown(true)}
