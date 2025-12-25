@@ -391,6 +391,7 @@ function Products() {
       {showProductFields ? (
         <div className="w-full p-4 flex flex-col gap-y-4 max-h-[600px] overflow-y-scroll custom-scrollbar-gray">
           <SelectInput
+            key="product_name"
             isInput
             required
             label="Product Name"
@@ -400,6 +401,7 @@ function Products() {
           />
           <div className="w-full flex flex-col md:flex-row items-center gap-3 justify-between">
             <SelectInput
+              key="product_price"
               isInput
               required
               label="Product Price"
@@ -413,6 +415,7 @@ function Products() {
             />
             <div className="flex items-center gap-3 w-full">
               <SelectInput
+                key="market_price_from"
                 isInput
                 required
                 label="Market Price"
@@ -431,6 +434,7 @@ function Products() {
                 }}
               />
               <SelectInput
+                key="market_price_to"
                 isInput
                 required
                 label="To"

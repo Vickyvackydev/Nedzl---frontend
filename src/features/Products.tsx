@@ -22,6 +22,172 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LocationDropdown } from "../components/LocationDropdown";
 import Pagination from "../components/Pagination";
 
+interface FilterContentProps {
+  selectedLocation: string;
+  setSelectedLocation: (val: string) => void;
+  selectedUniversity: string;
+  setSelectedUniversity: (val: string) => void;
+  selectedCatgory: string | null;
+  setSelectedCatgory: (val: string | null) => void;
+  categoriesWithCount: any[];
+  priceRange: { min: string; max: string };
+  setPriceRange: (range: { min: string; max: string }) => void;
+  handleApplyFilters: () => void;
+  resetFilters: () => void;
+  section: string | null;
+  setCurrentPage: (page: number) => void;
+}
+
+const FilterContent = ({
+  selectedLocation,
+  setSelectedLocation,
+  selectedUniversity,
+  setSelectedUniversity,
+  selectedCatgory,
+  setSelectedCatgory,
+  categoriesWithCount,
+  priceRange,
+  setPriceRange,
+  handleApplyFilters,
+  resetFilters,
+  section,
+  setCurrentPage,
+}: FilterContentProps) => (
+  <div className="flex flex-col gap-y-3">
+    <LocationDropdown
+      selected={formatText(selectedLocation)}
+      setSelected={setSelectedLocation}
+      listing={statesInNigeria}
+      placeholder="Select Location"
+      type="Location"
+    />
+    <LocationDropdown
+      selected={formatText(selectedUniversity)}
+      setSelected={setSelectedUniversity}
+      listing={universitiesInNigeria}
+      placeholder="Select University"
+      type="University"
+    />
+    <div className="w-full bg-white rounded-xl">
+      {/* Header */}
+      <div className="w-full p-2.5 border-b border-[#E9EAEB] text-primary-300">
+        <span className="text-primary-300 font-semibold text-[16px]">
+          Categories
+        </span>
+      </div>
+
+      {/* Scrollable content area */}
+      <div className="p-2.5 flex flex-col gap-y-1 max-h-[350px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#E5E5E5] scrollbar-track-transparent">
+        {/* Active Category */}
+        {selectedCatgory && (
+          <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-[#F7F7F7] sticky top-0 z-10">
+            <span className="text-primary-500 font-semibold text-[16px]">
+              {formatText(selectedCatgory as string)}
+            </span>
+            <span className="w-fit h-fit px-2 py-1 text-xs font-semibold text-[#808080] rounded-3xl bg-white">
+              {categoriesWithCount
+                ?.find(
+                  (item) => item.label === formatText(selectedCatgory as string)
+                )
+                ?.count.toString()
+                ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0}{" "}
+              Ads
+            </span>
+          </div>
+        )}
+
+        {/* Subcategories list */}
+        {categoriesWithCount
+          .filter(
+            (item) => item.label !== formatText(selectedCatgory as string)
+          )
+          .map((item, index) => (
+            <div
+              key={index}
+              onClick={() => {
+                const value = item.value;
+                setSelectedCatgory(value);
+                setCurrentPage(1);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                window.history.replaceState(
+                  {},
+                  "",
+                  section
+                    ? `/products?section=${section}&category=${value}`
+                    : `/products?category=${value}`
+                );
+              }}
+              className="group flex w-full items-center justify-between py-2 px-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-[#F7F7F7]"
+            >
+              <div className="flex items-center gap-x-2 w-full">
+                <span className="text-sm font-medium text-primary-300 group-hover:text-primary-500 transition-colors">
+                  {item.label}
+                </span>
+                <img src={LINE} className="h-[20px]" alt="" />
+                <span className="w-fit h-fit px-2 py-1 text-xs font-semibold text-[#808080] rounded-3xl bg-[#F7F7F7] group-hover:bg-[#E5E5E5] transition-colors">
+                  {item.count
+                    ?.toString()
+                    ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0}{" "}
+                  Ads
+                </span>
+              </div>
+            </div>
+          ))}
+      </div>
+    </div>
+
+    <div className="flex flex-col items-start gap-y-1 p-2.5 bg-white w-full rounded-xl shadow-box">
+      <span className="text-primary-300 font-semibold text-[16px]">Price</span>
+      <div className="w-full rounded-xl flex items-center gap-x-3 justify-between">
+        <div className="p-2 border border-borderColor rounded-xl flex flex-col gap-y-1 w-full">
+          <span className="text-primary-300 font-medium text-sm">Min</span>
+          <input
+            key="min_price_input"
+            type="text"
+            inputMode="decimal"
+            value={priceRange.min}
+            onChange={(val) => {
+              const numeric = val.target.value.replace(/\D/g, "");
+              const formatted = numeric.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+              setPriceRange({ ...priceRange, min: formatted });
+            }}
+            className="outline-none bg-transparent text-base w-full"
+            placeholder="0.00"
+          />
+        </div>
+        <div className="p-2 flex border border-borderColor rounded-xl flex-col gap-y-1 w-full">
+          <span className="text-primary-300 font-medium text-sm">Max</span>
+          <input
+            key="max_price_input"
+            type="text"
+            inputMode="decimal"
+            value={priceRange.max}
+            onChange={(val) => {
+              const numeric = val.target.value.replace(/\D/g, "");
+              const formatted = numeric.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+              setPriceRange({ ...priceRange, max: formatted });
+            }}
+            className="outline-none bg-transparent text-base w-full"
+            placeholder="0.00"
+          />
+        </div>
+      </div>
+    </div>
+    <Button
+      title={"Filter"}
+      handleClick={handleApplyFilters}
+      btnStyles={"w-full bg-global-green rounded-xl p-2.5"}
+      textStyle={"text-white font-medium text-[16px]"}
+    />
+    <button
+      onClick={resetFilters} // your handler function
+      className="px-3 py-2 text-primary-300 border border-borderColor text-xs font-semibold rounded-lg hover:bg-gray-100 transition-colors"
+    >
+      Clear Filters
+    </button>
+  </div>
+);
+
 function Products() {
   const [searchParams] = useSearchParams();
   const category = searchParams.get("category");
@@ -127,143 +293,6 @@ function Products() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const FilterContent = () => (
-    <div className="flex flex-col gap-y-3">
-      <LocationDropdown
-        selected={formatText(selectedLocation)}
-        setSelected={setSelectedLocation}
-        listing={statesInNigeria}
-        placeholder="Select Location"
-        type="Location"
-      />
-      <LocationDropdown
-        selected={formatText(selectedUniversity)}
-        setSelected={setSelectedUniversity}
-        listing={universitiesInNigeria}
-        placeholder="Select University"
-        type="University"
-      />
-      <div className="w-full bg-white rounded-xl">
-        {/* Header */}
-        <div className="w-full p-2.5 border-b border-[#E9EAEB] text-primary-300">
-          <span className="text-primary-300 font-semibold text-[16px]">
-            Categories
-          </span>
-        </div>
-
-        {/* Scrollable content area */}
-        <div className="p-2.5 flex flex-col gap-y-1 max-h-[350px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#E5E5E5] scrollbar-track-transparent">
-          {/* Active Category */}
-          {selectedCatgory && (
-            <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-[#F7F7F7] sticky top-0 z-10">
-              <span className="text-primary-500 font-semibold text-[16px]">
-                {formatText(selectedCatgory as string)}
-              </span>
-              <span className="w-fit h-fit px-2 py-1 text-xs font-semibold text-[#808080] rounded-3xl bg-white">
-                {categoriesWithCount
-                  ?.find(
-                    (item) =>
-                      item.label === formatText(selectedCatgory as string)
-                  )
-                  ?.count.toString()
-                  ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0}{" "}
-                Ads
-              </span>
-            </div>
-          )}
-
-          {/* Subcategories list */}
-          {categoriesWithCount
-            .filter(
-              (item) => item.label !== formatText(selectedCatgory as string)
-            )
-            .map((item, index) => (
-              <div
-                key={index}
-                onClick={() => {
-                  const value = item.value;
-                  setSelectedCatgory(value);
-                  setCurrentPage(1);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                  window.history.replaceState(
-                    {},
-                    "",
-                    section
-                      ? `/products?section=${section}&category=${value}`
-                      : `/products?category=${value}`
-                  );
-                }}
-                className="group flex w-full items-center justify-between py-2 px-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-[#F7F7F7]"
-              >
-                <div className="flex items-center gap-x-2 w-full">
-                  <span className="text-sm font-medium text-primary-300 group-hover:text-primary-500 transition-colors">
-                    {item.label}
-                  </span>
-                  <img src={LINE} className="h-[20px]" alt="" />
-                  <span className="w-fit h-fit px-2 py-1 text-xs font-semibold text-[#808080] rounded-3xl bg-[#F7F7F7] group-hover:bg-[#E5E5E5] transition-colors">
-                    {item.count
-                      ?.toString()
-                      ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0}{" "}
-                    Ads
-                  </span>
-                </div>
-              </div>
-            ))}
-        </div>
-      </div>
-
-      <div className="flex flex-col items-start gap-y-1 p-2.5 bg-white w-full rounded-xl shadow-box">
-        <span className="text-primary-300 font-semibold text-[16px]">
-          Price
-        </span>
-        <div className="w-full rounded-xl flex items-center gap-x-3 justify-between">
-          <div className="p-2 border border-borderColor rounded-xl flex flex-col gap-y-1 w-full">
-            <span className="text-primary-300 font-medium text-sm">Min</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              value={priceRange.min}
-              onChange={(val) => {
-                const numeric = val.target.value.replace(/\D/g, "");
-                const formatted = numeric.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                setPriceRange({ ...priceRange, min: formatted });
-              }}
-              className="outline-none bg-transparent text-base w-full"
-              placeholder="0.00"
-            />
-          </div>
-          <div className="p-2 flex border border-borderColor rounded-xl flex-col gap-y-1 w-full">
-            <span className="text-primary-300 font-medium text-sm">Max</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              value={priceRange.max}
-              onChange={(val) => {
-                const numeric = val.target.value.replace(/\D/g, "");
-                const formatted = numeric.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                setPriceRange({ ...priceRange, max: formatted });
-              }}
-              className="outline-none bg-transparent text-base w-full"
-              placeholder="0.00"
-            />
-          </div>
-        </div>
-      </div>
-      <Button
-        title={"Filter"}
-        handleClick={handleApplyFilters}
-        btnStyles={"w-full bg-global-green rounded-xl p-2.5"}
-        textStyle={"text-white font-medium text-[16px]"}
-      />
-      <button
-        onClick={resetFilters} // your handler function
-        className="px-3 py-2 text-primary-300 border border-borderColor text-xs font-semibold rounded-lg hover:bg-gray-100 transition-colors"
-      >
-        Clear Filters
-      </button>
-    </div>
-  );
-
   return (
     <MainLayout>
       <div className="px-4 md:px-20 py-7 bg-[#F7F7F7]">
@@ -310,7 +339,21 @@ function Products() {
         <div className="w-full flex flex-col md:flex-row items-start justify-between gap-x-3 gap-y-4 md:gap-y-0 mt-5">
           {/* Desktop Filter Sidebar */}
           <div className="hidden md:flex w-full md:w-[30%] flex-col gap-y-3">
-            <FilterContent />
+            <FilterContent
+              selectedLocation={selectedLocation}
+              setSelectedLocation={setSelectedLocation}
+              selectedUniversity={selectedUniversity}
+              setSelectedUniversity={setSelectedUniversity}
+              selectedCatgory={selectedCatgory}
+              setSelectedCatgory={setSelectedCatgory}
+              categoriesWithCount={categoriesWithCount}
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              handleApplyFilters={handleApplyFilters}
+              resetFilters={resetFilters}
+              section={section}
+              setCurrentPage={setCurrentPage}
+            />
           </div>
 
           {/* Product Grid */}
@@ -380,7 +423,21 @@ function Products() {
                   <img src={TIMES} className="w-5 h-5" alt="close" />
                 </button>
               </div>
-              <FilterContent />
+              <FilterContent
+                selectedLocation={selectedLocation}
+                setSelectedLocation={setSelectedLocation}
+                selectedUniversity={selectedUniversity}
+                setSelectedUniversity={setSelectedUniversity}
+                selectedCatgory={selectedCatgory}
+                setSelectedCatgory={setSelectedCatgory}
+                categoriesWithCount={categoriesWithCount}
+                priceRange={priceRange}
+                setPriceRange={setPriceRange}
+                handleApplyFilters={handleApplyFilters}
+                resetFilters={resetFilters}
+                section={section}
+                setCurrentPage={setCurrentPage}
+              />
             </motion.div>
           </>
         )}

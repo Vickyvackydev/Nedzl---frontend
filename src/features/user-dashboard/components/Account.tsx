@@ -30,17 +30,24 @@ function Account() {
   const user = userProfile?.data?.user;
 
   useEffect(() => {
-    if (userProfile) {
+    if (userProfile && !fields.email) {
       setFields((prev) => ({
         ...prev,
-        first_name: user?.user_name?.split(" ")?.[0],
-        last_name: user?.user_name?.split(" ")?.[1],
-        email: user?.email,
+        first_name: user?.user_name?.split(" ")?.[0] || "",
+        last_name: user?.user_name?.split(" ")?.[1] || "",
+        email: user?.email || "",
         location: user?.location || "",
-        phone_number: user?.phone_number,
+        phone_number: user?.phone_number || "",
       }));
     }
-  }, [userProfile]);
+  }, [
+    userProfile,
+    fields.email,
+    user?.user_name,
+    user?.email,
+    user?.location,
+    user?.phone_number,
+  ]);
 
   const handleUpdateProfile = async () => {
     setLoading(true);
@@ -113,6 +120,7 @@ function Account() {
       </div>
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-5 mt-5 px-4">
         <SelectInput
+          key="first_name"
           label="First Name"
           isInput
           value={fields.first_name}
@@ -120,24 +128,28 @@ function Account() {
         />
 
         <SelectInput
+          key="last_name"
           label="Last Name"
           isInput
           value={fields.last_name}
           onChange={(val) => setFields({ ...fields, last_name: val })}
         />
         <SelectInput
+          key="email"
           label="Email Address"
           isInput
           value={fields.email}
           onChange={(val) => setFields({ ...fields, email: val })}
         />
         <SelectInput
+          key="phone_number"
           label="Phone Number"
           isInput
           value={fields.phone_number}
           onChange={(val) => setFields({ ...fields, phone_number: val })}
         />
         <SelectInput
+          key="location"
           label="Location (Optional)"
           isInput
           value={fields.location}

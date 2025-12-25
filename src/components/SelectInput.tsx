@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
@@ -17,7 +17,7 @@ interface SelectInputProps {
   setValue?: (str: string) => void;
 }
 
-export default function SelectInput({
+const SelectInput = ({
   label,
   required = false,
   options = [],
@@ -26,9 +26,8 @@ export default function SelectInput({
   onChange,
   value,
   setValue,
-}: SelectInputProps) {
+}: SelectInputProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  // const [value, setValue] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Handle click outside
@@ -129,4 +128,6 @@ export default function SelectInput({
       )}
     </div>
   );
-}
+};
+
+export default memo(SelectInput);

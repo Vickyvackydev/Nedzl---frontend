@@ -48,43 +48,37 @@ const SideBarMenus = [
     title: "My Account",
     active_icon: SINGLE_USER_WHITE,
     inactive_icon: SINGLE_USER_BLACK,
-    component: <Account />,
+    Component: Account,
   },
   {
     title: "My Products",
     active_icon: ADS_WHITE,
     inactive_icon: ADS_BLACK,
-    component: <Products />,
+    Component: Products,
   },
   {
     title: "Store Settings",
     active_icon: STORE_SETTINGS_WHITE,
     inactive_icon: STORE_SETTINGS_BLACK,
-    component: <StoreSettings />,
+    Component: StoreSettings,
   },
-  // {
-  //   title: "Inbox",
-  //   active_icon: INBOX_WHITE,
-  //   inactive_icon: INBOX_BLACK,
-  //   component: <InBox />,
-  // },
   {
     title: "Customer Reviews",
     active_icon: REVIEW_WHITE,
     inactive_icon: REVIEW_BLACK,
-    component: <CustomerReview />,
+    Component: CustomerReview,
   },
   {
     title: "My Reviews",
     active_icon: REVIEWS_WHITE,
     inactive_icon: REVIEWS_BLACK,
-    component: <MyReview />,
+    Component: MyReview,
   },
   {
     title: "Settings",
     active_icon: SETTINGS_WHITE,
     inactive_icon: SETTINGS_BLACK,
-    component: <Settings />,
+    Component: Settings,
   },
 ];
 import { useSidebar } from "../../context/SidebarContext";
@@ -104,7 +98,19 @@ function UserDashboard() {
     dispatch(setProductFields(false));
   }, []);
 
-  const SidebarContent = () => (
+  const SidebarContent = ({
+    activeTab,
+    setActiveTab,
+    closeSidebar,
+    dispatch,
+    navigate,
+  }: {
+    activeTab: TabTypes;
+    setActiveTab: (tab: TabTypes) => void;
+    closeSidebar: () => void;
+    dispatch: any;
+    navigate: any;
+  }) => (
     <>
       {SideBarMenus.map((item) => (
         <div
@@ -166,12 +172,24 @@ function UserDashboard() {
             isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           )}
         >
-          <SidebarContent />
+          <SidebarContent
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            closeSidebar={closeSidebar}
+            dispatch={dispatch}
+            navigate={navigate}
+          />
         </div>
 
         {/* Desktop Sidebar */}
         <div className="hidden md:flex w-full md:w-[25%] bg-white rounded-xl flex-col p-4 items-start gap-y-3">
-          <SidebarContent />
+          <SidebarContent
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            closeSidebar={closeSidebar}
+            dispatch={dispatch}
+            navigate={navigate}
+          />
         </div>
         <div className="w-full md:w-[75%] bg-white rounded-xl">
           <div className="w-full p-4 border-b border-[#E9EAEB]">
@@ -220,12 +238,13 @@ function UserDashboard() {
             )}
           </div>
           <div className="w-full">
-            {
-              SideBarMenus.find(
+            {(() => {
+              const Tab = SideBarMenus.find(
                 (item) =>
                   item.title.split(" ").join("_").toLowerCase() === activeTab
-              )?.component
-            }
+              )?.Component;
+              return Tab ? <Tab /> : null;
+            })()}
           </div>
         </div>
       </div>
