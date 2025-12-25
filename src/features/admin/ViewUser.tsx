@@ -13,6 +13,7 @@ import {
   TOTAL_PRODUCTS,
   TOTAL_SOLD_PRODUCTS,
   TRASH,
+  REVIEW_AVATAR,
 } from "../../assets";
 // import { PercentageChange } from "../../components/chart";
 import {
@@ -25,7 +26,7 @@ import { useQuery } from "@tanstack/react-query";
 import useDropdown from "../../hooks/useDropdown";
 import FilterBox from "../../components/FilterBox";
 import TableComponent from "../../components/TableComponent";
-import { AdminUserDetails, Filter } from "../../types";
+import { AdminUserDetails, Filter, ReviewResponseType } from "../../types";
 import { Loader2, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { ProductsColumn } from "../../components/columns/ProductColumns";
@@ -46,6 +47,8 @@ import {
   setProductImages,
 } from "../../state/slices/globalReducer";
 import { updateProductStatus } from "../../services/product.service";
+import { getPublicReviews } from "../../services/reviews.service";
+import { formatTimeElapsed } from "../../utils";
 
 const productsStatus = ["All Listed Products", "Sold Products", "Under Review"];
 function ViewUser() {
@@ -129,6 +132,16 @@ function ViewUser() {
         search: search,
         filters: appliedFilters,
       }),
+  });
+
+  const {
+    data: publicReviews,
+    isLoading: reviewLoading,
+    // refetch: refetchReview,
+  } = useQuery({
+    queryKey: ["public-review", productDetails?.id],
+    queryFn: () => getPublicReviews(productDetails?.id as string),
+    enabled: !!productDetails?.id && productAction === "VIEW_REVIEWS",
   });
 
   // const filterproducts = products?.data?.filter((item: UserResponse) =>
@@ -777,7 +790,8 @@ function ViewUser() {
           show={
             productDetails !== null &&
             productAction !== "DELETE" &&
-            productAction !== "CLOSE"
+            productAction !== "CLOSE" &&
+            productAction !== "VIEW_REVIEWS"
           }
           onClose={() => dispatch(setProductDetails(null))}
         >
@@ -1041,6 +1055,102 @@ function ViewUser() {
                 handleClick={handleDeleteUser}
                 loading={loading}
               />
+            </div>
+          </div>
+        </Modal>
+        <Modal
+          show={productAction === "VIEW_REVIEWS"}
+          onClose={() => {
+            dispatch(setProductAction(null));
+            dispatch(setProductDetails(null));
+          }}
+        >
+          <div className="bg-white rounded-xl w-full max-w-[550px] geist-family max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 sticky top-0 bg-white z-10">
+              <h2 className="text-lg font-semibold text-primary-300">
+                Feedbacks -{" "}
+                <span className="text-emerald-500">
+                  {productDetails?.product_name}
+                </span>
+              </h2>
+              <button
+                onClick={() => {
+                  dispatch(setProductAction(null));
+                  dispatch(setProductDetails(null));
+                }}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            {reviewLoading ? (
+              <div className="w-full flex h-[200px] items-center justify-center">
+                <Loader2 color="#07b463" size={40} className="animate-spin" />
+              </div>
+            ) : (
+              <div className="max-h-[400px] overflow-auto w-full px-6 py-4 flex flex-col gap-y-3 font-geist">
+                {publicReviews?.data?.length > 0 ? (
+                  publicReviews?.data?.map((review: ReviewResponseType) => (
+                    <div
+                      key={review.id}
+                      className="w-full flex flex-col gap-y-3 border border-borderColor rounded-xl p-3"
+                    >
+                      <div className="w-full flex items-center justify-between">
+                        <div className="flex items-center gap-x-2">
+                          <img
+                            src={REVIEW_AVATAR}
+                            className="w-[32px] h-[32px]"
+                            alt=""
+                          />
+                          <span className="text-global-green font-semibold text-[16px]">
+                            {review.customer_name}
+                          </span>
+                        </div>
+                        <span className="text-[#656F7D] font-medium text-xs">
+                          {formatTimeElapsed(review?.created_at)}
+                        </span>
+                      </div>
+                      <span className="text-[#2A2E34] font-semibold text-[16px]">
+                        {review?.review_title}
+                      </span>
+                      <span className="text-sm font-medium text-primary-300">
+                        {review?.review}
+                      </span>
+                      {review?.images && review?.images?.length > 0 && (
+                        <div className="flex items-center gap-x-2 max-w-full overflow-scroll pb-2 custom-scrollbar">
+                          {review?.images?.map((image: string, idx: number) => (
+                            <img
+                              key={idx}
+                              src={image}
+                              className="min-w-[100px] h-[100px] rounded-lg object-cover"
+                              alt=""
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="w-full flex flex-col items-center justify-center py-10">
+                    <span className="text-gray-500 text-sm">
+                      No reviews yet for this product.
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 bg-white shadow-box">
+              <button
+                onClick={() => {
+                  dispatch(setProductAction(null));
+                  dispatch(setProductDetails(null));
+                }}
+                className="px-5 py-2 text-white bg-global-green rounded-xl font-medium hover:bg-emerald-600 transition-colors"
+              >
+                Close
+              </button>
             </div>
           </div>
         </Modal>

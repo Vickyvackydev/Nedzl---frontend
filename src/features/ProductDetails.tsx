@@ -34,7 +34,7 @@ import {
   getMembershipDuration,
 } from "../utils";
 import toast from "react-hot-toast";
-import { Copy, X } from "lucide-react";
+import { Copy, Loader2, X } from "lucide-react";
 import clsx from "clsx";
 import Modal from "../components/Modal";
 import SelectInput from "../components/SelectInput";
@@ -553,45 +553,61 @@ function ProductDetails() {
                 </button>
               </div>
               {reviewLoading ? (
-                <LoadingState />
+                <div className="w-full flex h-[200px] items-center justify-center">
+                  <Loader2 color="#07b463" size={40} className="animate-spin" />
+                </div>
               ) : (
-                <div className="max-h-[400px] overflow-auto w-full px-6 py-4 flex flex-col gap-y-3">
-                  {publicReviews?.data?.map((review: ReviewResponseType) => (
-                    <div className="w-full flex flex-col gap-y-3 border border-borderColor rounded-xl p-3">
-                      <div className="w-full flex items-center justify-between">
-                        <div className="flex items-center gap-x-2">
-                          <img
-                            src={REVIEW_AVATAR}
-                            className="w-[32px] h-[32px]"
-                            alt=""
-                          />
-                          <span className="text-global-green font-semibold text-[16px]">
-                            {review.customer_name}
-                          </span>
-                        </div>
-                        <span className="text-[#656F7D] font-medium text-xs">
-                          {formatTimeElapsed(review?.created_at)}
-                        </span>
-                      </div>
-                      <span className="text-[#2A2E34] font-semibold text-[16px]">
-                        {review?.review_title}
-                      </span>
-                      <span className="text-sm font-medium text-primary-300">
-                        {review?.review}
-                      </span>
-                      {review?.images && review?.images?.length > 0 && (
-                        <div className="flex items-center gap-x-2 max-w-full overflow-scroll">
-                          {review?.images?.map((image: string) => (
+                <div className="max-h-[400px] overflow-auto w-full px-6 py-4 flex flex-col gap-y-3 font-geist">
+                  {publicReviews?.data?.length > 0 ? (
+                    publicReviews?.data?.map((review: ReviewResponseType) => (
+                      <div
+                        key={review.id}
+                        className="w-full flex flex-col gap-y-3 border border-borderColor rounded-xl p-3"
+                      >
+                        <div className="w-full flex items-center justify-between">
+                          <div className="flex items-center gap-x-2">
                             <img
-                              src={image}
-                              className="min-w-[100px] h-[100px] rounded-lg object-cover"
+                              src={REVIEW_AVATAR}
+                              className="w-[32px] h-[32px]"
                               alt=""
                             />
-                          ))}
+                            <span className="text-global-green font-semibold text-[16px]">
+                              {review.customer_name}
+                            </span>
+                          </div>
+                          <span className="text-[#656F7D] font-medium text-xs">
+                            {formatTimeElapsed(review?.created_at)}
+                          </span>
                         </div>
-                      )}
+                        <span className="text-[#2A2E34] font-semibold text-[16px]">
+                          {review?.review_title}
+                        </span>
+                        <span className="text-sm font-medium text-primary-300">
+                          {review?.review}
+                        </span>
+                        {review?.images && review?.images?.length > 0 && (
+                          <div className="flex items-center gap-x-2 max-w-full overflow-scroll pb-2 custom-scrollbar">
+                            {review?.images?.map(
+                              (image: string, idx: number) => (
+                                <img
+                                  key={idx}
+                                  src={image}
+                                  className="min-w-[100px] h-[100px] rounded-lg object-cover"
+                                  alt=""
+                                />
+                              )
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="w-full flex flex-col items-center justify-center py-10">
+                      <span className="text-gray-500 text-sm">
+                        No reviews yet for this product.
+                      </span>
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
 

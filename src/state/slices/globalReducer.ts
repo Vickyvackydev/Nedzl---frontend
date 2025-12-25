@@ -15,7 +15,7 @@ interface GlobalTypes {
     | "VERIFY"
     | null;
   productDetails: ProductResponse | null;
-  productAction: "CLOSE" | "OPEN" | "DELETE" | null;
+  productAction: "CLOSE" | "OPEN" | "DELETE" | "VIEW_REVIEWS" | null;
   productImages: string[];
 }
 const initialState: GlobalTypes = {
@@ -52,7 +52,7 @@ export const GlobalSlice = createSlice({
     },
     setProductAction: (
       state,
-      action: PayloadAction<"CLOSE" | "OPEN" | "DELETE" | null>
+      action: PayloadAction<"CLOSE" | "OPEN" | "DELETE" | "VIEW_REVIEWS" | null>
     ) => {
       state.productAction = action.payload;
     },

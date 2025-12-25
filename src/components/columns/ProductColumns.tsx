@@ -1,8 +1,9 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
 // import { useNavigate } from "react-router-dom";
-import { EYE, OPTIONS_VERTICAL, TAG, TRASH } from "../../assets";
+import { EYE, OPTIONS_VERTICAL, REVIEWS_BLACK, TAG, TRASH } from "../../assets";
 import { motion, AnimatePresence } from "framer-motion";
 import moment from "moment";
 import clsx from "clsx";
@@ -47,6 +48,8 @@ const ActionButton = ({ row }: { row: { row: { original: any } } }) => {
   const optionRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dispatch = useDispatch();
+  const location = useLocation();
+  const isViewUserScreen = location.pathname.startsWith("/admin/users/");
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -142,6 +145,23 @@ const ActionButton = ({ row }: { row: { row: { original: any } } }) => {
               >
                 <img src={TAG} alt="eye" className="w-[20px] h-[20px]" />
                 Re-Open Product
+              </button>
+            )}
+
+            {isViewUserScreen && (
+              <button
+                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-[#00AD200D] gap-2"
+                onClick={() => {
+                  dispatch(setProductAction("VIEW_REVIEWS"));
+                  dispatch(setProductDetails(row.row.original));
+                }}
+              >
+                <img
+                  src={REVIEWS_BLACK}
+                  alt="reviews"
+                  className="w-[20px] h-[20px]"
+                />
+                View Reviews
               </button>
             )}
 
