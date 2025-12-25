@@ -485,14 +485,7 @@ function Overview() {
                 {/* Next Button */}
                 <button
                   type="button"
-                  onClick={() =>
-                    setCurrentPage(() =>
-                      Math.min(
-                        products?.data?.meta?.totalPages,
-                        products?.meta?.page + 1
-                      )
-                    )
-                  }
+                  onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={
                     products?.data?.meta?.page ===
                     products?.data?.meta?.totalPages

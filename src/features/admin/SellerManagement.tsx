@@ -474,7 +474,7 @@ function SellerManagement() {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`flex items-center justify-center min-w-[40px] h-[40px] rounded-xl border text-[13px] transition-all duration-300 ${
+                      className={`flex items-center justify-center min-w-[40px] h-[40px] rounded-xl border border-gray-300 text-[13px] transition-all duration-300 ${
                         users?.data?.meta?.page === pageNum
                           ? "bg-green-600 text-white border-green-600"
                           : "text-[#2A2E34] hover:bg-green-600 hover:text-white"
@@ -488,14 +488,7 @@ function SellerManagement() {
                 {/* Next Button */}
                 <button
                   type="button"
-                  onClick={() =>
-                    setCurrentPage(() =>
-                      Math.min(
-                        users?.data?.meta?.totalPages,
-                        users?.meta?.page + 1
-                      )
-                    )
-                  }
+                  onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={
                     users?.data?.meta?.page === users?.data?.meta?.totalPages
                   }

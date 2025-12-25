@@ -527,7 +527,7 @@ function ProductManagement() {
                     sorting={sorting}
                   />
                 </div>
-              ) : isLoading ? (
+              ) : isLoadingproducts ? (
                 <div className="w-full flex h-[50vh] items-center justify-center">
                   <Loader2 color="#07b463" size={50} className="animate-spin" />
                 </div>
@@ -605,14 +605,7 @@ function ProductManagement() {
                     {/* Next Button */}
                     <button
                       type="button"
-                      onClick={() =>
-                        setCurrentPage(() =>
-                          Math.min(
-                            products?.data?.meta?.totalPages,
-                            products?.meta?.page + 1
-                          )
-                        )
-                      }
+                      onClick={() => setCurrentPage(currentPage + 1)}
                       disabled={
                         products?.data?.meta?.page ===
                         products?.data?.meta?.totalPages
@@ -939,7 +932,18 @@ function ProductManagement() {
             </div>
           </div>
         )}
-        <div className="flex items-end justify-end mt-5">
+        {tab === "featured" && (
+          <div className="flex items-end justify-end mt-5">
+            <button
+              onClick={handleDeleteAllFeaturedProduct}
+              disabled={deleting}
+              className="px-5 py-2 text-white bg-red-500 rounded-xl  font-medium hover:bg-red-600 flex items-end self-end transition-colors"
+            >
+              {deleting ? "Deleting..." : "Reset"}
+            </button>
+          </div>
+        )}
+        {/* <div className="flex items-end justify-end mt-5">
           <button
             onClick={handleDeleteAllFeaturedProduct}
             disabled={deleting}
@@ -947,7 +951,7 @@ function ProductManagement() {
           >
             {deleting ? "Deleting..." : "Reset"}
           </button>
-        </div>
+        </div> */}
       </div>
       <Modal
         show={
