@@ -331,7 +331,15 @@ function ProductDetails() {
                         {productDetails?.product.views}
                       </span>
                     </div>
-                    <div className="w-fit h-fit bg-[#07B4631A]  rounded-lg p-1.5 text-xs font-medium text-global-green">
+
+                    <div
+                      className={clsx(
+                        "w-fit h-fit rounded-lg p-1 md:p-1.5 text-[10px] md:text-xs font-medium",
+                        productDetails?.product.condition === "brand-new"
+                          ? "text-global-green bg-[#07B4631A]"
+                          : "bg-[#B491071A] text-[#B49107]"
+                      )}
+                    >
                       {productDetails?.product.condition
                         ?.replace(/-/g, " ")
                         .toUpperCase()}

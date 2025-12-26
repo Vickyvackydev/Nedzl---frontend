@@ -19,6 +19,7 @@ import {
   statesInNigeria,
   universitiesInNigeria,
 } from "../../../constant";
+import imageCompression from "browser-image-compression";
 
 import { FiEdit2, FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
@@ -132,9 +133,7 @@ function Products() {
     }
 
     if (validFiles.length > availableSlots) {
-      toast.error(
-        `Maximum of ${maxImages} images is allowed. Only ${availableSlots} more image(s) can be added.`
-      );
+      toast.error(`Maximum of ${maxImages} images is allowed.`);
     }
 
     const filesToAdd = validFiles.slice(0, availableSlots);
@@ -243,8 +242,24 @@ function Products() {
       toast.error("Please add at least 2 photos");
       return;
     }
+    const maxFiles = 5;
+
+    if (images.length > maxFiles) {
+      toast.error(`You can upload a maximum of ${maxFiles} images`);
+      setIsCreatingProduct(false);
+      return;
+    }
 
     setIsCreatingProduct(true);
+    const allowedTypes = ["image/jpeg", "image/png"];
+
+    for (const file of images) {
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Only JPEG and PNG images are allowed");
+        setIsCreatingProduct(false);
+        return;
+      }
+    }
 
     const formData = new FormData();
     formData.append("product_name", formFields.product_name);
@@ -278,10 +293,26 @@ function Products() {
     if (editingProduct) {
       //  send existing URLs + new images
       formData.append("image_urls", JSON.stringify(existingImageUrls));
-      images.forEach((image) => formData.append("new_images", image));
+      for (const image of images) {
+        const compressedImage = await imageCompression(image, {
+          maxSizeMB: 1, // <= 1MB
+          maxWidthOrHeight: 1280, // good mobile resolution
+          useWebWorker: true,
+        });
+
+        formData.append("new_images", compressedImage);
+      }
     } else {
       //  only new image uploads
-      images.forEach((image) => formData.append("new_images", image));
+      for (const image of images) {
+        const compressedImage = await imageCompression(image, {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1280,
+          useWebWorker: true,
+        });
+
+        formData.append("new_images", compressedImage);
+      }
     }
 
     try {
@@ -303,7 +334,9 @@ function Products() {
         refetch();
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.error);
+      toast.error(
+        error?.response?.data?.error || "An error occured! Please try again"
+      );
     } finally {
       setIsCreatingProduct(false);
     }
