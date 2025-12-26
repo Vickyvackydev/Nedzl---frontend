@@ -56,7 +56,7 @@ function ViewUser() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const productDetails = useSelector(selectProduct);
-  const [currentImage, setCurrentImage] = useState<number | null>(null);
+  const [currentImage, setCurrentImage] = useState<number | null>(0);
   const productAction = useSelector(selectProductAction);
   const location = useLocation();
   const userId = location.pathname.split("/").pop();
@@ -737,7 +737,7 @@ function ViewUser() {
           show={productImages?.length > 0 || false}
           onClose={() => dispatch(setProductImages([]))}
         >
-          <div className="relative w-full md:w-[70%] flex flex-col gap-y-5">
+          <div className="relative w-full max-w-[500px] flex flex-col gap-y-5">
             {/* Close Button */}
             <button
               onClick={() => dispatch(setProductImages([]))}
@@ -747,39 +747,29 @@ function ViewUser() {
             </button>
 
             {/* Main Image */}
-            <div className="w-full bg-white shadow-box rounded-xl p-5">
+            <div className="w-full bg-white shadow-box rounded-xl p-5 flex flex-col gap-y-3">
               <div className="w-full">
                 <img
                   src={productImages?.[currentImage as number]}
-                  className="w-full h-[400px] md:h-[450px] rounded-xl object-contain bg-gray-50"
+                  className="w-full h-[300px] rounded-xl object-cover bg-gray-50"
                   alt=""
                 />
               </div>
 
               {/* Thumbnails */}
-              <div className="w-full mt-4 flex items-center gap-x-3 overflow-x-auto pb-2">
+              <div className="max-w-full overflow-x-scroll flex items-center gap-x-2 pb-2">
                 {productImages?.map((img: string, i: number) => {
                   const isActive = i === currentImage;
                   return (
-                    <div
+                    <img
                       key={i}
-                      className={`
-                        flex-shrink-0 cursor-pointer rounded-xl overflow-hidden
-                        border-2 transition-all duration-200
-                        ${
-                          isActive
-                            ? "border-primary-300 scale-105"
-                            : "border-transparent"
-                        }
-                      `}
+                      src={img}
                       onClick={() => setCurrentImage(i)}
-                    >
-                      <img
-                        src={img}
-                        className="w-[90px] h-[80px] md:w-[110px] md:h-[100px] object-cover"
-                        alt=""
-                      />
-                    </div>
+                      className={`w-[80px] h-[79px] rounded-xl object-cover cursor-pointer transition-all duration-200 ${
+                        isActive ? "border-2 border-primary-300" : ""
+                      }`}
+                      alt=""
+                    />
                   );
                 })}
               </div>
