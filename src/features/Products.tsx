@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import MainLayout from "../layout/MainLayout";
+import SEO from "../components/SEO";
 import { Link, useSearchParams } from "react-router-dom";
 import { DOUBLE_DIRECT, LINE, FILTER__, TIMES } from "../assets";
 import {
@@ -295,6 +296,20 @@ function Products() {
 
   return (
     <MainLayout>
+      <SEO
+        title={
+          keyword
+            ? `Search results for "${keyword}"`
+            : selectedCatgory
+            ? formatText(selectedCatgory)
+            : section
+            ? formatText(section)
+            : "Products"
+        }
+        description={`Browse ${
+          selectedCatgory ? formatText(selectedCatgory) : "items"
+        } on Nedzl.com. Find used items easily within your campus community in Nigeria.`}
+      />
       <div className="px-4 md:px-20 py-7 bg-[#F7F7F7]">
         <div className="w-full flex items-center justify-between gap-x-3">
           <div className="flex items-center gap-x-3">

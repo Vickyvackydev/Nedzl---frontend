@@ -10,6 +10,7 @@ import {
 } from "../services/product.service";
 import { categories } from "../constant";
 import CategoriesOverlay from "../components/CategoriesOverlay";
+import SEO from "../components/SEO";
 
 const SkeletonCard = () => (
   <div className="w-full flex flex-col gap-y-2 animate-pulse">
@@ -88,6 +89,11 @@ function Home() {
 
   return (
     <MainLayout>
+      <SEO
+        title="Home"
+        description="Welcome to Nedzl.com – the trusted student-focused e-commerce platform built to connect university students across Nigeria. Buy and sell used items on campus easily."
+        keywords="student marketplace, Nigeria university marketplace, buy used phones campus, sell hostel furniture"
+      />
       <div className="font-open-sans">
         <div className="bg-global-green px-4 md:px-20 py-4 w-full flex flex-row items-center justify-between gap-y-4 md:gap-y-0">
           <CategoriesOverlay />

@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import MainLayout from "../layout/MainLayout";
+import SEO from "../components/SEO";
 import {
   HEART,
   OUTLINE_EYE,
@@ -212,6 +213,38 @@ function ProductDetails() {
 
   return (
     <MainLayout>
+      <SEO
+        title={productDetails?.product.product_name}
+        description={productDetails?.product.description
+          ?.replace(/<[^>]*>/g, "")
+          .slice(0, 160)}
+        ogImage={productDetails?.product.image_urls[0]}
+        structuredData={{
+          "@context": "https://schema.org/",
+          "@type": "Product",
+          name: productDetails?.product.product_name,
+          image: productDetails?.product.image_urls,
+          description: productDetails?.product.description?.replace(
+            /<[^>]*>/g,
+            ""
+          ),
+          brand: {
+            "@type": "Brand",
+            name: productDetails?.product.brand_name || "Nedzl",
+          },
+          offers: {
+            "@type": "Offer",
+            url: window.location.href,
+            priceCurrency: "NGN",
+            price: productDetails?.product.product_price,
+            availability: "https://schema.org/InStock",
+            itemCondition:
+              productDetails?.product.condition === "brand-new"
+                ? "https://schema.org/NewCondition"
+                : "https://schema.org/UsedCondition",
+          },
+        }}
+      />
       {isLoadingProductDetails ? (
         <LoadingState />
       ) : (
