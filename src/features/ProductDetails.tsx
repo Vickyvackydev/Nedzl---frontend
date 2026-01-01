@@ -15,7 +15,7 @@ import {
   VERIFIED,
 } from "../assets";
 import Button from "../components/Button";
-import ProductRow from "../ui/product-row";
+import ProductRow from "../components/product-row";
 import { useQuery } from "@tanstack/react-query";
 import {
   getAllProducts,

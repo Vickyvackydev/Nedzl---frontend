@@ -21,6 +21,10 @@ import EmailVerifiedSuccess from "./features/auth/EmailVerificaionSuccess";
 import EmailVerificationLoading from "./features/auth/VerifyEmail";
 import NotFound from "./features/NotFound";
 import { SidebarProvider } from "./context/SidebarContext";
+import PrivacyPolicy from "./features/PrivacyPolicy";
+import TermsOfService from "./features/TermsOfService";
+import Contact from "./features/Contact";
+import FAQs from "./features/FAQs";
 
 function App() {
   const location = useLocation();
@@ -45,6 +49,10 @@ function App() {
         <Route path="/products" element={<Products />} />
 
         <Route path="/search" element={<SearchResults />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/faqs" element={<FAQs />} />
 
         <Route
           path="/dashboard"

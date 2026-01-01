@@ -111,3 +111,6 @@ export { default as REVIEW_AVATAR } from "../assets/images/review-avatar.svg";
 export { default as RED_BTN } from "../assets/images/red-btn.svg";
 export { default as NO_CHAT } from "../assets/images/no-chat.svg";
 export { default as BAR } from "../assets/icons/bar.svg";
+export { default as PHONE_CONTACT } from "../assets/icons/phone-contact.svg";
+export { default as SVG_LOCATION } from "../assets/icons/svg-location.svg";
+export { default as SVG_CONTACT } from "../assets/icons/svg-location.svg";

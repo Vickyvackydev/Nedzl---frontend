@@ -1,7 +1,7 @@
 // import React from "react";
 import { motion } from "framer-motion";
 
-import ProductCard from "../components/ProductCard";
+import ProductCard from "./ProductCard";
 import { EMPTY_CART, GRAY_PLAY } from "../assets";
 import { ProductType } from "../types";
 

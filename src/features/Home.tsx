@@ -1,16 +1,15 @@
 import { useRef, useEffect } from "react";
 import MainLayout from "../layout/MainLayout";
-// import { LEXUS } from "../assets";
-import { Link, useNavigate } from "react-router-dom";
-import ProductRow from "../ui/product-row";
+import { useNavigate } from "react-router-dom";
+import ProductRow from "../components/product-row";
 import { useQuery } from "@tanstack/react-query";
 import {
   getAllProducts,
   getFeaturedProducts,
 } from "../services/product.service";
-import { categories } from "../constant";
-import CategoriesOverlay from "../components/CategoriesOverlay";
+
 import SEO from "../components/SEO";
+import CategoryBar from "../components/CategoryBar";
 
 const SkeletonCard = () => (
   <div className="w-full flex flex-col gap-y-2 animate-pulse">
@@ -95,20 +94,7 @@ function Home() {
         keywords="student marketplace, Nigeria university marketplace, buy used phones campus, sell hostel furniture"
       />
       <div className="font-open-sans">
-        <div className="bg-global-green px-4 md:px-20 py-4 w-full flex flex-row items-center justify-between gap-y-4 md:gap-y-0">
-          <CategoriesOverlay />
-          <div className="flex items-center gap-2 overflow-x-auto w-full md:contents no-scrollbar">
-            {categories.slice(0, 6).map((li) => (
-              <Link
-                key={li.value}
-                to={`/products?category=${li.value}`}
-                className="w-fit p-3 text-white text-sm font-medium whitespace-nowrap"
-              >
-                {li.label}
-              </Link>
-            ))}
-          </div>
-        </div>
+        <CategoryBar />
         {isFeaturedProductNotComplete && (
           <div className="w-full px-4 md:px-20 mb-10 flex flex-col md:flex-row items-start justify-between gap-3 mt-5">
             {/* LEFT TWO BOXES */}

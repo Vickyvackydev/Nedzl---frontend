@@ -163,15 +163,15 @@ export const footer = [
       },
       {
         title: "Contact us",
-        link: "",
+        link: "/contact",
       },
       {
         title: "Privacy policy",
-        link: "",
+        link: "/privacy-policy",
       },
       {
         title: "Terms Of Use",
-        link: "",
+        link: "/terms-of-service",
       },
     ],
   },
@@ -201,7 +201,7 @@ export const footer = [
     links: [
       {
         title: "FAQs",
-        link: "",
+        link: "/faqs",
       },
       {
         title: "Hep Center",
@@ -209,7 +209,7 @@ export const footer = [
       },
       {
         title: "Contact Us",
-        link: "",
+        link: "/contact",
       },
     ],
   },

@@ -17,7 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ProductResponse } from "../types";
 import ProductCard from "../components/ProductCard";
 import { formatText } from "../utils";
-import { SkeletonCard } from "../ui/product-row";
+import { SkeletonCard } from "../components/product-row";
 import { motion, AnimatePresence } from "framer-motion";
 // import clsx from "clsx";
 import { LocationDropdown } from "../components/LocationDropdown";
@@ -87,9 +87,7 @@ const FilterContent = ({
             </span>
             <span className="w-fit h-fit px-2 py-1 text-xs font-semibold text-[#808080] rounded-3xl bg-white">
               {categoriesWithCount
-                ?.find(
-                  (item) => item.label === formatText(selectedCatgory as string)
-                )
+                ?.find((item) => item.value === selectedCatgory)
                 ?.count.toString()
                 ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0}{" "}
               Ads
@@ -99,9 +97,7 @@ const FilterContent = ({
 
         {/* Subcategories list */}
         {categoriesWithCount
-          .filter(
-            (item) => item.label !== formatText(selectedCatgory as string)
-          )
+          .filter((item) => item.value !== selectedCatgory)
           .map((item, index) => (
             <div
               key={index}
@@ -267,6 +263,8 @@ function Products() {
     });
   }, [categories, categorizedProductCount]);
 
+  console.log("categories with count", categoriesWithCount);
+
   const handleApplyFilters = () => {
     const filters = {
       state: selectedLocation,
@@ -293,6 +291,8 @@ function Products() {
     setIsFilterOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // console.log("selected category", selectedCatgory);
 
   return (
     <MainLayout>
@@ -324,10 +324,7 @@ function Products() {
               {selectedCatgory && (
                 <span className="text-[#808080]">
                   {categoriesWithCount
-                    ?.find(
-                      (item) =>
-                        item.label === formatText(selectedCatgory as string)
-                    )
+                    ?.find((item) => item.value === selectedCatgory)
                     ?.count.toString()
                     ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0}{" "}
                   Ads

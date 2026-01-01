@@ -12,7 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ProductResponse } from "../types";
 import ProductCard from "../components/ProductCard";
 import { formatText } from "../utils";
-import { SkeletonCard } from "../ui/product-row";
+import { SkeletonCard } from "../components/product-row";
 import { motion } from "framer-motion";
 
 function SearchResults() {
