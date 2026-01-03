@@ -204,7 +204,7 @@ export const footer = [
         link: "/faqs",
       },
       {
-        title: "Hep Center",
+        title: "Help Center",
         link: "",
       },
       {

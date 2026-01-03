@@ -361,11 +361,11 @@ function PrivacyPolicy() {
                   href="mailto:support@nedzl.com"
                   className="text-[#27D019] hover:underline"
                 >
-                  support@nedzl.com
+                  Nedzlworld@gmail.com
                 </a>
               </p>
               <p className="text-[16px] leading-[1.7] text-[#555555]">
-                Phone Number: +1 123-456-7890
+                Phone Number: +234 816 836 6347
               </p>
             </div>
           </section>
