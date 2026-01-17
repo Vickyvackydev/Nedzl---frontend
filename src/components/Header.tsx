@@ -1,7 +1,7 @@
 // import React from "react";
 import { BAR, HELP, NEDZL_LOGO_GREEN, NIGERIA_FLAG } from "../assets";
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import AccountDropdown from "./AccountDropdown";
 import SearchBar from "./SearchBar";
 // import { useMediaQuery } from "../hooks";
@@ -14,6 +14,7 @@ function Header() {
   // const mobile = useMediaQuery("(max-width: 640px)");
   const { toggleSidebar } = useSidebar();
   const location = useLocation();
+  const navigate = useNavigate();
   const {
     data: userProfile,
     // isLoading,
@@ -37,6 +38,13 @@ function Header() {
           </Link>
         </div>
         <div className="lg:hidden flex items-center gap-x-2">
+          <AccountDropdown user={user} />
+          <button
+            onClick={() => navigate("/faqs")}
+            className="h-[40px] w-[40px] rounded-lg bg-[#F7F7F7] flex items-center justify-center"
+          >
+            <img src={HELP} alt="" />
+          </button>
           {location.pathname === "/dashboard" && (
             <button
               onClick={toggleSidebar}
@@ -45,10 +53,6 @@ function Header() {
               <img src={BAR} alt="" />
             </button>
           )}
-          <AccountDropdown user={user} />
-          <button className="h-[40px] w-[40px] rounded-lg bg-[#F7F7F7] flex items-center justify-center">
-            <img src={HELP} alt="" />
-          </button>
         </div>
       </div>
       <div className="flex items-center gap-x-2 w-full md:w-auto justify-center">
