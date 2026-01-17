@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import {
-  DISCORD,
   FACEBOOK,
   // FEND_FOOTER_LOGO,
   INSTAGRAM,
   NEDZL_LOGO_GREEN,
+  TIKTOK,
   TWITTER,
 } from "../assets";
 import { footer } from "../constant";
@@ -81,13 +81,29 @@ function Footer() {
               Join us on
             </span>
             <div className="flex items-center lg:gap-x-7 gap-x-4">
-              {[FACEBOOK, INSTAGRAM, TWITTER, DISCORD].map((img, index) => (
-                <img
-                  key={index}
-                  src={img}
-                  className="w-[24px] h-[24px]"
-                  alt=""
-                />
+              {[
+                {
+                  icon: FACEBOOK,
+                  link: "https://www.facebook.com/profile.php?id=61585694382803",
+                },
+                {
+                  icon: INSTAGRAM,
+                  link: "https://www.instagram.com/nedzlworld?igsh=azdqN2FiczNjbGFt",
+                },
+                { icon: TWITTER, link: "" },
+                {
+                  icon: TIKTOK,
+                  link: "https://www.tiktok.com/@nedzl_?_r=1&_t=ZS-939GyJuQQ5a",
+                },
+              ].map((item, index) => (
+                <Link to={item.link}>
+                  <img
+                    key={index}
+                    src={item.icon}
+                    className="w-[24px] h-[24px]"
+                    alt=""
+                  />
+                </Link>
               ))}
             </div>
           </div>

@@ -365,7 +365,7 @@ function PrivacyPolicy() {
                 </a>
               </p>
               <p className="text-[16px] leading-[1.7] text-[#555555]">
-                Phone Number: +234 816 836 6347
+                Phone Number: +234 704 924 0913
               </p>
             </div>
           </section>
