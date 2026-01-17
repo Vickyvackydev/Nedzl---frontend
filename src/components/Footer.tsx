@@ -96,7 +96,7 @@ function Footer() {
                   link: "https://www.tiktok.com/@nedzl_?_r=1&_t=ZS-939GyJuQQ5a",
                 },
               ].map((item, index) => (
-                <Link to={item.link}>
+                <Link to={item.link} target="_blank">
                   <img
                     key={index}
                     src={item.icon}
