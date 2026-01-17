@@ -12,6 +12,7 @@ import { login } from "../../services/auth.service";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { setToken, setUser } from "../../state/slices/authReducer";
+import SEO from "../../components/SEO";
 
 function Login() {
   const navigate = useNavigate();
@@ -73,6 +74,7 @@ function Login() {
   };
   return (
     <>
+      <SEO title="Login" description="Login to your Nedzl account." />
       <AuthLayout>
         <motion.div
           initial={{ opacity: 0, y: 100 }}

@@ -8,6 +8,7 @@ interface SEOProps {
   ogType?: string;
   ogImage?: string;
   structuredData?: object;
+  noindex?: boolean;
 }
 
 const SEO = ({
@@ -18,9 +19,11 @@ const SEO = ({
   ogType = "website",
   ogImage,
   structuredData,
+  noindex = false,
 }: SEOProps) => {
   const baseTitle = "Nedzl.com – The Ultimate Student Marketplace";
   const fullTitle = title ? `${title} | ${baseTitle}` : baseTitle;
+  const currentUrl = window.location.href;
 
   useEffect(() => {
     // Update Title
@@ -77,10 +80,36 @@ const SEO = ({
     }
 
     // Update Canonical
-    if (canonical) {
-      const canonicalTag = document.querySelector('link[rel="canonical"]');
-      if (canonicalTag) {
-        canonicalTag.setAttribute("href", canonical);
+    // If a specific canonical is provided, use it. Otherwise, defaults to current URL.
+    const canonicalUrl = canonical || currentUrl;
+    let canonicalTag = document.querySelector('link[rel="canonical"]');
+    if (!canonicalTag) {
+      canonicalTag = document.createElement("link");
+      canonicalTag.setAttribute("rel", "canonical");
+      document.head.appendChild(canonicalTag);
+    }
+    canonicalTag.setAttribute("href", canonicalUrl);
+
+    // Handle noindex
+    let robotsTag = document.querySelector('meta[name="robots"]');
+    if (noindex) {
+      if (!robotsTag) {
+        robotsTag = document.createElement("meta");
+        robotsTag.setAttribute("name", "robots");
+        document.head.appendChild(robotsTag);
+      }
+      robotsTag.setAttribute("content", "noindex");
+    } else {
+      // Create or update to "index, follow" to be explicit, but removing noindex is key
+      if (robotsTag) {
+        // Optionally remove it or set to index, follow.
+        // Removing it returns to default behavior which is index.
+        // However, if we want to force index we can set it.
+        // Let's just remove "noindex" if it was set by this component previously,
+        // or set to "index, follow" if we want to be explicit.
+        // Safer to just remove if we don't want to enforce index on everything.
+        // But since we are SPA, cleaning up is important.
+        robotsTag.setAttribute("content", "index, follow");
       }
     }
 
@@ -108,6 +137,8 @@ const SEO = ({
     ogImage,
     fullTitle,
     structuredData,
+    noindex,
+    currentUrl,
   ]);
 
   return null;

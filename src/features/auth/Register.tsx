@@ -11,6 +11,7 @@ import { CHECK_GREEN, NEDZL_LOGO_GREEN, PAD_LOCK } from "../../assets";
 import Button from "../../components/Button";
 import { register } from "../../services/auth.service";
 import toast from "react-hot-toast";
+import SEO from "../../components/SEO";
 
 function Register() {
   const navigate = useNavigate();
@@ -106,6 +107,7 @@ function Register() {
   };
   return (
     <>
+      <SEO title="Register" description="Create a new Nedzl account." />
       <AuthLayout>
         <motion.div
           initial={{ opacity: 0, y: 100 }}

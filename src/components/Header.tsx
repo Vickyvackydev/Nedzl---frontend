@@ -80,10 +80,10 @@ function Header() {
           </button> */}
 
         <AccountDropdown user={user} />
-        <div className="flex items-center gap-x-3">
+        <Link to={"/faqs"} className="flex items-center gap-x-3">
           <img src={HELP} className="w-[25px] h-[25px]" alt="" />
           <span className="text-faded-black text-[16px] font-medium">Help</span>
-        </div>
+        </Link>
       </div>
     </div>
   );

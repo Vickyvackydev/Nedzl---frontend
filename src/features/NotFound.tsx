@@ -1,11 +1,13 @@
 import MainLayout from "../layout/MainLayout";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
+import SEO from "../components/SEO";
 
 const NotFound = () => {
   const navigate = useNavigate();
   return (
     <MainLayout>
+      <SEO title="Page Not Found" noindex={true} />
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-4">
         <h1 className="text-9xl font-bold text-global-green">404</h1>
         <div className="flex flex-col gap-2">
