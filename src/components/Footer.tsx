@@ -5,7 +5,7 @@ import {
   INSTAGRAM,
   NEDZL_LOGO_GREEN,
   TIKTOK,
-  TWITTER,
+  X,
 } from "../assets";
 import { footer } from "../constant";
 import Button from "./Button";
@@ -90,13 +90,17 @@ function Footer() {
                   icon: INSTAGRAM,
                   link: "https://www.instagram.com/nedzlworld?igsh=azdqN2FiczNjbGFt",
                 },
-                { icon: TWITTER, link: "" },
+                { icon: X, link: "https://x.com/Nedzlworld" },
                 {
                   icon: TIKTOK,
                   link: "https://www.tiktok.com/@nedzl_?_r=1&_t=ZS-939GyJuQQ5a",
                 },
               ].map((item, index) => (
-                <Link to={item.link} target="_blank">
+                <Link
+                  to={item.link}
+                  target="_blank"
+                  className="hover:scale-105 transition-all duration-200"
+                >
                   <img
                     key={index}
                     src={item.icon}
