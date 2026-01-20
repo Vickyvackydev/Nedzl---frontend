@@ -76,7 +76,7 @@ export default function CategoriesOverlay() {
       {/* All Categories Button */}
       <div
         onClick={() => setOpen(true)}
-        className="w-fit px-7 border cursor-pointer border-white rounded-xl py-2 flex justify-center items-center gap-x-2"
+        className="w-fit px-7 border cursor-pointer border-white rounded-full py-2 flex justify-center items-center gap-x-2"
       >
         <img src={BAR_WHITE} className="w-[24px] h-[24px]" alt="" />
         <span className="text-sm text-nowrap font-medium text-white">

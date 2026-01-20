@@ -159,7 +159,7 @@ export const footer = [
     links: [
       {
         title: "About us",
-        link: "",
+        link: "/about-us",
       },
       {
         title: "Contact us",

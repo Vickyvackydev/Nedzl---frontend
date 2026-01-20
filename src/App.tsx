@@ -25,6 +25,7 @@ import PrivacyPolicy from "./features/PrivacyPolicy";
 import TermsOfService from "./features/TermsOfService";
 import Contact from "./features/Contact";
 import FAQs from "./features/FAQs";
+import About from "./features/About";
 
 function App() {
   const location = useLocation();
@@ -53,6 +54,7 @@ function App() {
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/faqs" element={<FAQs />} />
+        <Route path="/about-us" element={<About />} />
 
         <Route
           path="/dashboard"
