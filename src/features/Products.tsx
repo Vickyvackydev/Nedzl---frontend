@@ -111,7 +111,7 @@ const FilterContent = ({
                   "",
                   section
                     ? `/products?section=${section}&category=${value}`
-                    : `/products?category=${value}`
+                    : `/products?category=${value}`,
                 );
               }}
               className="group flex w-full items-center justify-between py-2 px-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-[#F7F7F7]"
@@ -256,7 +256,7 @@ function Products() {
     return categories.map((cat) => {
       const match = categorizedProductCount?.results?.find(
         (item: { category: string; total: number }) =>
-          item.category === cat.value
+          item.category === cat.value,
       );
 
       return { ...cat, count: match ? match.total : 0 };
@@ -301,14 +301,42 @@ function Products() {
           keyword
             ? `Search results for "${keyword}"`
             : selectedCatgory
-            ? formatText(selectedCatgory)
-            : section
-            ? formatText(section)
-            : "Products"
+              ? formatText(selectedCatgory)
+              : section
+                ? formatText(section)
+                : "Products"
         }
         description={`Browse ${
           selectedCatgory ? formatText(selectedCatgory) : "items"
         } on Nedzl.com. Find used items easily within your campus community in Nigeria.`}
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: "https://www.nedzl.com/",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Products",
+              item: "https://www.nedzl.com/products",
+            },
+            ...(selectedCatgory
+              ? [
+                  {
+                    "@type": "ListItem",
+                    position: 3,
+                    name: formatText(selectedCatgory),
+                    item: `https://www.nedzl.com/products?category=${selectedCatgory}`,
+                  },
+                ]
+              : []),
+          ],
+        }}
       />
       <div className="px-4 md:px-20 py-7 bg-[#F7F7F7]">
         <div className="w-full flex items-center justify-between gap-x-3">
@@ -384,7 +412,7 @@ function Products() {
                   >
                     <ProductCard item={item} />
                   </motion.div>
-                )
+                ),
               )
             ) : (
               <div className="col-span-3 text-center text-gray-500 font-medium py-10">

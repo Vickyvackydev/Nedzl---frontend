@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Tv,
   Sofa,
@@ -23,7 +24,6 @@ import { categories } from "../constant";
 import { BAR_WHITE } from "../assets";
 import { useQuery } from "@tanstack/react-query";
 import { getProductCategoryCounts } from "../services/product.service";
-import { useNavigate } from "react-router-dom";
 
 const iconMap: Record<string, any> = {
   "electrical-home-appliances": Tv,
@@ -46,7 +46,7 @@ const iconMap: Record<string, any> = {
 
 export default function CategoriesOverlay() {
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const {
     data: categorizedProductCount,
@@ -64,7 +64,7 @@ export default function CategoriesOverlay() {
     return categories.map((cat) => {
       const match = categorizedProductCount?.results?.find(
         (item: { category: string; total: number }) =>
-          item.category === cat.value
+          item.category === cat.value,
       );
 
       return { ...cat, count: match ? match.total : 0 };
@@ -113,33 +113,37 @@ export default function CategoriesOverlay() {
                 {categoriesWithCount.map((cat) => {
                   const Icon = iconMap[cat.value] || Tv;
                   return (
-                    <motion.div
+                    <Link
                       key={cat.value}
-                      whileHover={{ scale: 1.02 }}
-                      onClick={() =>
-                        navigate(`/products?category=${cat.value}`)
-                      }
+                      to={`/products?category=${cat.value}`}
+                      onClick={() => setOpen(false)}
                       className="flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition-colors p-3 rounded-xl cursor-pointer"
                     >
-                      <div className="flex items-center gap-x-3">
-                        <div className="bg-blue-100 p-2 rounded-lg">
-                          <Icon className="w-5 h-5 text-blue-600" />
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        className="flex items-center justify-between w-full"
+                      >
+                        <div className="flex items-center gap-x-3">
+                          <div className="bg-blue-100 p-2 rounded-lg">
+                            <Icon className="w-5 h-5 text-blue-600" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-medium text-gray-800">
+                              {cat.label}
+                            </h4>
+                            <p className="text-xs text-gray-500">
+                              {" "}
+                              {cat.count
+                                ?.toString()
+                                ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ||
+                                0}{" "}
+                              Ads
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="text-sm font-medium text-gray-800">
-                            {cat.label}
-                          </h4>
-                          <p className="text-xs text-gray-500">
-                            {" "}
-                            {cat.count
-                              ?.toString()
-                              ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0}{" "}
-                            Ads
-                          </p>
-                        </div>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
-                    </motion.div>
+                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                      </motion.div>
+                    </Link>
                   );
                 })}
               </div>

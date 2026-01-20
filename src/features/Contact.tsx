@@ -17,7 +17,7 @@ const Contact = () => {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setFormField({
       ...formField,
@@ -97,7 +97,7 @@ const Contact = () => {
               <div className="flex items-start gap-x-5">
                 <img src={PHONE_CONTACT} className="w-[40px] h-[40px]" alt="" />
                 <div className="flex flex-col gap-y-2">
-                  <h3 className="text-[16px] font-bold">+234 816 836 6347</h3>
+                  <h3 className="text-[16px] font-bold">+234 704 924 0913</h3>
                   <p className="text-white/90 text-[15px] leading-relaxed">
                     We will get back to you within 24 hours, or call us every
                     day, 09:00 AM – 06:00 PM

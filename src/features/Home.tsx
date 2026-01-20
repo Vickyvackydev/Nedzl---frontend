@@ -92,6 +92,42 @@ function Home() {
         title="Home"
         description="Welcome to Nedzl.com – the trusted student-focused e-commerce platform built to connect university students across Nigeria. Buy and sell used items on campus easily."
         keywords="student marketplace, Nigeria university marketplace, buy used phones campus, sell hostel furniture"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          itemListElement: [
+            {
+              "@type": "SiteNavigationElement",
+              position: 1,
+              name: "Electricals",
+              url: "https://www.nedzl.com/products?category=electricals",
+            },
+            {
+              "@type": "SiteNavigationElement",
+              position: 2,
+              name: "Home Appliances",
+              url: "https://www.nedzl.com/products?category=home-appliances",
+            },
+            {
+              "@type": "SiteNavigationElement",
+              position: 3,
+              name: "Furniture",
+              url: "https://www.nedzl.com/products?category=furniture",
+            },
+            {
+              "@type": "SiteNavigationElement",
+              position: 4,
+              name: "Kitchenware",
+              url: "https://www.nedzl.com/products?category=kitchenware",
+            },
+            {
+              "@type": "SiteNavigationElement",
+              position: 5,
+              name: "Books",
+              url: "https://www.nedzl.com/products?category=books",
+            },
+          ],
+        }}
       />
       <div className="font-open-sans">
         <CategoryBar />
@@ -137,7 +173,7 @@ function Home() {
                               ₦{item.product_price?.toLocaleString()}
                             </span>
                           </div>
-                        )
+                        ),
                       )}
                 </div>
               </div>
@@ -180,7 +216,7 @@ function Home() {
                               ₦{item.product_price?.toLocaleString()}
                             </span>
                           </div>
-                        )
+                        ),
                       )}
                 </div>
               </div>
@@ -228,7 +264,7 @@ function Home() {
                               ₦{item.product_price?.toLocaleString()}
                             </span>
                           </div>
-                        )
+                        ),
                       )}
                 </div>
               </div>
@@ -273,7 +309,7 @@ function Home() {
                               ₦{item.product_price?.toLocaleString()}
                             </span>
                           </div>
-                        )
+                        ),
                       )}
                 </div>
               </div>
