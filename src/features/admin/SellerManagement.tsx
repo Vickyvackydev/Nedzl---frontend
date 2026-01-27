@@ -43,8 +43,7 @@ import {
 } from "../../state/slices/globalReducer";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
-// import { API } from "../../config";
-import { useNavigate } from "react-router-dom";
+
 import SEO from "../../components/SEO";
 import toast from "react-hot-toast";
 import { filterOptions } from "../../constant";
