@@ -1,24 +1,23 @@
-import MainLayout from "../layout/MainLayout";
-import CategoryBar from "../components/CategoryBar";
-import { PHONE_CONTACT, SVG_CONTACT, SVG_LOCATION } from "../assets";
-import React, { useState } from "react";
-import { createContact } from "../services/contact.service";
-import toast from "react-hot-toast";
+import MainLayout from '../layout/MainLayout';
+import CategoryBar from '../components/CategoryBar';
+import { PHONE_CONTACT, SVG_CONTACT, SVG_LOCATION } from '../assets';
+import React, { useState } from 'react';
+import { createContact } from '../services/contact.service';
+import toast from 'react-hot-toast';
+import SEO from '../components/SEO';
 
 const Contact = () => {
   const [loading, setLoading] = useState(false);
 
   const [formField, setFormField] = useState({
-    first_name: "",
-    last_name: "",
-    phone_number: "",
-    email: "",
-    message: "",
+    first_name: '',
+    last_name: '',
+    phone_number: '',
+    email: '',
+    message: '',
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormField({
       ...formField,
       [e.target.name]: e.target.value,
@@ -40,23 +39,33 @@ const Contact = () => {
     try {
       const response = await createContact(formField);
       if (response) {
-        toast.success("Message sent successfully");
+        toast.success('Message sent successfully');
         setFormField({
-          first_name: "",
-          last_name: "",
-          phone_number: "",
-          email: "",
-          message: "",
+          first_name: '',
+          last_name: '',
+          phone_number: '',
+          email: '',
+          message: '',
         });
       }
     } catch (error) {
-      toast.error("Failed to send message");
+      toast.error('Failed to send message');
     } finally {
       setLoading(false);
     }
   };
   return (
     <MainLayout>
+      <SEO
+        title="Contact"
+        description="Get in touch with Nedzl. Contact support and reach our team."
+        structuredData={{
+          '@context': 'https://schema.org',
+          '@type': 'ContactPage',
+          name: 'Contact Nedzl',
+          url: window.location.href,
+        }}
+      />
       <CategoryBar />
       <div className="w-full bg-white font-inter">
         <div className="max-w-[1400px] mx-auto px-6 md:px-20 py-16">
@@ -78,16 +87,10 @@ const Contact = () => {
                 <div className="flex flex-col gap-y-2">
                   <h3 className="text-[16px] font-bold">Quick Contact</h3>
                   <div className="flex flex-col text-white/90 text-[15px]">
-                    <a
-                      href="mailto:Nedzlworld@gmail.com"
-                      className="hover:underline"
-                    >
+                    <a href="mailto:Nedzlworld@gmail.com" className="hover:underline">
                       Email: Nedzlworld@gmail.com
                     </a>
-                    <a
-                      href="mailto:Nedzlworld@gmail.com"
-                      className="hover:underline"
-                    >
+                    <a href="mailto:Nedzlworld@gmail.com" className="hover:underline">
                       Support: Nedzlworld@gmail.com
                     </a>
                   </div>
@@ -99,8 +102,7 @@ const Contact = () => {
                 <div className="flex flex-col gap-y-2">
                   <h3 className="text-[16px] font-bold">+234 704 924 0913</h3>
                   <p className="text-white/90 text-[15px] leading-relaxed">
-                    We will get back to you within 24 hours, or call us every
-                    day, 09:00 AM – 06:00 PM
+                    We will get back to you within 24 hours, or call us every day, 09:00 AM – 06:00 PM
                   </p>
                 </div>
               </div>
@@ -109,20 +111,14 @@ const Contact = () => {
             {/* Right Contact Form */}
             <div className="flex-1 bg-white rounded-[24px] p-5 md:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100">
               <div className="mb-10">
-                <h2 className="text-[24px] font-bold text-[#1A1A1A] mb-2">
-                  Contact Us
-                </h2>
-                <p className="text-[#9B9B9B] text-[14px]">
-                  Have any questions?
-                </p>
+                <h2 className="text-[24px] font-bold text-[#1A1A1A] mb-2">Contact Us</h2>
+                <p className="text-[#9B9B9B] text-[14px]">Have any questions?</p>
               </div>
 
               <form className="flex flex-col gap-y-6" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="flex flex-col gap-y-2">
-                    <label className="text-[14px] font-semibold text-primary-300">
-                      First Name
-                    </label>
+                    <label className="text-[14px] font-semibold text-primary-300">First Name</label>
                     <input
                       type="text"
                       name="first_name"
@@ -134,9 +130,7 @@ const Contact = () => {
                     />
                   </div>
                   <div className="flex flex-col gap-y-2">
-                    <label className="text-[14px] font-semibold text-primary-300">
-                      Last Name
-                    </label>
+                    <label className="text-[14px] font-semibold text-primary-300">Last Name</label>
                     <input
                       type="text"
                       name="last_name"
@@ -151,9 +145,7 @@ const Contact = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="flex flex-col gap-y-2">
-                    <label className="text-[14px] font-semibold text-primary-300">
-                      Email Address
-                    </label>
+                    <label className="text-[14px] font-semibold text-primary-300">Email Address</label>
                     <input
                       type="email"
                       name="email"
@@ -165,16 +157,10 @@ const Contact = () => {
                     />
                   </div>
                   <div className="flex flex-col gap-y-2">
-                    <label className="text-[14px] font-semibold text-primary-300">
-                      Phone Number
-                    </label>
+                    <label className="text-[14px] font-semibold text-primary-300">Phone Number</label>
                     <div className="flex gap-x-3">
                       <div className="flex items-center gap-x-2 px-4 py-4 rounded-xl border border-gray-200 bg-gray-50 shrink-0">
-                        <img
-                          src="https://flagcdn.com/w20/ng.png"
-                          alt="NG"
-                          className="w-5"
-                        />
+                        <img src="https://flagcdn.com/w20/ng.png" alt="NG" className="w-5" />
                         {/* <span className="text-[15px] text-gray-600">▼</span> */}
                       </div>
                       <input
@@ -191,9 +177,7 @@ const Contact = () => {
                 </div>
 
                 <div className="flex flex-col gap-y-2">
-                  <label className="text-[14px] font-semibold text-primary-300">
-                    Message
-                  </label>
+                  <label className="text-[14px] font-semibold text-primary-300">Message</label>
                   <textarea
                     rows={4}
                     name="message"
@@ -211,7 +195,7 @@ const Contact = () => {
                     disabled={loading}
                     className="bg-global-green hover:bg-[#22b515] disabled:bg-gray-200 disabled:cursor-not-allowed text-white px-10 py-4 rounded-lg font-bold transition-all duration-200 disabled:opacity-50"
                   >
-                    {loading ? "Please wait..." : "Submit"}
+                    {loading ? 'Please wait...' : 'Submit'}
                   </button>
                 </div>
               </form>

@@ -33,6 +33,7 @@ import { ProductsColumn } from "../../components/columns/ProductColumns";
 import { useLocation, useNavigate } from "react-router-dom";
 import moment from "moment";
 import clsx from "clsx";
+import SEO from "../../components/SEO";
 import { statusStyles } from "../../components/columns/SellerColumns";
 import Button from "../../components/Button";
 import Modal from "../../components/Modal";
@@ -265,7 +266,12 @@ function ViewUser() {
 
   return (
     <DashboardLayout>
-      <div className="p-3 geist-family w-full flex flex-col items-start gap-y-3">
+      <SEO
+        title="User Details"
+        description="Detailed user information for admins."
+        noindex={true}
+      />
+      <div className="p-3 sm:p-5 geist-family w-full flex flex-col items-start gap-y-3">
         <div className="w-full flex items-center justify-between">
           <button
             onClick={() => window.history.back()}

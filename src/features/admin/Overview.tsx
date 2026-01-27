@@ -53,6 +53,7 @@ import { filterOptions } from "../../constant";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import clsx from "clsx";
+import SEO from "../../components/SEO";
 
 const periodOptions = [
   { label: "Last 7 Days", value: "7d" },
@@ -264,6 +265,11 @@ function Overview() {
 
   return (
     <DashboardLayout>
+      <SEO
+        title="Admin Dashboard"
+        description="Admin overview and statistics."
+        noindex={true}
+      />
       <div className="w-full p-3 sm:p-5 geist-family">
         {/* <LinkHead title="Admin | Overview" content="" /> */}
         <div className="w-full flex items-center justify-between gap-y-3">

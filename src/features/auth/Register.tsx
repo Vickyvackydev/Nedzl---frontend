@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState } from "react";
 
 import { FaCheck, FaEye, FaEyeSlash } from "react-icons/fa";
@@ -113,7 +114,11 @@ function Register() {
   };
   return (
     <>
-      <SEO title="Register" description="Create a new Nedzl account." />
+      <SEO
+        title="Register"
+        description="Create a new Nedzl account."
+        noindex={true}
+      />
       <AuthLayout>
         <motion.div
           initial={{ opacity: 0, y: 100 }}

@@ -57,6 +57,7 @@ import {
 import moment from "moment";
 
 import { useNavigate } from "react-router-dom";
+import SEO from "../../components/SEO";
 import { filterOptions } from "../../constant";
 import { updateProductStatus } from "../../services/product.service";
 
@@ -355,6 +356,11 @@ function ProductManagement() {
   };
   return (
     <DashboardLayout>
+      <SEO
+        title="Product Management"
+        description="Manage products on Nedzl."
+        noindex={true}
+      />
       <div className="w-full p-3 sm:p-5 geist-family">
         {/* <LinkHead title="Admin | Overview" content="" /> */}
         <div className="w-full flex items-center justify-between gap-y-3 flex-col sm:flex-row">

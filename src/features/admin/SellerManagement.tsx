@@ -44,6 +44,8 @@ import {
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
 // import { API } from "../../config";
+import { useNavigate } from "react-router-dom";
+import SEO from "../../components/SEO";
 import toast from "react-hot-toast";
 import { filterOptions } from "../../constant";
 
@@ -272,6 +274,11 @@ function SellerManagement() {
   };
   return (
     <DashboardLayout>
+      <SEO
+        title="Seller Management"
+        description="Manage sellers on Nedzl."
+        noindex={true}
+      />
       <div className="w-full p-3 sm:p-5 geist-family">
         {/* <LinkHead title="Admin | Overview" content="" /> */}
         <div className="w-full flex items-center justify-between gap-y-3">

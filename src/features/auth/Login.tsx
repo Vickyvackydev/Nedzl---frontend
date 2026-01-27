@@ -1,18 +1,18 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 
-import { Link, useNavigate } from "react-router-dom";
-import AuthLayout from "../../layout/Authlayout";
-import { NEDZL_LOGO_GREEN, PAD_LOCK } from "../../assets";
-import Button from "../../components/Button";
-import { login } from "../../services/auth.service";
-import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { setToken, setUser } from "../../state/slices/authReducer";
-import SEO from "../../components/SEO";
+import { Link, useNavigate } from 'react-router-dom';
+import AuthLayout from '../../layout/Authlayout';
+import { NEDZL_LOGO_GREEN, PAD_LOCK } from '../../assets';
+import Button from '../../components/Button';
+import { login } from '../../services/auth.service';
+import toast from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { setToken, setUser } from '../../state/slices/authReducer';
+import SEO from '../../components/SEO';
 
 function Login() {
   const navigate = useNavigate();
@@ -20,8 +20,8 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const [formInput, setFormInput] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,12 +33,12 @@ function Login() {
     }));
   };
 
-  const disbled = formInput.email === "" || formInput.password === "";
+  const disbled = formInput.email === '' || formInput.password === '';
 
   const reset = () =>
     setFormInput({
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     });
   const handleLogin = async () => {
     setLoading(true);
@@ -58,23 +58,23 @@ function Login() {
         // setTimeout(() => {
         //   window.location.reload();
         // }, 1000);
-        if (response?.data?.user?.role === "ADMIN") {
-          navigate("/admin/overview");
+        if (response?.data?.user?.role === 'ADMIN') {
+          navigate('/admin/overview');
         } else {
-          navigate("/dashboard");
+          navigate('/dashboard');
         }
 
         reset();
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Something went wrong");
+      toast.error(error?.response?.data?.message || 'Something went wrong');
     } finally {
       setLoading(false);
     }
   };
   return (
     <>
-      <SEO title="Login" description="Login to your Nedzl account." />
+      <SEO title="Login" description="Login to your Nedzl account." noindex={true} />
       <AuthLayout>
         <motion.div
           initial={{ opacity: 0, y: 100 }}
@@ -84,30 +84,17 @@ function Login() {
         >
           <div className="flex flex-col items-center justify-center gap-y-2 ">
             <Link to="/">
-              <img
-                src={NEDZL_LOGO_GREEN}
-                className="w-[130px] h-[33.41px]"
-                alt=""
-              />
+              <img src={NEDZL_LOGO_GREEN} className="w-[130px] h-[33.41px]" alt="" />
             </Link>
-            <span className="text-2xl font-bold text-primary-300">
-              Welcome Back
-            </span>
+            <span className="text-2xl font-bold text-primary-300">Welcome Back</span>
             <span className="text-primary-300 font-normal text-sm">
-              Dont have an account?{" "}
-              <span
-                className="text-global-green font-medium cursor-pointer"
-                onClick={() => navigate("/register")}
-              >
+              Dont have an account?{' '}
+              <span className="text-global-green font-medium cursor-pointer" onClick={() => navigate('/register')}>
                 Create an account
               </span>
             </span>
           </div>
-          <form
-            action=""
-            onSubmit={(e) => e.preventDefault()}
-            className="flex flex-col gap-y-4 w-full"
-          >
+          <form action="" onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-y-4 w-full">
             <div className="flex flex-col items-start w-full gap-y-1">
               <span className="text-sm font-medium text-[#4F5762]">Email</span>
               <div className="w-full h-[48px] rounded-xl px-3 border border-borderColor shadow-input flex items-center gap-x-2">
@@ -123,15 +110,13 @@ function Login() {
             </div>
 
             <div className="flex flex-col items-start w-full gap-y-1">
-              <span className="text-sm font-medium text-[#4F5762]">
-                Password
-              </span>
+              <span className="text-sm font-medium text-[#4F5762]">Password</span>
               <div className="w-full h-[48px] justify-between rounded-xl px-3 border border-borderColor shadow-input flex items-center gap-x-2">
                 <div className="flex items-center gap-x-2">
                   <img src={PAD_LOCK} className="w-[20px] h-[20px]" alt="" />
 
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     name="password"
                     value={formInput.password}
                     onChange={handleInputChange}
@@ -140,17 +125,11 @@ function Login() {
                   />
                 </div>
                 {showPassword ? (
-                  <span
-                    className="cursor-pointer "
-                    onClick={() => setShowPassword(false)}
-                  >
+                  <span className="cursor-pointer " onClick={() => setShowPassword(false)}>
                     <FaEyeSlash color="#808080" />
                   </span>
                 ) : (
-                  <span
-                    className="cursor-pointer"
-                    onClick={() => setShowPassword(true)}
-                  >
+                  <span className="cursor-pointer" onClick={() => setShowPassword(true)}>
                     <FaEye color="#808080" />
                   </span>
                 )}
@@ -158,11 +137,11 @@ function Login() {
             </div>
 
             <Button
-              title={"Login"}
+              title={'Login'}
               loading={loading}
               disabled={loading || disbled}
-              btnStyles={"bg-global-green rounded-lg w-full mt-5 h-[45px]"}
-              textStyle={"text-white text-[16px] text-semibold"}
+              btnStyles={'bg-global-green rounded-lg w-full mt-5 h-[45px]'}
+              textStyle={'text-white text-[16px] text-semibold'}
               handleClick={handleLogin}
             />
           </form>

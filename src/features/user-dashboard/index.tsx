@@ -82,6 +82,7 @@ const SideBarMenus = [
   },
 ];
 import { useSidebar } from "../../context/SidebarContext";
+import SEO from "../../components/SEO";
 
 function UserDashboard() {
   const [activeTab, setActiveTab] = useState<TabTypes>("my_account");
@@ -117,7 +118,7 @@ function UserDashboard() {
           key={item.title}
           onClick={() => {
             setActiveTab(
-              item.title.split(" ").join("_").toLowerCase() as TabTypes
+              item.title.split(" ").join("_").toLowerCase() as TabTypes,
             );
             closeSidebar();
           }}
@@ -125,7 +126,7 @@ function UserDashboard() {
             "flex items-center cursor-pointer gap-x-2 text-sm font-medium px-4 py-3 rounded-xl w-full",
             activeTab === item.title.split(" ").join("_").toLowerCase()
               ? "bg-global-green text-white"
-              : "bg-transparent text-primary-300"
+              : "bg-transparent text-primary-300",
           )}
         >
           <img
@@ -156,6 +157,11 @@ function UserDashboard() {
 
   return (
     <MainLayout>
+      <SEO
+        title="Dashboard"
+        description="Manage your Nedzl account, products, and more."
+        noindex={true}
+      />
       <div className="w-full flex flex-col md:flex-row items-start gap-4 shadow-box justify-between bg-[#F5F5F5] py-7 px-4 md:px-20 relative">
         {/* Mobile Sidebar Overlay */}
         {isSidebarOpen && (
@@ -169,7 +175,7 @@ function UserDashboard() {
         <div
           className={clsx(
             "fixed inset-y-0 left-0 z-50 w-[70%] max-w-[300px] bg-white transform transition-transform duration-300 ease-in-out md:hidden flex flex-col p-4 gap-y-3 overflow-y-auto",
-            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full",
           )}
         >
           <SidebarContent
@@ -241,7 +247,7 @@ function UserDashboard() {
             {(() => {
               const Tab = SideBarMenus.find(
                 (item) =>
-                  item.title.split(" ").join("_").toLowerCase() === activeTab
+                  item.title.split(" ").join("_").toLowerCase() === activeTab,
               )?.Component;
               return Tab ? <Tab /> : null;
             })()}
