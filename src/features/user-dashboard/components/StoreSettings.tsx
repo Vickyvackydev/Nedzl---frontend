@@ -43,6 +43,7 @@ function StoreSettings() {
   } = useQuery({
     queryKey: ["store-settings", userId],
     queryFn: () => getSellerStoreDetails(userId as string),
+    enabled: !!userId,
   });
 
   const regionOptions = [

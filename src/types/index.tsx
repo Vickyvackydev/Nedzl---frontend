@@ -41,7 +41,7 @@ export interface FormFieldTypeProps {
   placeholder: string;
   placeholderstyle: string;
   handleChange: (
-    value: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    value: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
 }
 
@@ -125,6 +125,7 @@ export interface User {
   created_at: string; // ISO date string
   updated_at: string; // ISO date string
   deleted_at: string | null;
+  referral_code: string;
 }
 
 export interface StoreSettingsPayload {
@@ -193,6 +194,12 @@ export interface AdminUserDetails {
     created_at: string;
     updated_at: string;
     deleted_at: string | null;
+    referral_by: {
+      id: string;
+      user_name: string;
+      email: string;
+    } | null;
+    referral_count: number;
   };
 
   metrics: {

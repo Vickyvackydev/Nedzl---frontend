@@ -39,6 +39,7 @@ import Modal from "../../components/Modal";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  resetGlobalState,
   selectProduct,
   selectProductAction,
   selectProductImages,
@@ -174,10 +175,12 @@ function ViewUser() {
   };
   const handleFilterChange = (
     id: number | string,
-    newValue: string | number | null
+    newValue: string | number | null,
   ) => {
     setFilters((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, value: newValue } : item))
+      prev.map((item) =>
+        item.id === id ? { ...item, value: newValue } : item,
+      ),
     );
   };
 
@@ -212,6 +215,7 @@ function ViewUser() {
       const response = await deleteAdminUser(userId as string);
       if (response) {
         toast.success(response.message);
+        dispatch(resetGlobalState());
         window.history.back();
       }
     } catch (error: any) {
@@ -229,9 +233,8 @@ function ViewUser() {
       if (response) {
         toast.success(response?.message);
         dispatch(setProductAction(null));
-        refetch();
-        refetch();
         dispatch(setProductDetails(null));
+        refetch();
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.message);
@@ -245,13 +248,13 @@ function ViewUser() {
     try {
       const response = await updateProductStatus(
         productDetails?.id as string,
-        "CLOSED"
+        "CLOSED",
       );
       if (response) {
         toast.success(response?.message);
         dispatch(setProductAction(null));
-        refetch();
         dispatch(setProductDetails(null));
+        refetch();
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.message);
@@ -324,13 +327,13 @@ function ViewUser() {
                 <div
                   className={clsx(
                     "w-fit flex items-center gap-x-1 justify-center px-3 py-1.5 rounded-md",
-                    ui.bg
+                    ui.bg,
                   )}
                 >
                   <div
                     className={clsx(
                       "min-w-[5px] min-h-[5px] rounded-full",
-                      ui.dot
+                      ui.dot,
                     )}
                   />
 
@@ -363,7 +366,7 @@ function ViewUser() {
                     "text-green-600 font-medium text-sm",
                     userDetails?.user_details?.is_verified
                       ? "text-green-600"
-                      : "text-red-600"
+                      : "text-red-600",
                   )}
                 >
                   ●{" "}
@@ -393,7 +396,7 @@ function ViewUser() {
                 <span className="text-sm">
                   {" "}
                   {moment(userDetails?.user_details?.created_at).format(
-                    "MMM D, YYYY h:mm A"
+                    "MMM D, YYYY h:mm A",
                   )}
                 </span>
               </div>
@@ -402,6 +405,20 @@ function ViewUser() {
                 <p className="text-xs text-gray-500 mb-1">Location</p>
                 <span className="text-sm">
                   {userDetails?.user_details?.location}
+                </span>
+              </div>
+
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Referral Count</p>
+                <span className="text-sm">
+                  {userDetails?.user_details?.referral_count || 0}
+                </span>
+              </div>
+
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Referred By</p>
+                <span className="text-sm">
+                  {userDetails?.user_details?.referral_by?.user_name || "-"}
                 </span>
               </div>
             </div>
@@ -430,7 +447,7 @@ function ViewUser() {
                     "text-green-600 font-medium text-sm",
                     userDetails?.user_details?.is_verified
                       ? "text-green-600"
-                      : "text-red-600"
+                      : "text-red-600",
                   )}
                 >
                   ●{" "}
@@ -445,7 +462,7 @@ function ViewUser() {
                 <span className="text-sm">
                   {" "}
                   {moment(userDetails?.store_details?.created_at).format(
-                    "MMM D, YYYY h:mm A"
+                    "MMM D, YYYY h:mm A",
                   )}
                 </span>
               </div>
@@ -486,7 +503,7 @@ function ViewUser() {
                 "w-full h-[40px] text-sm text-nowrap cursor-pointer rounded-xl  font-medium",
                 selectedStatus === item
                   ? "bg-[#FFFFFF] text-global-green"
-                  : "bg-none text-[#656F7D] "
+                  : "bg-none text-[#656F7D] ",
               )}
             >
               {item}
@@ -580,7 +597,7 @@ function ViewUser() {
                   type="button"
                   onClick={() =>
                     setCurrentPage(() =>
-                      Math.max(1, products?.data?.meta?.page - 1)
+                      Math.max(1, products?.data?.meta?.page - 1),
                     )
                   }
                   disabled={products?.meta?.page === 1}
@@ -607,7 +624,7 @@ function ViewUser() {
                 >
                   {Array.from(
                     { length: products?.data?.meta?.totalPages || 0 },
-                    (_, i) => i + 1
+                    (_, i) => i + 1,
                   ).map((pageNum) => (
                     <button
                       key={pageNum}
@@ -630,8 +647,8 @@ function ViewUser() {
                     setCurrentPage(() =>
                       Math.min(
                         products?.data?.meta?.totalPages,
-                        products?.meta?.page + 1
-                      )
+                        products?.meta?.page + 1,
+                      ),
                     )
                   }
                   disabled={
@@ -967,13 +984,13 @@ function ViewUser() {
                     <div
                       className={clsx(
                         "w-fit flex items-center gap-x-1 justify-center px-3 py-1.5 rounded-md",
-                        ui?.bg
+                        ui?.bg,
                       )}
                     >
                       <div
                         className={clsx(
                           "min-w-[5px] min-h-[5px] rounded-full",
-                          ui?.dot
+                          ui?.dot,
                         )}
                       />
 

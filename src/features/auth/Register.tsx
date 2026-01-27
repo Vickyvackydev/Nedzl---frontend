@@ -5,7 +5,7 @@ import { MdPhone } from "react-icons/md";
 
 import { motion } from "framer-motion";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import AuthLayout from "../../layout/Authlayout";
 import { CHECK_GREEN, NEDZL_LOGO_GREEN, PAD_LOCK } from "../../assets";
 import Button from "../../components/Button";
@@ -19,6 +19,9 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [searchParams] = useSearchParams();
+
+  const ref = searchParams.get("ref");
 
   const [formInput, setFormInput] = useState({
     user_name: "",
@@ -26,6 +29,7 @@ function Register() {
     password: "",
     confirm_password: "",
     phone_number: "",
+    referral_code: ref,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,6 +81,7 @@ function Register() {
       password: "",
       phone_number: "",
       confirm_password: "",
+      referral_code: "",
     });
   const handleRegister = async () => {
     setLoading(true);
@@ -87,6 +92,7 @@ function Register() {
         password: formInput.password,
         phone_number: formInput.phone_number,
         role: "USER",
+        referral_code: formInput.referral_code,
       };
 
       const response = await register(payload);
@@ -335,6 +341,21 @@ function Register() {
                     Password must match
                   </span>
                 )}
+            </div>
+            <div className="flex flex-col items-start w-full gap-y-1">
+              <span className="text-sm font-medium text-[#4F5762]">
+                Referral Code
+              </span>
+              <div className="w-full h-[48px] rounded-xl px-3 border border-borderColor shadow-input flex items-center gap-x-2">
+                <input
+                  type="text"
+                  placeholder="Referral Code (optional)"
+                  name="referral_code"
+                  value={formInput.referral_code as string}
+                  onChange={handleInputChange}
+                  className="bg-transparent placeholder:text-sm  w-full outline-none text-primary-300"
+                />
+              </div>
             </div>
             <div
               className="flex items-center gap-x-3"

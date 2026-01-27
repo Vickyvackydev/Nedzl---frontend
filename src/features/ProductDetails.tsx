@@ -41,16 +41,6 @@ import Modal from "../components/Modal";
 import SelectInput from "../components/SelectInput";
 import { createReview, getPublicReviews } from "../services/reviews.service";
 import { Store } from "../state/store";
-import {
-  FacebookShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-  LinkedinShareButton,
-  FacebookIcon,
-  WhatsappIcon,
-  LinkedinIcon,
-  XIcon,
-} from "react-share";
 
 function ProductDetails() {
   const [activeTab, setActiveTab] = useState<
@@ -102,7 +92,7 @@ function ProductDetails() {
       queryKey: ["public-review", productDetails?.product?.id],
       queryFn: () => getPublicReviews(productDetails?.product?.id as string),
       enabled: !!productDetails?.product?.id,
-    }
+    },
     // {
     //   enabled: !!productDetails?.product?.id,
     // }
@@ -114,19 +104,33 @@ function ProductDetails() {
   const category = productDetails?.product.category_name?.replace(/-/g, " ");
   const maxImages = 5;
   const [showSellerNumber, setShowSellerNumber] = useState(false);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
   const [reviewFields, setReviewFields] = useState({
     review_title: "",
     customer_name: "",
     review: "",
   });
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Check out this product on Nedzl",
+          text: `I just checked out "${productDetails?.product?.product_name}" on Nedzl — take a look, you might like it.`,
+          url: window.location.href,
+        });
+      } catch (error) {
+        toast.error("Failed to share");
+      }
+    }
+  };
   const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
     const selectedFiles = Array.from(e.target.files);
 
     const validFiles = selectedFiles.filter(
-      (file) => file.type === "image/jpeg" || file.type === "image/jpg"
+      (file) => file.type === "image/jpeg" || file.type === "image/jpg",
     );
 
     if (validFiles.length < selectedFiles.length) {
@@ -142,7 +146,7 @@ function ProductDetails() {
 
     if (validFiles.length > availableSlots) {
       toast.error(
-        `Maximum of ${maxImages} images is allowed. Only ${availableSlots} more image(s) can be added.`
+        `Maximum of ${maxImages} images is allowed. Only ${availableSlots} more image(s) can be added.`,
       );
     }
 
@@ -192,7 +196,7 @@ function ProductDetails() {
 
   const [liked, setLiked] = useState(productDetails?.product?.is_liked_by_me);
   const [likesCount, setLikesCount] = useState(
-    productDetails?.product?.likes || 0
+    productDetails?.product?.likes || 0,
   );
 
   const handleToggleLike = async () => {
@@ -226,7 +230,7 @@ function ProductDetails() {
           image: productDetails?.product.image_urls,
           description: productDetails?.product.description?.replace(
             /<[^>]*>/g,
-            ""
+            "",
           ),
           brand: {
             "@type": "Brand",
@@ -289,7 +293,7 @@ function ProductDetails() {
                           className="w-full h-[79px] rounded-xl object-cover cursor-pointer"
                           alt=""
                         />
-                      )
+                      ),
                     )}
                   </div>
                   <div className="flex flex-col gap-y-2 items-startp">
@@ -324,7 +328,7 @@ function ProductDetails() {
                         )}
                         <button
                           title="Share"
-                          onClick={() => setIsShareModalOpen(true)}
+                          onClick={handleShare}
                           className="w-[32px] h-[32px] rounded-full border-[0.67px] border-[#DADADA] flex items-center justify-center"
                         >
                           <img
@@ -350,7 +354,7 @@ function ProductDetails() {
                       <span className="text-[#75757A] font-normal text-sm">
                         {productDetails?.product.address_in_state},{" "}
                         {formatTimeElapsed(
-                          productDetails?.product?.created_at as string
+                          productDetails?.product?.created_at as string,
                         )}
                       </span>
                     </div>
@@ -370,7 +374,7 @@ function ProductDetails() {
                         "w-fit h-fit rounded-lg p-1 md:p-1.5 text-[10px] md:text-xs font-medium",
                         productDetails?.product.condition === "brand-new"
                           ? "text-global-green bg-[#07B4631A]"
-                          : "bg-[#B491071A] text-[#B49107]"
+                          : "bg-[#B491071A] text-[#B49107]",
                       )}
                     >
                       {productDetails?.product.condition
@@ -442,11 +446,11 @@ function ProductDetails() {
                     <div className="w-fit h-fit border border-[#E9EAEB] rounded-lg p-1.5 text-xs font-medium text-primary-300">
                       Market Price:{" "}
                       {formatPrice(
-                        productDetails?.product.market_price_from as number
+                        productDetails?.product.market_price_from as number,
                       )}{" "}
                       -{" "}
                       {formatPrice(
-                        productDetails?.product.market_price_to as number
+                        productDetails?.product.market_price_to as number,
                       )}
                     </div>
                   </div>
@@ -475,86 +479,100 @@ function ProductDetails() {
                     </div>
                   </div>
                   <div className="p-5">
-                    <div className="flex items-center gap-x-2">
-                      <div className="relative">
-                        <img
-                          src={PROFILE}
-                          className="w-[60px] h-[60px]"
-                          alt=""
-                        />
-                        <div className="border-4 w-[15px] h-[15px] right-0 top-10 bg-global-green absolute rounded-full border-white"></div>
-                      </div>
-                      <div className="flex flex-col items-start gap-y-1">
-                        <span className="text-[16px] font-semibold text-primary-300">
-                          {storeDetails?.data?.business_name ||
-                            productDetails?.product.user?.user_name}
-                        </span>
+                    {storeDetails?.data || productDetails?.product.user ? (
+                      <>
                         <div className="flex items-center gap-x-2">
-                          <img
-                            src={VERIFIED}
-                            className="w-[16px] h-[16px]"
-                            alt=""
-                          />
-
-                          <span className="text-[#75757A] text-xs font-medium">
-                            {productDetails?.product.user?.is_verified
-                              ? "Verified"
-                              : "Not Verified"}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-x-2">
-                          <img
-                            src={SINGLE_USER}
-                            className="w-[16px] h-[16px]"
-                            alt=""
-                          />
-                          <span className="text-[#75757A] text-xs font-medium">
-                            {getMembershipDuration(
-                              productDetails?.product.user?.created_at as string
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-3 flex flex-col w-full gap-y-2">
-                      <Button
-                        title={
-                          showSellerNumber ? (
-                            <div className="flex items-center justify-center gap-2">
-                              <span>
-                                {productDetails?.product.user?.phone_number}
-                              </span>
-
-                              <Copy
-                                className={clsx("w-4 h-4 cursor-pointer")}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  navigator.clipboard.writeText(
-                                    productDetails?.product.user
-                                      ?.phone_number || ""
-                                  );
-                                  toast.success("Copied to clipboard");
-                                }}
+                          <div className="relative">
+                            <img
+                              src={PROFILE}
+                              className="w-[60px] h-[60px]"
+                              alt=""
+                            />
+                            <div className="border-4 w-[15px] h-[15px] right-0 top-10 bg-global-green absolute rounded-full border-white"></div>
+                          </div>
+                          <div className="flex flex-col items-start gap-y-1">
+                            <span className="text-[16px] font-semibold text-primary-300">
+                              {storeDetails?.data?.business_name ||
+                                productDetails?.product.user?.user_name}
+                            </span>
+                            <div className="flex items-center gap-x-2">
+                              <img
+                                src={VERIFIED}
+                                className="w-[16px] h-[16px]"
+                                alt=""
                               />
-                            </div>
-                          ) : (
-                            "Show Seller Contact"
-                          )
-                        }
-                        btnStyles="w-full bg-global-green rounded-xl h-[40px]"
-                        textStyle="text-white font-medium text-sm"
-                        handleClick={() => setShowSellerNumber(true)}
-                      />
 
-                      <Button
-                        title="Let Us Handle It"
-                        btnStyles="w-full border border-[#E9EAEB] rounded-xl h-[40px]"
-                        textStyle="text-primary-300 font-medium text-sm"
-                        handleClick={() =>
-                          toast.success("Coming soon on Nedzl")
-                        }
-                      />
-                    </div>
+                              <span className="text-[#75757A] text-xs font-medium">
+                                {productDetails?.product.user?.is_verified
+                                  ? "Verified"
+                                  : "Not Verified"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-x-2">
+                              <img
+                                src={SINGLE_USER}
+                                className="w-[16px] h-[16px]"
+                                alt=""
+                              />
+                              <span className="text-[#75757A] text-xs font-medium">
+                                {getMembershipDuration(
+                                  productDetails?.product.user
+                                    ?.created_at as string,
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-3 flex flex-col w-full gap-y-2">
+                          <Button
+                            title={
+                              showSellerNumber ? (
+                                <div className="flex items-center justify-center gap-2">
+                                  <span>
+                                    {productDetails?.product.user?.phone_number}
+                                  </span>
+
+                                  <Copy
+                                    className={clsx("w-4 h-4 cursor-pointer")}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      navigator.clipboard.writeText(
+                                        productDetails?.product.user
+                                          ?.phone_number || "",
+                                      );
+                                      toast.success("Copied to clipboard");
+                                    }}
+                                  />
+                                </div>
+                              ) : (
+                                "Show Seller Contact"
+                              )
+                            }
+                            btnStyles="w-full bg-global-green rounded-xl h-[40px]"
+                            textStyle="text-white font-medium text-sm"
+                            handleClick={() => setShowSellerNumber(true)}
+                          />
+
+                          <Button
+                            title="Let Us Handle It"
+                            btnStyles="w-full border border-[#E9EAEB] rounded-xl h-[40px]"
+                            textStyle="text-primary-300 font-medium text-sm"
+                            handleClick={() =>
+                              toast.success("Coming soon on Nedzl")
+                            }
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="w-full py-5 flex flex-col items-center justify-center text-center gap-y-2">
+                        <span className="text-sm font-semibold text-red-600 uppercase">
+                          Inactive Seller
+                        </span>
+                        <p className="text-sm text-gray-500 font-medium">
+                          this user is not active on nedzl
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -563,12 +581,13 @@ function ProductDetails() {
           <ProductRow
             title="Similar Adverts"
             data={similarProduct?.data?.filter(
-              (item: ProductResponse) => item.id !== productDetails?.product?.id
+              (item: ProductResponse) =>
+                item.id !== productDetails?.product?.id,
             )}
             loading={isLoading}
             onSeeAll={() =>
               navigate(
-                `/products?category=${productDetails?.product?.category_name}`
+                `/products?category=${productDetails?.product?.category_name}`,
               )
             }
           />
@@ -636,7 +655,7 @@ function ProductDetails() {
                                   className="min-w-[100px] h-[100px] rounded-lg object-cover"
                                   alt=""
                                 />
-                              )
+                              ),
                             )}
                           </div>
                         )}
@@ -696,7 +715,7 @@ function ProductDetails() {
                     <div
                       onClick={() => setSelectedExperience("very-satisfied")}
                       className={clsx(
-                        "text-sm w-full cursor-pointer relative text-center border py-2.5 rounded-xl font-semibold text-[#28A745] bg-[#28A7451A] border-[#28A745]"
+                        "text-sm w-full cursor-pointer relative text-center border py-2.5 rounded-xl font-semibold text-[#28A745] bg-[#28A7451A] border-[#28A745]",
                       )}
                     >
                       Very Satisfied
@@ -707,7 +726,7 @@ function ProductDetails() {
                     <div
                       onClick={() => setSelectedExperience("satisfied")}
                       className={clsx(
-                        "text-sm  w-full cursor-pointer relative rounded-xl text-center py-2.5 border font-semibold text-[#FFC107] bg-[#FFC1071A] border-[#FFC107]"
+                        "text-sm  w-full cursor-pointer relative rounded-xl text-center py-2.5 border font-semibold text-[#FFC107] bg-[#FFC1071A] border-[#FFC107]",
                       )}
                     >
                       Satisfied
@@ -718,7 +737,7 @@ function ProductDetails() {
                     <div
                       onClick={() => setSelectedExperience("unsatisfied")}
                       className={clsx(
-                        "text-sm w-full cursor-pointer relative font-semibold rounded-xl text-center py-2.5 border text-[#DC3545] bg-[#DC35451A] border-[#DC3545]"
+                        "text-sm w-full cursor-pointer relative font-semibold rounded-xl text-center py-2.5 border text-[#DC3545] bg-[#DC35451A] border-[#DC3545]",
                       )}
                     >
                       Unsatisfied
@@ -853,7 +872,7 @@ function ProductDetails() {
               </div>
             </div>
           </Modal>
-          <Modal
+          {/* <Modal
             show={isShareModalOpen}
             onClose={() => setIsShareModalOpen(false)}
           >
@@ -939,7 +958,7 @@ function ProductDetails() {
                 </button>
               </div>
             </div>
-          </Modal>
+          </Modal> */}
         </>
       )}
     </MainLayout>

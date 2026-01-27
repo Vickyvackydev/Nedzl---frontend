@@ -46,24 +46,34 @@ export const GlobalSlice = createSlice({
         | "DELETE"
         | "VERIFY"
         | null
-      >
+      >,
     ) => {
       state.userAction = action.payload;
     },
     setProductAction: (
       state,
-      action: PayloadAction<"CLOSE" | "OPEN" | "DELETE" | "VIEW_REVIEWS" | null>
+      action: PayloadAction<
+        "CLOSE" | "OPEN" | "DELETE" | "VIEW_REVIEWS" | null
+      >,
     ) => {
       state.productAction = action.payload;
     },
     setProductDetails: (
       state,
-      action: PayloadAction<ProductResponse | null>
+      action: PayloadAction<ProductResponse | null>,
     ) => {
       state.productDetails = action.payload;
     },
     setProductImages: (state, action: PayloadAction<string[]>) => {
       state.productImages = action.payload;
+    },
+    resetGlobalState: (state) => {
+      state.productFields = false;
+      state.globalUserId = null;
+      state.userAction = null;
+      state.productDetails = null;
+      state.productAction = null;
+      state.productImages = [];
     },
   },
 });
@@ -75,6 +85,7 @@ export const {
   setProductDetails,
   setProductAction,
   setProductImages,
+  resetGlobalState,
 } = GlobalSlice.actions;
 
 export const selectProductFields = (state: RootState) =>

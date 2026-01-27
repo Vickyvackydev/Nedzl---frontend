@@ -169,10 +169,12 @@ function Overview() {
   };
   const handleFilterChange = (
     id: number | string,
-    newValue: string | number | null
+    newValue: string | number | null,
   ) => {
     setFilters((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, value: newValue } : item))
+      prev.map((item) =>
+        item.id === id ? { ...item, value: newValue } : item,
+      ),
     );
   };
 
@@ -227,9 +229,9 @@ function Overview() {
       if (response) {
         toast.success(response?.message);
         dispatch(setProductAction(null));
+        dispatch(setProductDetails(null));
         refetchProducts();
         refetch();
-        dispatch(setProductDetails(null));
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.message);
@@ -244,14 +246,14 @@ function Overview() {
     try {
       const response = await updateProductStatus(
         productDetails?.id as string,
-        productAction === "OPEN" ? "ONGOING" : "CLOSED"
+        productAction === "OPEN" ? "ONGOING" : "CLOSED",
       );
       if (response) {
         toast.success(response?.message);
         dispatch(setProductAction(null));
+        dispatch(setProductDetails(null));
         refetchProducts();
         refetch();
-        dispatch(setProductDetails(null));
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.message);
@@ -439,7 +441,7 @@ function Overview() {
                   type="button"
                   onClick={() =>
                     setCurrentPage(() =>
-                      Math.max(1, products?.data?.meta?.page - 1)
+                      Math.max(1, products?.data?.meta?.page - 1),
                     )
                   }
                   disabled={products?.meta?.page === 1}
@@ -466,7 +468,7 @@ function Overview() {
                 >
                   {Array.from(
                     { length: products?.data?.meta?.totalPages || 0 },
-                    (_, i) => i + 1
+                    (_, i) => i + 1,
                   ).map((pageNum) => (
                     <button
                       key={pageNum}
@@ -828,13 +830,13 @@ function Overview() {
                     <div
                       className={clsx(
                         "w-fit flex items-center gap-x-1 justify-center px-3 py-1.5 rounded-md",
-                        ui?.bg
+                        ui?.bg,
                       )}
                     >
                       <div
                         className={clsx(
                           "min-w-[5px] min-h-[5px] rounded-full",
-                          ui?.dot
+                          ui?.dot,
                         )}
                       />
 

@@ -172,8 +172,8 @@ function ProductManagement() {
           selectedStatus === "All"
             ? ""
             : selectedStatus.toUpperCase() === "ACTIVE"
-            ? "ONGOING"
-            : selectedStatus.toUpperCase(),
+              ? "ONGOING"
+              : selectedStatus.toUpperCase(),
         page: productSelectModal ? modalPage : currentPage,
         search,
         filters: appliedFilters,
@@ -193,7 +193,7 @@ function ProductManagement() {
 
   const handleToggleIds = (id: string) => {
     setSelectedProductIds((prev) =>
-      prev.includes(id) ? prev.filter((it) => it !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((it) => it !== id) : [...prev, id],
     );
   };
   const addFilter = (item: string) => {
@@ -223,10 +223,12 @@ function ProductManagement() {
   };
   const handleFilterChange = (
     id: number | string,
-    newValue: string | number | null
+    newValue: string | number | null,
   ) => {
     setFilters((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, value: newValue } : item))
+      prev.map((item) =>
+        item.id === id ? { ...item, value: newValue } : item,
+      ),
     );
   };
 
@@ -289,7 +291,7 @@ function ProductManagement() {
         description: selectedFeaturedProducts?.description,
       });
       setSelectedProductIds(
-        selectedFeaturedProducts.products?.map((item) => item.id)
+        selectedFeaturedProducts.products?.map((item) => item.id),
       );
     } else {
       setFields({ category_name: "", description: "" });
@@ -302,7 +304,8 @@ function ProductManagement() {
     try {
       const response = await deleteAdminProduct(productDetails?.id as string);
       if (response) {
-        setProductDetails(null);
+        dispatch(setProductDetails(null));
+        dispatch(setProductAction(null));
         toast.success(response?.message);
         setDeleteModal(false);
         refetchProducts();
@@ -319,10 +322,9 @@ function ProductManagement() {
     try {
       const response = await updateProductStatus(
         productDetails?.id as string,
-        productAction === "OPEN" ? "ONGOING" : "CLOSED"
+        productAction === "OPEN" ? "ONGOING" : "CLOSED",
       );
       if (response) {
-        setProductDetails(null);
         toast.success(response?.message);
         setCloseProductModal(false);
         dispatch(setProductAction(null));
@@ -411,7 +413,7 @@ function ProductManagement() {
               "w-full h-[40px] text-sm cursor-pointer rounded-xl px-3  font-medium",
               tab === "all"
                 ? "bg-[#FFFFFF] text-global-green"
-                : "bg-none text-[#656F7D] "
+                : "bg-none text-[#656F7D] ",
             )}
           >
             All Products
@@ -422,7 +424,7 @@ function ProductManagement() {
               "w-full h-[40px] text-sm cursor-pointer rounded-xl  text-nowrap px-3 font-medium",
               tab === "featured"
                 ? "bg-[#FFFFFF] text-global-green"
-                : "bg-none text-[#656F7D] "
+                : "bg-none text-[#656F7D] ",
             )}
           >
             Featured Products
@@ -459,7 +461,7 @@ function ProductManagement() {
                     "w-full px-3 h-[40px] text-sm cursor-pointer rounded-xl text-nowrap  font-medium",
                     selectedStatus === item
                       ? "bg-[#FFFFFF] text-global-green"
-                      : "bg-none text-[#656F7D] "
+                      : "bg-none text-[#656F7D] ",
                   )}
                 >
                   {item}
@@ -559,7 +561,7 @@ function ProductManagement() {
                       type="button"
                       onClick={() =>
                         setCurrentPage(() =>
-                          Math.max(1, products?.data?.meta?.page - 1)
+                          Math.max(1, products?.data?.meta?.page - 1),
                         )
                       }
                       disabled={products?.meta?.page === 1}
@@ -586,7 +588,7 @@ function ProductManagement() {
                     >
                       {Array.from(
                         { length: products?.data?.meta?.totalPages || 0 },
-                        (_, i) => i + 1
+                        (_, i) => i + 1,
                       ).map((pageNum) => (
                         <button
                           key={pageNum}
@@ -1144,13 +1146,13 @@ function ProductManagement() {
                   <div
                     className={clsx(
                       "w-fit flex items-center gap-x-1 justify-center px-3 py-1.5 rounded-md",
-                      ui?.bg
+                      ui?.bg,
                     )}
                   >
                     <div
                       className={clsx(
                         "min-w-[5px] min-h-[5px] rounded-full",
-                        ui?.dot
+                        ui?.dot,
                       )}
                     />
 
@@ -1299,7 +1301,7 @@ function ProductManagement() {
                       "w-fit h-fit   rounded-lg p-1.5 text-xs font-medium ",
                       item.condition === "brand-new"
                         ? "text-global-green bg-[#07B4631A]"
-                        : "bg-[#B491071A] text-[#B49107]"
+                        : "bg-[#B491071A] text-[#B49107]",
                     )}
                   >
                     {item?.condition?.replace(/-/g, " ").toUpperCase()}
@@ -1347,7 +1349,7 @@ function ProductManagement() {
                   type="button"
                   onClick={() =>
                     setModalPage(() =>
-                      Math.max(1, products?.data?.meta?.page - 1)
+                      Math.max(1, products?.data?.meta?.page - 1),
                     )
                   }
                   disabled={products?.meta?.page === 1}
@@ -1374,7 +1376,7 @@ function ProductManagement() {
                 >
                   {Array.from(
                     { length: products?.data?.meta?.totalPages || 0 },
-                    (_, i) => i + 1
+                    (_, i) => i + 1,
                   ).map((pageNum) => (
                     <button
                       key={pageNum}
@@ -1397,8 +1399,8 @@ function ProductManagement() {
                     setModalPage(() =>
                       Math.min(
                         products?.data?.meta?.totalPages,
-                        products?.meta?.page + 1
-                      )
+                        products?.meta?.page + 1,
+                      ),
                     )
                   }
                   disabled={

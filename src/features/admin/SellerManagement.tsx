@@ -39,6 +39,7 @@ import {
   selectUserAction,
   selectUserId,
   setUserAction,
+  setUserId,
 } from "../../state/slices/globalReducer";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
@@ -122,7 +123,7 @@ function SellerManagement() {
         selectedStatus === "All Sellers" ? "" : selectedStatus.toUpperCase(),
         currentPage,
         search,
-        appliedFilters
+        appliedFilters,
       ),
   });
 
@@ -156,10 +157,12 @@ function SellerManagement() {
   };
   const handleFilterChange = (
     id: number | string,
-    newValue: string | number | null
+    newValue: string | number | null,
   ) => {
     setFilters((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, value: newValue } : item))
+      prev.map((item) =>
+        item.id === id ? { ...item, value: newValue } : item,
+      ),
     );
   };
 
@@ -239,6 +242,9 @@ function SellerManagement() {
       if (response) {
         toast.success(response?.message);
         dispatch(setUserAction(null));
+        if (userAction === "DELETE") {
+          dispatch(setUserId(null));
+        }
         refetchusers();
       }
     } catch (error: any) {
@@ -347,7 +353,7 @@ function SellerManagement() {
                 "w-[98px] h-[40px] text-sm cursor-pointer rounded-xl  font-medium",
                 selectedStatus === item
                   ? "bg-[#FFFFFF] text-global-green"
-                  : "bg-none text-[#656F7D] "
+                  : "bg-none text-[#656F7D] ",
               )}
             >
               {item}
@@ -442,7 +448,7 @@ function SellerManagement() {
                   type="button"
                   onClick={() =>
                     setCurrentPage(() =>
-                      Math.max(1, users?.data?.meta?.page - 1)
+                      Math.max(1, users?.data?.meta?.page - 1),
                     )
                   }
                   disabled={users?.meta?.page === 1}
@@ -469,7 +475,7 @@ function SellerManagement() {
                 >
                   {Array.from(
                     { length: users?.data?.meta?.totalPages || 0 },
-                    (_, i) => i + 1
+                    (_, i) => i + 1,
                   ).map((pageNum) => (
                     <button
                       key={pageNum}
