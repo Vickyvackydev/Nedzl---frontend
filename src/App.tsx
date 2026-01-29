@@ -26,6 +26,8 @@ import TermsOfService from "./features/TermsOfService";
 import Contact from "./features/Contact";
 import FAQs from "./features/FAQs";
 import About from "./features/About";
+import ForgotPassword from "./features/auth/ForgotPassword";
+import ResetPassword from "./features/auth/ResetPassword";
 
 function App() {
   const location = useLocation();
@@ -41,6 +43,8 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/auth/reset-password" element={<ResetPassword />} />
         <Route path="/email-sent" element={<CheckEmailVerification />} />
         <Route path="/auth/verify/success" element={<EmailVerifiedSuccess />} />
         <Route path="/auth/verify" element={<EmailVerificationLoading />} />

@@ -7,8 +7,20 @@ export const register = async (payload: UserPayload) => {
 };
 
 export const login = async (payload: { email: string; password: string }) => {
-  const response = API.post("/auth/login", payload);
-  return (await response).data;
+  const response = await API.post("/auth/login", payload);
+  return response.data;
+};
+
+export const forgotPassword = async (payload: { email: string }) => {
+  const response = await API.post("/auth/forgot-password", payload);
+  return response.data;
+};
+export const resetPassword = async (payload: {
+  token: string;
+  password: string;
+}) => {
+  const response = await API.post("/auth/reset-password", payload);
+  return response.data;
 };
 
 export const verifyEmail = async (token: string) => {

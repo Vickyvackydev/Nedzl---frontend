@@ -19,7 +19,7 @@ export default function CheckEmailVerification() {
         </h1>
         <p className="text-gray-600 text-base leading-relaxed">
           We’ve sent a verification link to your email. Please check your inbox
-          and click the link to activate your account.
+          and click the link to verify your account.
         </p>
       </div>
     </div>
