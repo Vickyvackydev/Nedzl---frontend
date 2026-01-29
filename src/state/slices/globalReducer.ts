@@ -17,6 +17,7 @@ interface GlobalTypes {
   productDetails: ProductResponse | null;
   productAction: "CLOSE" | "OPEN" | "DELETE" | "VIEW_REVIEWS" | null;
   productImages: string[];
+  currentPage: number;
 }
 const initialState: GlobalTypes = {
   productFields: false,
@@ -25,6 +26,7 @@ const initialState: GlobalTypes = {
   productDetails: null,
   productAction: null,
   productImages: [],
+  currentPage: 1,
 };
 export const GlobalSlice = createSlice({
   initialState,
@@ -67,6 +69,9 @@ export const GlobalSlice = createSlice({
     setProductImages: (state, action: PayloadAction<string[]>) => {
       state.productImages = action.payload;
     },
+    setCurrentPage: (state, action: PayloadAction<number>) => {
+      state.currentPage = action.payload;
+    },
     resetGlobalState: (state) => {
       state.productFields = false;
       state.globalUserId = null;
@@ -86,6 +91,7 @@ export const {
   setProductAction,
   setProductImages,
   resetGlobalState,
+  setCurrentPage,
 } = GlobalSlice.actions;
 
 export const selectProductFields = (state: RootState) =>
@@ -100,4 +106,6 @@ export const selectProductAction = (state: RootState) =>
   state.globalstate.productAction;
 export const selectProductImages = (state: RootState) =>
   state.globalstate.productImages;
+export const selectCurrentPage = (state: RootState) =>
+  state.globalstate.currentPage;
 export const globalReducer = GlobalSlice.reducer;

@@ -22,6 +22,11 @@ import { motion, AnimatePresence } from "framer-motion";
 // import clsx from "clsx";
 import { LocationDropdown } from "../components/LocationDropdown";
 import Pagination from "../components/Pagination";
+import {
+  selectCurrentPage,
+  setCurrentPage,
+} from "../state/slices/globalReducer";
+import { useDispatch, useSelector } from "react-redux";
 
 interface FilterContentProps {
   selectedLocation: string;
@@ -37,6 +42,7 @@ interface FilterContentProps {
   resetFilters: () => void;
   section: string | null;
   setCurrentPage: (page: number) => void;
+  dispatch: (action: any) => void;
 }
 
 const FilterContent = ({
@@ -53,6 +59,7 @@ const FilterContent = ({
   resetFilters,
   section,
   setCurrentPage,
+  dispatch,
 }: FilterContentProps) => (
   <div className="flex flex-col gap-y-3">
     <LocationDropdown
@@ -104,7 +111,7 @@ const FilterContent = ({
               onClick={() => {
                 const value = item.value;
                 setSelectedCatgory(value);
-                setCurrentPage(1);
+                dispatch(setCurrentPage(1));
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 window.history.replaceState(
                   {},
@@ -193,10 +200,11 @@ function Products() {
 
   const [selectedCatgory, setSelectedCatgory] = useState(category);
 
-  const [currentPage, setCurrentPage] = useState(1);
+  // const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(12);
 
   //   const [location, setLocation] = useState("");
+  const currentPage = useSelector(selectCurrentPage);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedUniversity, setSelectedUniversity] = useState("");
   const [payload, setPayload] = useState({});
@@ -206,6 +214,7 @@ function Products() {
   });
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (category && selectedCatgory !== "") {
@@ -263,7 +272,7 @@ function Products() {
     });
   }, [categories, categorizedProductCount]);
 
-  console.log("categories with count", categoriesWithCount);
+  // console.log("categories with count", categoriesWithCount);
 
   const handleApplyFilters = () => {
     const filters = {
@@ -273,7 +282,7 @@ function Products() {
       max_price: Number(priceRange.max.replace(/,/g, "")),
     };
     setPayload(filters);
-    setCurrentPage(1);
+
     refetch();
     setIsFilterOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -285,7 +294,7 @@ function Products() {
     setSelectedCatgory(category);
     setSelectedLocation("");
     setSelectedUniversity("");
-    setCurrentPage(1);
+    dispatch(setCurrentPage(1));
 
     refetch();
     setIsFilterOpen(false);
@@ -393,6 +402,7 @@ function Products() {
               resetFilters={resetFilters}
               section={section}
               setCurrentPage={setCurrentPage}
+              dispatch={dispatch}
             />
           </div>
 
@@ -429,7 +439,7 @@ function Products() {
               currentPage={currentPage}
               totalPages={categorizedProduct?.totalpages}
               onPageChange={(page) => {
-                setCurrentPage(page);
+                dispatch(setCurrentPage(page));
               }}
             />
           </div>
@@ -477,6 +487,7 @@ function Products() {
                 resetFilters={resetFilters}
                 section={section}
                 setCurrentPage={setCurrentPage}
+                dispatch={dispatch}
               />
             </motion.div>
           </>
