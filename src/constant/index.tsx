@@ -180,19 +180,19 @@ export const footer = [
     links: [
       {
         title: "Service Center",
-        link: "",
+        link: "/contact",
       },
       {
-        title: "How to shop on NEDZL?",
-        link: "",
+        title: "How to Create an Account on NEDZL?",
+        link: "https://youtu.be/F5e99lIccM4?si=xuynsm9FG46jkQ_2",
       },
       {
-        title: "How to return a product on NEDZL?",
-        link: "",
+        title: "How to post a product on NEDZL?",
+        link: "https://youtu.be/b-fte6XFO9o?si=PAF_4ko-3c9ntmrS",
       },
       {
         title: "Report a Product",
-        link: "",
+        link: "/contact",
       },
     ],
   },
@@ -205,7 +205,7 @@ export const footer = [
       },
       {
         title: "Help Center",
-        link: "",
+        link: "/contact",
       },
       {
         title: "Contact Us",
