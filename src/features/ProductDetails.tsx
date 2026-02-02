@@ -41,6 +41,8 @@ import Modal from "../components/Modal";
 import SelectInput from "../components/SelectInput";
 import { createReview, getPublicReviews } from "../services/reviews.service";
 import { Store } from "../state/store";
+import ImagePreviewer from "./user-dashboard/components/ImagePreviewer";
+import { MdPreview } from "react-icons/md";
 
 function ProductDetails() {
   const [activeTab, setActiveTab] = useState<
@@ -52,6 +54,9 @@ function ProductDetails() {
   const [selectedExperience, setSelectedExperience] = useState<
     "very-satisfied" | "satisfied" | "unsatisfied" | string
   >("");
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
+    null,
+  );
   const location = useLocation();
   const { pathname } = location;
   const product_id = pathname.split("/").pop();
@@ -277,19 +282,42 @@ function ProductDetails() {
             <div className="w-full flex flex-col md:flex-row items-start justify-between mt-4 gap-7">
               <div className="w-full md:w-[70%] flex flex-col gap-y-4">
                 <div className="w-full p-5 bg-white shadow-box rounded-xl flex flex-col gap-y-3">
-                  <div className="w-full ">
+                  <div className="w-full relative group">
                     <img
                       src={productDetails?.product.image_urls[currentImage]}
                       className="w-full h-[300px] rounded-xl object-cover"
                       alt=""
                     />
+
+                    {/* Preview Button */}
+                    <button
+                      onClick={() => setSelectedImageIndex(currentImage)}
+                      className="
+      absolute bottom-3 right-3
+      flex items-center gap-2
+      px-3 py-2
+      text-sm font-medium
+      bg-black/70 text-white
+      rounded-lg
+      opacity-0 scale-95
+      group-hover:opacity-100 group-hover:scale-100
+      transition-all duration-200
+      hover:bg-black
+    "
+                    >
+                      <MdPreview /> Preview
+                    </button>
                   </div>
+
                   <div className="max-w-full overflow-x-scroll flex items-center gap-x-2">
                     {productDetails?.product?.image_urls?.map(
                       (img: string, i: number) => (
                         <img
                           src={img}
-                          onClick={() => setCurrentImage(i)}
+                          onClick={() => {
+                            setCurrentImage(i);
+                            setSelectedImageIndex(i);
+                          }}
                           className="w-full h-[79px] rounded-xl object-cover cursor-pointer"
                           alt=""
                         />
@@ -875,6 +903,27 @@ function ProductDetails() {
               </div>
             </div>
           </Modal>
+          {/* Image Previewer */}
+          {selectedImageIndex !== null && productDetails && (
+            <ImagePreviewer
+              // @ts-ignore
+              images={productDetails?.product?.image_urls}
+              currentIndex={selectedImageIndex}
+              onClose={() => setSelectedImageIndex(null)}
+              onNext={() =>
+                setSelectedImageIndex(
+                  (i) => (i! + 1) % productDetails?.product?.image_urls.length,
+                )
+              }
+              onPrev={() =>
+                setSelectedImageIndex(
+                  (i) =>
+                    (i! - 1 + productDetails?.product?.image_urls.length) %
+                    productDetails?.product?.image_urls.length,
+                )
+              }
+            />
+          )}
           {/* <Modal
             show={isShareModalOpen}
             onClose={() => setIsShareModalOpen(false)}
