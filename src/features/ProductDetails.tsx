@@ -484,7 +484,10 @@ function ProductDetails() {
                         <div className="flex items-center gap-x-2">
                           <div className="relative">
                             <img
-                              src={PROFILE}
+                              src={
+                                productDetails?.product?.user?.image_url ||
+                                PROFILE
+                              }
                               className="w-[60px] h-[60px]"
                               alt=""
                             />
