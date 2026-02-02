@@ -488,7 +488,7 @@ function ProductDetails() {
                                 productDetails?.product?.user?.image_url ||
                                 PROFILE
                               }
-                              className="w-[60px] h-[60px]"
+                              className="w-[60px] h-[60px] rounded-full"
                               alt=""
                             />
                             <div className="border-4 w-[15px] h-[15px] right-0 top-10 bg-global-green absolute rounded-full border-white"></div>
