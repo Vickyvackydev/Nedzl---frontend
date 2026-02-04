@@ -9,7 +9,9 @@ import {
 import Button from "../../../components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  selectCurrentPage,
   selectProductFields,
+  setCurrentPage,
   setProductFields,
 } from "../../../state/slices/globalReducer";
 import SelectInput from "../../../components/SelectInput";
@@ -37,6 +39,7 @@ import moment from "moment";
 import { formatText } from "../../../utils";
 import Modal from "../../../components/Modal";
 import { Ban } from "lucide-react";
+import Pagination from "../../../components/Pagination";
 
 type Tabs = "active" | "closed" | "reviewed";
 
@@ -46,11 +49,12 @@ function Products() {
   const [isCreatingProduct, setIsCreatingProduct] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [editingProduct, setEditingProduct] = useState<ProductType | null>(
-    null
+    null,
   );
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
-    null
+    null,
   );
+  const currentPage = useSelector(selectCurrentPage);
   const [deleteModal, setDeleteModal] = useState(false);
   // const [closeProductModal, setCloseProductModal] = useState(false);
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
@@ -86,10 +90,11 @@ function Products() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["user-products", activeTab],
+    queryKey: ["user-products", activeTab, currentPage],
     queryFn: () =>
       getUserProducts({
         status: activeTab === "active" ? "ONGOING" : activeTab.toUpperCase(),
+        page: currentPage,
       }),
   });
 
@@ -116,7 +121,7 @@ function Products() {
     const selectedFiles = Array.from(e.target.files);
 
     const validFiles = selectedFiles.filter(
-      (file) => file.type === "image/jpeg" || file.type === "image/jpg"
+      (file) => file.type === "image/jpeg" || file.type === "image/jpg",
     );
 
     if (validFiles.length < selectedFiles.length) {
@@ -197,7 +202,7 @@ function Products() {
     // Handle existing images (URLs)
     const imageUrls = Array.isArray(product.image_urls)
       ? product.image_urls.filter(
-          (img): img is string => typeof img === "string"
+          (img): img is string => typeof img === "string",
         )
       : [];
     setExistingImageUrls(imageUrls);
@@ -265,15 +270,15 @@ function Products() {
     formData.append("product_name", formFields.product_name);
     formData.append(
       "product_price",
-      Number(formFields.product_price.replace(/,/g, "")) as any
+      Number(formFields.product_price.replace(/,/g, "")) as any,
     );
     formData.append(
       "market_price_from",
-      Number(formFields.market_price_from.replace(/,/g, "")) as any
+      Number(formFields.market_price_from.replace(/,/g, "")) as any,
     );
     formData.append(
       "market_price_to",
-      Number(formFields.market_price_to.replace(/,/g, "")) as any
+      Number(formFields.market_price_to.replace(/,/g, "")) as any,
     );
     formData.append("category_name", formFields.category_name);
     formData.append("condition", formFields.condition);
@@ -282,7 +287,7 @@ function Products() {
       "is_negotiable",
       formFields.is_negotiable === "yes" || formFields.is_negotiable === "Yes"
         ? "true"
-        : "false"
+        : "false",
     );
     formData.append("state", formFields.state);
     formData.append("address_in_state", formFields.address_in_state);
@@ -320,7 +325,7 @@ function Products() {
         ? await updateProduct(
             editingProduct.id as string,
             formData,
-            setUploadProgress
+            setUploadProgress,
           )
         : await uploadProduct(formData, setUploadProgress);
 
@@ -335,7 +340,7 @@ function Products() {
       }
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.error || "An error occured! Please try again"
+        error?.response?.data?.error || "An error occured! Please try again",
       );
     } finally {
       setIsCreatingProduct(false);
@@ -403,7 +408,7 @@ function Products() {
     try {
       const response = await updateProductStatus(
         selectedProductId as string,
-        productAction as "CLOSED" | "ONGOING" | "REJECTED"
+        productAction as "CLOSED" | "ONGOING" | "REJECTED",
       );
       if (response) {
         toast.success(response?.message);
@@ -458,7 +463,7 @@ function Products() {
                   const numeric = val.replace(/\D/g, ""); // only digits
                   const formatted = numeric.replace(
                     /\B(?=(\d{3})+(?!\d))/g,
-                    ","
+                    ",",
                   );
                   setFormFields({
                     ...formFields,
@@ -477,7 +482,7 @@ function Products() {
                   const numeric = val.replace(/\D/g, ""); // only digits
                   const formatted = numeric.replace(
                     /\B(?=(\d{3})+(?!\d))/g,
-                    ","
+                    ",",
                   );
                   setFormFields({ ...formFields, market_price_to: formatted });
                 }}
@@ -762,7 +767,7 @@ function Products() {
                     <div className="w-full flex flex-col md:flex-row items-start gap-2">
                       <img
                         src={item?.image_urls[0] as string}
-                        className="w-full md:w-[208px] h-[208px] rounded-lg object-cover"
+                        className="w-full max-w-[208px] h-[208px] rounded-lg object-cover"
                         alt=""
                       />
                       <div className="w-full flex flex-col gap-y-2">
@@ -871,6 +876,18 @@ function Products() {
                   </div>
                 ))}
               </div>
+
+              {userProducts?.data?.totalPages > 1 && (
+                <div className="w-full flex justify-end mt-4">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={userProducts?.data?.totalPages}
+                    onPageChange={(page) => {
+                      dispatch(setCurrentPage(page));
+                    }}
+                  />
+                </div>
+              )}
             </div>
           ) : isLoading ? (
             <div className="flex space-x-1 h-[75vh] justify-center items-center">
