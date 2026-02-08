@@ -18,17 +18,13 @@ import Button from "../components/Button";
 import ProductRow from "../components/product-row";
 import { useQuery } from "@tanstack/react-query";
 import {
-  getAllProducts,
   getSellerStoreDetails,
+  getSimilarProducts,
   getSingleProduct,
   toggleLike,
 } from "../services/product.service";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import {
-  ProductResponse,
-  ReviewResponseType,
-  SingleProductResponse,
-} from "../types";
+import { ReviewResponseType, SingleProductResponse } from "../types";
 import {
   formatPrice,
   formatTimeElapsed,
@@ -81,11 +77,8 @@ function ProductDetails() {
     isLoading,
     // refetch,
   } = useQuery({
-    queryKey: ["similar-product", productDetails?.product?.category_name],
-    queryFn: () =>
-      getAllProducts({
-        category_name: productDetails?.product?.category_name || "",
-      }),
+    queryKey: ["similar-products", productDetails?.product?.id],
+    queryFn: () => getSimilarProducts(productDetails?.product?.id as string),
   });
 
   const {
@@ -611,10 +604,7 @@ function ProductDetails() {
           </div>
           <ProductRow
             title="Similar Adverts"
-            data={similarProduct?.data?.filter(
-              (item: ProductResponse) =>
-                item.id !== productDetails?.product?.id,
-            )}
+            data={similarProduct}
             loading={isLoading}
             onSeeAll={() =>
               navigate(

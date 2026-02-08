@@ -16,7 +16,7 @@ export const uploadProduct = async (data: FormData, setProgress: Function) => {
 export const updateProduct = async (
   id: string,
   data: FormData,
-  setProgress: Function
+  setProgress: Function,
 ) => {
   const response = await API.put(`/products/${id}/user`, data, {
     headers: { "Content-Type": "multipart/formdata" },
@@ -38,6 +38,14 @@ export const getUserProducts = async (filters: Record<string, any>) => {
 export const getAllProducts = async (filters: Record<string, any>) => {
   const query = buildQueryStrings(filters);
   const response = await API.get(`/products?${query}`);
+  return response.data?.data;
+};
+export const getSimilarProducts = async (
+  id: string,
+  // filters?: Record<string, any>,
+) => {
+  // const query = buildQueryStrings(filters as Record<string, any>);
+  const response = await API.get(`/products/${id}/similar`);
   return response.data?.data;
 };
 export const getSingleProduct = async (id: string) => {
@@ -69,7 +77,7 @@ export const deleteProduct = async (id: string) => {
 
 export const updateProductStatus = async (
   id: string,
-  status: "CLOSED" | "ONGOING" | "REJECTED"
+  status: "CLOSED" | "ONGOING" | "REJECTED",
 ) => {
   const response = await API.patch(`/products/update/${id}/status`, { status });
   return response.data;

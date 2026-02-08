@@ -10,7 +10,7 @@ function ProductCard({ item }: { item: ProductType }) {
   return (
     <div
       onClick={() => navigate(`/product-details/${item.id}`)}
-      className="w-full cursor-pointer h-full bg-white hover:scale-105 transition-all duration-300 shadow-box p-2 md:p-3 rounded-xl flex flex-col gap-y-1 md:gap-y-2 items-start"
+      className="w-full max-w-[250px] cursor-pointer h-full bg-white hover:scale-105 transition-all duration-300 shadow-box p-2 md:p-3 rounded-xl flex flex-col gap-y-1 md:gap-y-2 items-start"
     >
       <img
         src={item?.image_urls?.[0] as string}
@@ -43,7 +43,7 @@ function ProductCard({ item }: { item: ProductType }) {
             "w-fit h-fit rounded-lg p-1 md:p-1.5 text-[10px] md:text-xs font-medium",
             item.condition === "brand-new"
               ? "text-global-green bg-[#07B4631A]"
-              : "bg-[#B491071A] text-[#B49107]"
+              : "bg-[#B491071A] text-[#B49107]",
           )}
         >
           {item?.condition?.replace(/-/g, " ").toUpperCase()}
