@@ -512,7 +512,7 @@ function ProductDetails() {
                               className="w-[60px] h-[60px] rounded-full"
                               alt=""
                             />
-                            <div className="border-4 w-[15px] h-[15px] right-0 top-10 bg-global-green absolute rounded-full border-white"></div>
+                            <div className="border-4 w-[15px] h-[15px] -right-1 top-11 bg-global-green absolute rounded-full border-white"></div>
                           </div>
                           <div className="flex flex-col items-start gap-y-1">
                             <span className="text-[16px] font-semibold text-primary-300">
