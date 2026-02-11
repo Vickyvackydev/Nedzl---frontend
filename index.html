@@ -2,16 +2,49 @@
 <html lang="en">
   <head>
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-60X6VD7Q6J"></script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-60X6VD7Q6J"
+    ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
         dataLayer.push(arguments);
       }
-      gtag('js', new Date());
+      gtag("js", new Date());
 
-      gtag('config', 'G-60X6VD7Q6J');
+      gtag("config", "G-60X6VD7Q6J");
     </script>
+    <!-- Meta Pixel Code -->
+    <script>
+      !(function (f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+        n = f.fbq = function () {
+          n.callMethod
+            ? n.callMethod.apply(n, arguments)
+            : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = "2.0";
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      })(
+        window,
+        document,
+        "script",
+        "https://connect.facebook.net/en_US/fbevents.js",
+      );
+      fbq("init", "1461293815357352");
+      fbq("track", "PageView");
+    </script>
+
+    <!-- End Meta Pixel Code -->
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -23,7 +56,10 @@
       rel="stylesheet"
     />
 
-    <title>Buy & Sell Used Items Easily on Nedzl.com – The Ultimate Student Marketplace</title>
+    <title>
+      Buy & Sell Used Items Easily on Nedzl.com – The Ultimate Student
+      Marketplace
+    </title>
     <meta
       name="description"
       content="Looking for a smart way to buy or sell used items on campus? Welcome to Nedzl.com – the trusted student-focused e-commerce platform built to connect university students across Nigeria."
@@ -39,7 +75,10 @@
     <meta property="og:url" content="https://www.nedzl.com/" />
     <meta property="og:site_name" content="Nedzl" />
     <meta property="og:locale" content="en_NG" />
-    <meta property="og:title" content="Buy & Sell Used Items Easily on Nedzl.com – The Ultimate Student Marketplace" />
+    <meta
+      property="og:title"
+      content="Buy & Sell Used Items Easily on Nedzl.com – The Ultimate Student Marketplace"
+    />
     <meta
       property="og:description"
       content="The trusted student-focused e-commerce platform built to connect university students across Nigeria. Save money, make money, and connect easily."
@@ -58,7 +97,10 @@
       property="twitter:description"
       content="The trusted student-focused e-commerce platform built to connect university students across Nigeria. Save money, make money, and connect easily."
     />
-    <meta property="twitter:image" content="https://www.nedzl.com/og-image.jpg" />
+    <meta
+      property="twitter:image"
+      content="https://www.nedzl.com/og-image.jpg"
+    />
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -69,7 +111,11 @@
         "url": "https://www.nedzl.com",
         "logo": "https://www.nedzl.com/favicon.ico",
         "description": "The trusted student-focused e-commerce platform built to connect university students across Nigeria.",
-        "sameAs": ["https://facebook.com/nedzl", "https://twitter.com/nedzl", "https://instagram.com/nedzl"]
+        "sameAs": [
+          "https://facebook.com/nedzl",
+          "https://twitter.com/nedzl",
+          "https://instagram.com/nedzl"
+        ]
       }
     </script>
     <script type="application/ld+json">
@@ -87,6 +133,13 @@
     </script>
   </head>
   <body>
+    <noscript
+      ><img
+        height="1"
+        width="1"
+        style="display: none"
+        src="https://www.facebook.com/tr?id=1461293815357352&ev=PageView&noscript=1"
+    /></noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

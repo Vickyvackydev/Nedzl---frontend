@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MainLayout from "../layout/MainLayout";
 import SEO from "../components/SEO";
 import {
@@ -212,6 +212,26 @@ function ProductDetails() {
       setLikesCount(likesCount);
     }
   };
+
+  useEffect(() => {
+    // Only fire if the product data has loaded and fbq is ready
+    if (
+      productDetails?.product &&
+      productDetails?.product?.id &&
+      (window as any).fbq
+    ) {
+      (window as any).fbq("track", "ViewContent", {
+        content_ids: [productDetails?.product?.id],
+        content_type: "product",
+        value: productDetails?.product?.product_price,
+        currency: "NGN",
+      });
+      console.log(
+        "Meta Pixel: ViewContent tracked for",
+        productDetails?.product?.id,
+      );
+    }
+  }, [productDetails]);
 
   return (
     <MainLayout>
