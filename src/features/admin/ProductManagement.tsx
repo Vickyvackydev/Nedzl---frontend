@@ -245,6 +245,7 @@ function ProductManagement() {
   }, [currentPage]);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -940,17 +941,17 @@ function ProductManagement() {
             </div>
           </div>
         )}
-        {/* {tab === "featured" && (
+        {tab === "featured" && (
           <div className="flex items-end justify-end mt-5">
             <button
-              onClick={handleDeleteAllFeaturedProduct}
+              onClick={() => setShowResetConfirm(true)}
               disabled={deleting}
               className="px-5 py-2 text-white bg-red-500 rounded-xl  font-medium hover:bg-red-600 flex items-end self-end transition-colors"
             >
               {deleting ? "Deleting..." : "Reset"}
             </button>
           </div>
-        )} */}
+        )}
         {/* <div className="flex items-end justify-end mt-5">
           <button
             onClick={handleDeleteAllFeaturedProduct}
@@ -961,6 +962,40 @@ function ProductManagement() {
           </button>
         </div> */}
       </div>
+      <CustomModal
+        open={showResetConfirm}
+        close={() => setShowResetConfirm(false)}
+        width="w-[450px]"
+        modalTitle="Reset Featured Products"
+      >
+        <div className="p-5 space-y-4">
+          <p className="text-sm text-primary-300">
+            This will remove all currently featured products from the homepage.
+            You will need to set them up again.
+          </p>
+          <p className="text-sm text-red-500 font-medium">
+            This action cannot be undone.
+          </p>
+          <div className="flex items-center justify-end gap-3 pt-3">
+            <button
+              onClick={() => setShowResetConfirm(false)}
+              className="px-4 py-2.5 rounded-xl border border-[#E9EAEB] text-sm font-medium text-primary-300"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                handleDeleteAllFeaturedProduct();
+                setShowResetConfirm(false);
+              }}
+              disabled={deleting}
+              className="px-4 py-2.5 rounded-xl text-sm font-medium text-white bg-red-500 hover:bg-red-600 disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {deleting ? "Deleting..." : "Yes, reset"}
+            </button>
+          </div>
+        </div>
+      </CustomModal>
       <Modal
         show={
           productDetails !== null &&

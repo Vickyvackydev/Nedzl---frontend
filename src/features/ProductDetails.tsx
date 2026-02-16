@@ -359,24 +359,26 @@ function ProductDetails() {
       ) : (
         <>
           <div className="px-4 md:px-20 py-7 bg-[#F7F7F7]">
-            <div className="w-full flex items-center justify-start gap-x-3">
-              <Link
-                to={"/"}
-                className="w-fit h-fit px-2 py-1.5 rounded-full text-xs font-semibold text-primary-300 bg-white shadow-box"
-              >
-                Home
-              </Link>
-              <span className="text-xs font-semibold text-primary-300">/</span>
-              <Link
-                to={`/products?category=${productDetails?.product.category_name}`}
-                className="w-fit h-fit px-2 py-1.5 rounded-full text-xs font-semibold text-primary-300 bg-white shadow-box"
-              >
-                {category?.charAt(0).toUpperCase() + category?.slice(1)!}
-              </Link>
-              <span className="text-xs font-semibold text-primary-300">/</span>
+            <div className="w-full overflow-x-auto md:overflow-visible">
+              <div className="flex items-center justify-start gap-x-3 whitespace-nowrap pb-1">
+                <Link
+                  to={"/"}
+                  className="w-fit h-fit px-2 py-1.5 rounded-full text-xs font-semibold text-primary-300 bg-white shadow-box"
+                >
+                  Home
+                </Link>
+                <span className="text-xs font-semibold text-primary-300">/</span>
+                <Link
+                  to={`/products?category=${productDetails?.product.category_name}`}
+                  className="w-fit h-fit px-2 py-1.5 rounded-full text-xs font-semibold text-primary-300 bg-white shadow-box"
+                >
+                  {category?.charAt(0).toUpperCase() + category?.slice(1)!}
+                </Link>
+                <span className="text-xs font-semibold text-primary-300">/</span>
 
-              <div className="w-fit h-fit px-2 py-1.5 rounded-full text-xs font-semibold text-primary-300 bg-white shadow-box">
-                {productDetails?.product.product_name}
+                <div className="w-fit h-fit px-2 py-1.5 rounded-full text-xs font-semibold text-primary-300 bg-white shadow-box">
+                  {productDetails?.product.product_name}
+                </div>
               </div>
             </div>
             <div className="w-full flex flex-col md:flex-row items-start justify-between mt-4 gap-7">
