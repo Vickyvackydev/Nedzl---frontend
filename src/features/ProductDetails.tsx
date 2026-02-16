@@ -109,6 +109,117 @@ function ProductDetails() {
     review: "",
   });
 
+  const product = productDetails?.product;
+  const reviews = (publicReviews?.data || []) as ReviewResponseType[];
+
+  const mapExperienceToRating = (experience: string) => {
+    if (experience === "very-satisfied") {
+      return 5;
+    }
+    if (experience === "satisfied") {
+      return 4;
+    }
+    if (experience === "unsatisfied") {
+      return 2;
+    }
+    return 3;
+  };
+
+  const ratingValues: number[] = reviews.map((review) =>
+    mapExperienceToRating(review.experience),
+  );
+
+  const totalRating = ratingValues.reduce((total, rating) => total + rating, 0);
+
+  const averageRating =
+    ratingValues.length > 0 ? totalRating / ratingValues.length : null;
+
+  let priceValidUntil: string | null = null;
+  if (product?.created_at) {
+    const createdDate = new Date(product.created_at);
+    if (!Number.isNaN(createdDate.getTime())) {
+      createdDate.setDate(createdDate.getDate() + 30);
+      priceValidUntil = createdDate.toISOString().split("T")[0];
+    }
+  }
+
+  let productStructuredData: object | undefined;
+  if (product) {
+    const data: any = {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      name: product.product_name,
+      image: product.image_urls,
+      description: product.description
+        ? product.description.replace(/<[^>]*>/g, "")
+        : "",
+      brand: {
+        "@type": "Brand",
+        name: product.brand_name || "Nedzl",
+      },
+      offers: {
+        "@type": "Offer",
+        url: window.location.href,
+        priceCurrency: "NGN",
+        price: product.product_price,
+        availability: "https://schema.org/InStock",
+        itemCondition:
+          product.condition === "brand-new"
+            ? "https://schema.org/NewCondition"
+            : "https://schema.org/UsedCondition",
+        hasMerchantReturnPolicy: {
+          "@type": "MerchantReturnPolicy",
+          applicableCountry: "NG",
+          returnPolicyCategory: "https://schema.org/MerchantReturnNotPermitted",
+        },
+        shippingDetails: {
+          "@type": "OfferShippingDetails",
+          shippingDestination: {
+            "@type": "DefinedRegion",
+            addressCountry: "NG",
+          },
+          shippingRate: {
+            "@type": "MonetaryAmount",
+            value: "0",
+            currency: "NGN",
+          },
+        },
+      },
+    };
+
+    if (priceValidUntil) {
+      data.offers.priceValidUntil = priceValidUntil;
+    }
+
+    if (averageRating && ratingValues.length > 0) {
+      data.aggregateRating = {
+        "@type": "AggregateRating",
+        ratingValue: averageRating.toFixed(1),
+        reviewCount: ratingValues.length,
+        bestRating: "5",
+        worstRating: "1",
+      };
+
+      data.review = reviews.map(
+        (review: ReviewResponseType, index: number) => ({
+          "@type": "Review",
+          author: review.customer_name,
+          datePublished: review.created_at,
+          name: review.review_title,
+          reviewBody: review.review,
+          reviewRating: {
+            "@type": "Rating",
+            ratingValue: ratingValues[index],
+            bestRating: "5",
+            worstRating: "1",
+          },
+        }),
+      );
+    }
+
+    productStructuredData = data;
+  }
+
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -241,31 +352,7 @@ function ProductDetails() {
           ?.replace(/<[^>]*>/g, "")
           .slice(0, 160)}
         ogImage={productDetails?.product.image_urls[0]}
-        structuredData={{
-          "@context": "https://schema.org/",
-          "@type": "Product",
-          name: productDetails?.product.product_name,
-          image: productDetails?.product.image_urls,
-          description: productDetails?.product.description?.replace(
-            /<[^>]*>/g,
-            "",
-          ),
-          brand: {
-            "@type": "Brand",
-            name: productDetails?.product.brand_name || "Nedzl",
-          },
-          offers: {
-            "@type": "Offer",
-            url: window.location.href,
-            priceCurrency: "NGN",
-            price: productDetails?.product.product_price,
-            availability: "https://schema.org/InStock",
-            itemCondition:
-              productDetails?.product.condition === "brand-new"
-                ? "https://schema.org/NewCondition"
-                : "https://schema.org/UsedCondition",
-          },
-        }}
+        structuredData={productStructuredData}
       />
       {isLoadingProductDetails ? (
         <LoadingState />
@@ -605,6 +692,20 @@ function ProductDetails() {
                               toast.success("Coming soon on Nedzl")
                             }
                           />
+                          <div className="mt-3 w-full rounded-xl border border-[#FEE2E2] bg-[#FFF1F2] p-3">
+                            <p className="text-xs font-semibold text-[#B91C1C]">
+                              Safety and fraud disclaimer
+                            </p>
+                            <p className="mt-1 text-xs md:text-sm text-[#4B5563]">
+                              Nedzl only connects buyers and sellers and does
+                              not handle payments, shipping, or delivery. Always
+                              meet in a safe public place, inspect items before
+                              paying, and use secure payment methods. Never send
+                              money before receiving your goods. Nedzl is not
+                              responsible for any loss or fraud resulting from
+                              payments made directly to sellers.
+                            </p>
+                          </div>
                         </div>
                       </>
                     ) : (

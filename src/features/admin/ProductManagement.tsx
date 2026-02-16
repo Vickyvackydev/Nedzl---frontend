@@ -940,7 +940,7 @@ function ProductManagement() {
             </div>
           </div>
         )}
-        {tab === "featured" && (
+        {/* {tab === "featured" && (
           <div className="flex items-end justify-end mt-5">
             <button
               onClick={handleDeleteAllFeaturedProduct}
@@ -950,7 +950,7 @@ function ProductManagement() {
               {deleting ? "Deleting..." : "Reset"}
             </button>
           </div>
-        )}
+        )} */}
         {/* <div className="flex items-end justify-end mt-5">
           <button
             onClick={handleDeleteAllFeaturedProduct}

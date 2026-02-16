@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 interface SEOProps {
   title?: string;
@@ -16,12 +16,12 @@ const SEO = ({
   description,
   keywords,
   canonical,
-  ogType = 'website',
+  ogType = "website",
   ogImage,
   structuredData,
   noindex = false,
 }: SEOProps) => {
-  const baseTitle = 'Nedzl.com – The Ultimate Student Marketplace';
+  const baseTitle = "Nedzl.com – The Ultimate Student Marketplace";
   const fullTitle = title ? `${title} | ${baseTitle}` : baseTitle;
   const currentUrl = window.location.href;
 
@@ -33,9 +33,9 @@ const SEO = ({
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute(
-        'content',
+        "content",
         description ||
-          'Buy & Sell Used Items Easily on Nedzl.com – The trusted student-focused e-commerce platform across Nigeria.',
+          "Buy & Sell Used Items Easily on Nedzl.com – The trusted student-focused e-commerce platform across Nigeria.",
       );
     }
 
@@ -43,91 +43,100 @@ const SEO = ({
     const metaKeywords = document.querySelector('meta[name="keywords"]');
     if (metaKeywords) {
       metaKeywords.setAttribute(
-        'content',
-        keywords || 'student marketplace, buy used items, sell used items, university students Nigeria, Nedzl',
+        "content",
+        keywords ||
+          "student marketplace, buy used items, sell used items, university students Nigeria, Nedzl",
       );
     }
 
     // Update OG Title
     const ogTitle = document.querySelector('meta[property="og:title"]');
     if (ogTitle) {
-      ogTitle.setAttribute('content', fullTitle);
+      ogTitle.setAttribute("content", fullTitle);
     }
 
     // Update OG Description
     const ogDesc = document.querySelector('meta[property="og:description"]');
     if (ogDesc) {
       ogDesc.setAttribute(
-        'content',
+        "content",
         description ||
-          'The trusted student-focused e-commerce platform built to connect university students across Nigeria.',
+          "The trusted student-focused e-commerce platform built to connect university students across Nigeria.",
       );
     }
 
     // Update OG Type
     const ogTypeMeta = document.querySelector('meta[property="og:type"]');
     if (ogTypeMeta) {
-      ogTypeMeta.setAttribute('content', ogType);
+      ogTypeMeta.setAttribute("content", ogType);
     }
 
     // Update OG Image
     if (ogImage) {
       const ogImg = document.querySelector('meta[property="og:image"]');
       if (ogImg) {
-        ogImg.setAttribute('content', ogImage);
+        ogImg.setAttribute("content", ogImage);
       }
     }
 
     // Update OG URL
     const ogUrl = document.querySelector('meta[property="og:url"]');
     if (ogUrl) {
-      ogUrl.setAttribute('content', currentUrl);
+      ogUrl.setAttribute("content", currentUrl);
     }
 
     // Update Twitter Tags
     const twTitle = document.querySelector('meta[property="twitter:title"]');
     if (twTitle) {
-      twTitle.setAttribute('content', fullTitle);
+      twTitle.setAttribute("content", fullTitle);
     }
-    const twDesc = document.querySelector('meta[property="twitter:description"]');
+    const twDesc = document.querySelector(
+      'meta[property="twitter:description"]',
+    );
     if (twDesc) {
       twDesc.setAttribute(
-        'content',
+        "content",
         description ||
-          'The trusted student-focused e-commerce platform built to connect university students across Nigeria. Save money, make money, and connect easily.',
+          "The trusted student-focused e-commerce platform built to connect university students across Nigeria. Save money, make money, and connect easily.",
       );
     }
     if (ogImage) {
       const twImg = document.querySelector('meta[property="twitter:image"]');
       if (twImg) {
-        twImg.setAttribute('content', ogImage);
+        twImg.setAttribute("content", ogImage);
       }
     }
     const twUrl = document.querySelector('meta[property="twitter:url"]');
     if (twUrl) {
-      twUrl.setAttribute('content', currentUrl);
+      twUrl.setAttribute("content", currentUrl);
     }
 
-    // Update Canonical
-    // If a specific canonical is provided, use it. Otherwise, defaults to current URL.
-    const canonicalUrl = canonical || currentUrl;
+    let canonicalUrl = canonical;
+    if (!canonicalUrl) {
+      try {
+        const url = new URL(currentUrl);
+        canonicalUrl = `${url.origin}${url.pathname}`;
+      } catch {
+        canonicalUrl = currentUrl;
+      }
+    }
     let canonicalTag = document.querySelector('link[rel="canonical"]');
     if (!canonicalTag) {
-      canonicalTag = document.createElement('link');
-      canonicalTag.setAttribute('rel', 'canonical');
+      canonicalTag = document.createElement("link");
+      canonicalTag.setAttribute("rel", "canonical");
       document.head.appendChild(canonicalTag);
     }
-    canonicalTag.setAttribute('href', canonicalUrl);
+    canonicalTag.setAttribute("href", canonicalUrl);
 
     // Handle noindex
     let robotsTag = document.querySelector('meta[name="robots"]');
     if (noindex) {
       if (!robotsTag) {
-        robotsTag = document.createElement('meta');
-        robotsTag.setAttribute('name', 'robots');
+        robotsTag = document.createElement("meta");
+        robotsTag.setAttribute("name", "robots");
         document.head.appendChild(robotsTag);
       }
-      robotsTag.setAttribute('content', 'noindex');
+      robotsTag.setAttribute("content", "noindex");
     } else {
       // Create or update to "index, follow" to be explicit, but removing noindex is key
       if (robotsTag) {
@@ -138,26 +147,37 @@ const SEO = ({
         // or set to "index, follow" if we want to be explicit.
         // Safer to just remove if we don't want to enforce index on everything.
         // But since we are SPA, cleaning up is important.
-        robotsTag.setAttribute('content', 'index, follow');
+        robotsTag.setAttribute("content", "index, follow");
       }
     }
 
     // Handle Structured Data (JSON-LD)
     if (structuredData) {
-      const script = document.createElement('script');
-      script.type = 'application/ld+json';
-      script.id = 'json-ld-seo';
+      const script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.id = "json-ld-seo";
       script.innerHTML = JSON.stringify(structuredData);
       document.head.appendChild(script);
 
       return () => {
-        const oldScript = document.getElementById('json-ld-seo');
+        const oldScript = document.getElementById("json-ld-seo");
         if (oldScript) {
           document.head.removeChild(oldScript);
         }
       };
     }
-  }, [title, description, keywords, canonical, ogType, ogImage, fullTitle, structuredData, noindex, currentUrl]);
+  }, [
+    title,
+    description,
+    keywords,
+    canonical,
+    ogType,
+    ogImage,
+    fullTitle,
+    structuredData,
+    noindex,
+    currentUrl,
+  ]);
 
   return null;
 };
