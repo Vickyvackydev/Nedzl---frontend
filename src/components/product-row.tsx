@@ -10,6 +10,7 @@ interface ProductSectionProps {
   data: any[];
   loading?: boolean;
   onSeeAll?: () => void;
+  layout?: "scroll" | "grid";
 }
 
 export default function ProductSection({
@@ -17,6 +18,7 @@ export default function ProductSection({
   data,
   loading = false,
   onSeeAll,
+  layout = "scroll",
 }: ProductSectionProps) {
   return (
     <div className="w-full bg-[#F7F7F7] h-full py-7 px-4 md:px-20 flex flex-col gap-y-5">
@@ -36,27 +38,50 @@ export default function ProductSection({
 
       {/* Content */}
       {loading ? (
-        <div className="w-full flex overflow-x-auto gap-3 pb-4 no-scrollbar">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="min-w-[200px] md:min-w-[240px]">
-              <SkeletonCard />
-            </div>
-          ))}
-        </div>
+        layout === "grid" ? (
+          <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+        ) : (
+          <div className="w-full flex overflow-x-auto gap-3 pb-4 no-scrollbar">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="min-w-[200px] md:min-w-[240px]">
+                <SkeletonCard />
+              </div>
+            ))}
+          </div>
+        )
       ) : data && data.length > 0 ? (
-        <div className="w-full flex overflow-x-auto gap-3 pb-4 no-scrollbar">
-          {data.map((item: ProductType, index: number) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.05 }}
-              className="min-w-[200px] md:min-w-[240px]"
-            >
-              <ProductCard item={item} />
-            </motion.div>
-          ))}
-        </div>
+        layout === "grid" ? (
+          <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {data.map((item: ProductType, index: number) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+              >
+                <ProductCard item={item} />
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="w-full flex overflow-x-auto gap-3 pb-4 no-scrollbar">
+            {data.map((item: ProductType, index: number) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                className="min-w-[200px] md:min-w-[240px]"
+              >
+                <ProductCard item={item} />
+              </motion.div>
+            ))}
+          </div>
+        )
       ) : (
         <motion.div
           initial={{ opacity: 0 }}

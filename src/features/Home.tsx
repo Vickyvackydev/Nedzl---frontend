@@ -330,6 +330,7 @@ function Home() {
         data={forYouProducts?.data}
         loading={isLoading}
         onSeeAll={() => navigate(`/products?section=for-you`)}
+        layout={isFeaturedProductNotComplete ? "scroll" : "grid"}
       />
     </MainLayout>
   );
