@@ -142,8 +142,8 @@ const ActionButton = ({ row }: { row: { row: { original: any } } }) => {
                   setUserAction(
                     row.row.original.user?.status === "SUSPENDED"
                       ? "UNSUSPEND"
-                      : "SUSPEND"
-                  )
+                      : "SUSPEND",
+                  ),
                 );
                 dispatch(setUserId(row.row.original.user?.id));
               }}
@@ -173,8 +173,8 @@ const ActionButton = ({ row }: { row: { row: { original: any } } }) => {
                   setUserAction(
                     row.row.original.user?.status === "DEACTIVATED"
                       ? "ACTIVATE"
-                      : "DEACTIVATE"
-                  )
+                      : "DEACTIVATE",
+                  ),
                 );
                 dispatch(setUserId(row.row.original.user?.id));
               }}
@@ -222,7 +222,9 @@ export const SellerColumn = [
             alt=""
           />
           <span className="text-sm font-medium text-[#4D4D4D]">
-            {row.row.original.user?.user_name}
+            {row.row.original.user?.user_name?.length > 15
+              ? row.row.original.user?.user_name?.substring(0, 15) + "..."
+              : row.row.original.user?.user_name}
           </span>
         </div>
       );
@@ -281,7 +283,7 @@ export const SellerColumn = [
       return (
         <span className="text-sm text-[#4D4D4D]">
           {moment(row.row.original.user?.created_at).format(
-            "MMM D, YYYY h:mm A"
+            "MMM D, YYYY h:mm A",
           )}
         </span>
       );
@@ -317,7 +319,7 @@ export const SellerColumn = [
         <div
           className={clsx(
             "w-fit flex items-center gap-x-1 justify-center px-3 py-1.5 rounded-md",
-            ui.bg
+            ui.bg,
           )}
         >
           <div

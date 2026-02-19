@@ -15,7 +15,7 @@ export const getDashboardUsers = async (
   status: string,
   page: number,
   search: string,
-  filters: Filter[]
+  filters: Filter[],
 ) => {
   const query = buildQueryParams(filters, usersQueryKey);
   const params: Record<string, any> = {
@@ -33,8 +33,16 @@ export const getDashboardProducts = async (options: {
   search?: string;
   filters?: Filter[];
   user_id?: string;
+  is_deleted_by_user?: boolean;
 }) => {
-  const { status, page, search, filters = [], user_id } = options;
+  const {
+    status,
+    page,
+    search,
+    filters = [],
+    user_id,
+    is_deleted_by_user,
+  } = options;
 
   const query = buildQueryParams(filters, productsQueryKey);
 
@@ -43,12 +51,13 @@ export const getDashboardProducts = async (options: {
     search,
     page,
     user_id,
+    is_deleted_by_user,
     ...query,
   };
 
   // Remove undefined values
   Object.keys(params).forEach(
-    (key) => params[key] === undefined && delete params[key]
+    (key) => params[key] === undefined && delete params[key],
   );
 
   const response = await API.get(`/admin/products`, { params });
@@ -61,11 +70,11 @@ export const getAdminUserDetails = async (id: string) => {
 };
 export const updateFeaturedProducts = async (
   box_number: number,
-  data: { category_name: string; description: string; product_ids: string[] }
+  data: { category_name: string; description: string; product_ids: string[] },
 ) => {
   const response = await API.post(
     `/admin/feature-products/${box_number}`,
-    data
+    data,
   );
   return response?.data;
 };
@@ -80,7 +89,7 @@ export const deleteFeaturedProducts = async () => {
 
 export const updateUserStatus = async (
   id: string,
-  status: "DEACTIVATED" | "SUSPENDED" | "ACTIVE"
+  status: "DEACTIVATED" | "SUSPENDED" | "ACTIVE",
 ) => {
   const response = await API.patch(`/users/verify/${id}/status`, { status });
   return response.data;

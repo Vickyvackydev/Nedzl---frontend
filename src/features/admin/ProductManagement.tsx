@@ -150,6 +150,7 @@ function ProductManagement() {
   const [boxNumber, setBoxNumber] = useState<number | null>(null);
   // const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [isDeletedByUser, setIsDeletedByUser] = useState(false);
   const [fields, setFields] = useState({
     category_name: "",
     description: "",
@@ -166,6 +167,7 @@ function ProductManagement() {
       productSelectModal ? modalPage : currentPage,
       search,
       appliedFilters,
+      isDeletedByUser,
     ],
     queryFn: () =>
       getDashboardProducts({
@@ -178,6 +180,7 @@ function ProductManagement() {
         page: productSelectModal ? modalPage : currentPage,
         search,
         filters: appliedFilters,
+        is_deleted_by_user: isDeletedByUser,
       }),
   });
 
@@ -460,13 +463,16 @@ function ProductManagement() {
                 </div>
               ))}
             </div>
-            <div className="lg:w-[45%] w-full bg-[#00A63E0D] p-1.5 mt-5  rounded-xl flex items-center gap-x-3">
+            <div className="lg:w-[50%] w-full bg-[#00A63E0D] p-1.5 mt-5  rounded-xl flex items-center gap-x-3">
               {productsStatus.map((item) => (
                 <button
-                  onClick={() => setSelectedStatus(item)}
+                  onClick={() => {
+                    setIsDeletedByUser(false);
+                    setSelectedStatus(item);
+                  }}
                   className={clsx(
                     "w-full px-3 h-[40px] text-sm cursor-pointer rounded-xl text-nowrap  font-medium",
-                    selectedStatus === item
+                    selectedStatus === item && !isDeletedByUser
                       ? "bg-[#FFFFFF] text-global-green"
                       : "bg-none text-[#656F7D] ",
                   )}
@@ -474,6 +480,17 @@ function ProductManagement() {
                   {item}
                 </button>
               ))}
+              <button
+                onClick={() => setIsDeletedByUser((prev) => !prev)}
+                className={clsx(
+                  "w-full px-3 h-[40px] text-sm cursor-pointer rounded-xl text-nowrap  font-medium",
+                  isDeletedByUser
+                    ? "bg-[#FFFFFF] text-global-green"
+                    : "bg-none text-[#656F7D] ",
+                )}
+              >
+                Deleted Products
+              </button>
             </div>
             <div className="mt-5 w-full rounded-xl border border-[#E9EAEB] bg-white px-3 sm:px-5 py-3">
               <div className="w-full flex justify-between items-center gap-3 flex-col sm:flex-row">

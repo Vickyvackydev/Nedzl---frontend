@@ -200,7 +200,9 @@ export const ProductsColumn = [
           {/* <div className="w-[20px] h-[20px] rounded-md border border-borderColor" /> */}
           {/* <img src={ASSET_ICON} className="w-[32px] h-[32px]" alt="" /> */}
           <span className="text-sm font-medium text-[#4D4D4D]">
-            {row.row.original.product_name}
+            {row.row.original.product_name?.length > 30
+              ? `${row.row.original.product_name.slice(0, 30)}...`
+              : row.row.original.product_name}
           </span>
         </div>
       );
@@ -292,7 +294,7 @@ export const ProductsColumn = [
         <div
           className={clsx(
             "w-fit flex items-center gap-x-1 justify-center px-3 py-1.5 rounded-md",
-            ui.bg
+            ui.bg,
           )}
         >
           <div
