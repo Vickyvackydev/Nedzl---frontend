@@ -52,7 +52,9 @@ function ProductCard({ item }: { item: ProductType }) {
       <div className="flex items-center gap-x-1 md:gap-x-2 mt-auto">
         <img src={LOCATION} className="w-4 h-4 md:w-5 md:h-5" alt="" />
         <span className="text-faded-black text-[10px] md:text-sm">
-          {item?.state?.charAt(0).toUpperCase() + item?.state?.slice(1)}
+          {(
+            item?.state?.charAt(0).toUpperCase() + item?.state?.slice(1)
+          ).replace(/-/g, " ")}
         </span>
       </div>
     </div>

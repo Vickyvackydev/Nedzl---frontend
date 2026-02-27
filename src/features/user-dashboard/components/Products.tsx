@@ -40,6 +40,7 @@ import { formatText } from "../../../utils";
 import Modal from "../../../components/Modal";
 import { Ban } from "lucide-react";
 import Pagination from "../../../components/Pagination";
+import { sanitizeRichText } from "../../../utils/sanitize";
 
 type Tabs = "active" | "closed" | "reviewed";
 
@@ -282,7 +283,7 @@ function Products() {
     );
     formData.append("category_name", formFields.category_name);
     formData.append("condition", formFields.condition);
-    formData.append("description", formFields.description);
+    formData.append("description", sanitizeRichText(formFields.description));
     formData.append(
       "is_negotiable",
       formFields.is_negotiable === "yes" || formFields.is_negotiable === "Yes"

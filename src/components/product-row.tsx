@@ -55,7 +55,7 @@ export default function ProductSection({
         )
       ) : data && data.length > 0 ? (
         layout === "grid" ? (
-          <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
             {data.map((item: ProductType, index: number) => (
               <motion.div
                 key={index}

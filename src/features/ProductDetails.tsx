@@ -53,6 +53,7 @@ function ProductDetails() {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null,
   );
+  // const role = useSelector(selectRole);
   const location = useLocation();
   const { pathname } = location;
   const product_id = pathname.split("/").pop();
@@ -367,14 +368,18 @@ function ProductDetails() {
                 >
                   Home
                 </Link>
-                <span className="text-xs font-semibold text-primary-300">/</span>
+                <span className="text-xs font-semibold text-primary-300">
+                  /
+                </span>
                 <Link
                   to={`/products?category=${productDetails?.product.category_name}`}
                   className="w-fit h-fit px-2 py-1.5 rounded-full text-xs font-semibold text-primary-300 bg-white shadow-box"
                 >
                   {category?.charAt(0).toUpperCase() + category?.slice(1)!}
                 </Link>
-                <span className="text-xs font-semibold text-primary-300">/</span>
+                <span className="text-xs font-semibold text-primary-300">
+                  /
+                </span>
 
                 <div className="w-fit h-fit px-2 py-1.5 rounded-full text-xs font-semibold text-primary-300 bg-white shadow-box">
                   {productDetails?.product.product_name}
