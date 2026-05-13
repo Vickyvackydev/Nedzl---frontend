@@ -84,7 +84,7 @@ function Footer() {
               {[
                 {
                   icon: FACEBOOK,
-                  link: "https://www.facebook.com/profile.php?id=61585694382803",
+                  link: "https://www.facebook.com/profile.php?id=61589400029118",
                 },
                 {
                   icon: INSTAGRAM,
