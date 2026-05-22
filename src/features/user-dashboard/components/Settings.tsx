@@ -197,6 +197,48 @@ function Settings() {
         </div>
       </div>
 
+      {/* Student ID Card Section */}
+      <div className="flex flex-col gap-y-4">
+        <h3 className="text-md font-bold text-primary-300 border-b border-[#E9EAEB] pb-2">
+          Student Verification ID
+        </h3>
+
+        {user?.student_id_card ? (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border border-[#E9EAEB] rounded-xl bg-gray-50/50">
+            <div className="w-full sm:w-[200px] h-[125px] overflow-hidden rounded-xl border border-gray-200 bg-white flex items-center justify-center flex-shrink-0 shadow-sm relative group">
+              <img
+                src={user.student_id_card}
+                alt="Student ID Card"
+                className="w-full h-full object-cover cursor-pointer transition-transform duration-300 group-hover:scale-105"
+                onClick={() => window.open(user.student_id_card, "_blank")}
+              />
+            </div>
+            <div className="flex flex-col gap-y-1">
+              <span className="text-sm font-semibold text-primary-300">
+                Uploaded Student ID Card
+              </span>
+              <p className="text-xs text-[#75757A] max-w-md">
+                Your student ID is used for campus verification. Tap or click the card to view it in full size.
+              </p>
+              <button
+                onClick={() => window.open(user.student_id_card, "_blank")}
+                className="mt-2 text-xs font-semibold text-global-green hover:underline flex items-center w-fit"
+              >
+                View Full Image ↗
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center p-6 border border-dashed border-[#E9EAEB] rounded-xl text-center bg-gray-50/20">
+            <span className="text-2xl mb-1.5">🪪</span>
+            <span className="text-sm font-semibold text-primary-300">No Student ID Uploaded</span>
+            <p className="text-xs text-[#75757A] max-w-sm mt-0.5">
+              You did not upload a student ID card during registration. If verification is required, please reach out to admin support.
+            </p>
+          </div>
+        )}
+      </div>
+
       <div className="flex flex-col items-center gap-y-4 pt-10 mt-auto opacity-50">
         <div className="bg-[#07B4631A] p-4 rounded-full">
           <span className="text-2xl text-global-green">⚙️</span>

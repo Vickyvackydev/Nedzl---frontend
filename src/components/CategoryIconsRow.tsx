@@ -125,9 +125,14 @@ export default function CategoryIconsRow() {
       {/* Drawer Overlay */}
       <AnimatePresence>
         {open && (
-          <>
+          <motion.div
+            className="fixed inset-0 z-[9999] pointer-events-none"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 1 }}
+          >
             <motion.div
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9999]"
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm pointer-events-auto"
+              style={{ WebkitBackdropFilter: "blur(4px)" }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -139,7 +144,7 @@ export default function CategoryIconsRow() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -400, opacity: 0 }}
               transition={{ type: "spring", damping: 20 }}
-              className="fixed left-4 top-4 bottom-4 w-[320px] max-w-[85vw] bg-white rounded-2xl shadow-xl p-5 overflow-y-auto z-[10000]"
+              className="absolute left-4 top-4 bottom-4 w-[320px] max-w-[85vw] bg-white rounded-2xl shadow-xl p-5 overflow-y-auto pointer-events-auto"
             >
               <h2 className="text-lg text-nowrap font-bold mb-4 text-gray-800">
                 All Categories
@@ -180,7 +185,7 @@ export default function CategoryIconsRow() {
                 })}
               </div>
             </motion.div>
-          </>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

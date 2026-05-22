@@ -126,6 +126,7 @@ export interface User {
   updated_at: string; // ISO date string
   deleted_at: string | null;
   referral_code: string;
+  student_id_card?: string;
 }
 
 export interface StoreSettingsPayload {

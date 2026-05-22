@@ -49,10 +49,10 @@ export default function BannerSlider() {
             href={banner.target_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex-shrink-0 cursor-pointer block"
+                        className="w-full flex-shrink-0 cursor-pointer block"
             style={{
-              height: "min(400px, 38vw)", // Keep proportional height
-              minHeight: "200px",
+              aspectRatio: "3 / 1",
+              maxHeight: "400px",
             }}
           >
             <img

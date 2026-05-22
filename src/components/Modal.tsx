@@ -17,10 +17,15 @@ const Modal: React.FC<SuccessModalProps> = ({
   return (
     <AnimatePresence>
       {show && (
-        <>
+        <motion.div
+          className="fixed inset-0 z-50 pointer-events-none"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 1 }}
+        >
           {/* Background overlay */}
           <motion.div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm pointer-events-auto"
+            style={{ WebkitBackdropFilter: "blur(4px)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -29,15 +34,17 @@ const Modal: React.FC<SuccessModalProps> = ({
 
           {/* Center modal */}
           <motion.div
-            className="fixed inset-0 flex items-center justify-center z-50"
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: "spring", stiffness: 120, damping: 15 }}
           >
-            {children}
+            <div className="pointer-events-auto">
+              {children}
+            </div>
           </motion.div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   );
