@@ -191,6 +191,7 @@ export interface AdminUserDetails {
     location: string;
     status: "ACTIVE" | "INACTIVE" | string;
     is_verified: boolean;
+    student_id_card: string;
     created_at: string;
     updated_at: string;
     deleted_at: string | null;

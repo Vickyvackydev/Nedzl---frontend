@@ -1,8 +1,9 @@
 import { API } from "../config";
-import { UserPayload } from "../types";
 
-export const register = async (payload: UserPayload) => {
-  const response = API.post("/auth/register", payload);
+export const register = async (payload: FormData) => {
+  const response = API.post("/auth/register", payload, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return (await response).data;
 };
 

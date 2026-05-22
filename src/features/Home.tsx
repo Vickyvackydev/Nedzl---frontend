@@ -10,6 +10,7 @@ import {
 
 import SEO from "../components/SEO";
 import CategoryBar from "../components/CategoryBar";
+import BannerSlider from "../components/BannerSlider";
 
 const SkeletonCard = () => (
   <div className="w-full flex flex-col gap-y-2 animate-pulse">
@@ -131,6 +132,7 @@ function Home() {
       />
       <div className="font-open-sans">
         <CategoryBar />
+        <BannerSlider />
         {isFeaturedProductNotComplete && (
           <div className="w-full px-4 md:px-20 mb-10 flex flex-col md:flex-row items-start justify-between gap-3 mt-5">
             {/* LEFT TWO BOXES */}

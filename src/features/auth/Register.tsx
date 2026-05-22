@@ -20,6 +20,7 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [studentIdCard, setStudentIdCard] = useState<File | null>(null);
   const [searchParams] = useSearchParams();
 
   const ref = searchParams.get("ref");
@@ -87,16 +88,20 @@ function Register() {
   const handleRegister = async () => {
     setLoading(true);
     try {
-      const payload = {
-        user_name: formInput.user_name,
-        email: formInput.email,
-        password: formInput.password,
-        phone_number: formInput.phone_number,
-        role: "USER",
-        referral_code: formInput.referral_code,
-      };
+      const formData = new FormData();
+      formData.append("user_name", formInput.user_name);
+      formData.append("email", formInput.email);
+      formData.append("password", formInput.password);
+      formData.append("phone_number", formInput.phone_number);
+      formData.append("role", "USER");
+      if (formInput.referral_code) {
+        formData.append("referral_code", formInput.referral_code);
+      }
+      if (studentIdCard) {
+        formData.append("student_id_card", studentIdCard);
+      }
 
-      const response = await register(payload);
+      const response = await register(formData);
       if (response) {
         toast.success(response.message);
         window.history.pushState({}, "", "/email-sent");
@@ -359,6 +364,23 @@ function Register() {
                   value={formInput.referral_code as string}
                   onChange={handleInputChange}
                   className="bg-transparent placeholder:text-sm  w-full outline-none text-primary-300"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col items-start w-full gap-y-1">
+              <span className="text-sm font-medium text-[#4F5762]">
+                Are you a student? upload ur student id here (Optional)
+              </span>
+              <div className="w-full h-[48px] rounded-xl px-3 border border-borderColor shadow-input flex items-center gap-x-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      setStudentIdCard(e.target.files[0]);
+                    }
+                  }}
+                  className="bg-transparent text-sm w-full outline-none text-primary-300 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-global-green file:text-white hover:file:bg-green-700"
                 />
               </div>
             </div>

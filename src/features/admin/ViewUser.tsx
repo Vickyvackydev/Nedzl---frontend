@@ -427,6 +427,19 @@ function ViewUser() {
                   {userDetails?.user_details?.referral_by?.user_name || "-"}
                 </span>
               </div>
+
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Student ID Card</p>
+                <div className="mt-1">
+                  {userDetails?.user_details?.student_id_card ? (
+                    <a href={userDetails.user_details.student_id_card} target="_blank" rel="noopener noreferrer" className="text-sm text-global-green underline">
+                      View ID Card
+                    </a>
+                  ) : (
+                    <span className="text-sm italic text-gray-500">No ID available for this user</span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 

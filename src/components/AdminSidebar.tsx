@@ -135,6 +135,31 @@ function AdminSidebar(props: SidebarProps) {
                     Products Management
                   </span>
                 </Link>
+                <Link
+                  to="/admin/banners"
+                  className={`flex items-center gap-x-3 rounded-lg cursor-pointer  ${
+                    pathname.includes("/admin/banners") &&
+                    "bg-global-green shadow-md"
+                  } w-full p-3 rounded-lg `}
+                >
+                  <img
+                    src={
+                      pathname.includes("/admin/banners")
+                        ? SETTINGS_WHITE
+                        : SETTINGS_BLACK
+                    }
+                    className="w-[20px] h-[20px]"
+                    alt=""
+                  />
+                  <span
+                    className={`text-sm font-medium text-nowrap ${
+                      pathname.includes("/admin/banners") &&
+                      "text-white"
+                    }`}
+                  >
+                    Banners
+                  </span>
+                </Link>
               </div>
             </div>
             <div className="w-full px-3">
@@ -254,6 +279,31 @@ function AdminSidebar(props: SidebarProps) {
                   }`}
                 >
                   Products Management
+                </span>
+              </Link>
+              <Link
+                to="/admin/banners"
+                className={`flex items-center gap-x-3 rounded-lg cursor-pointer  ${
+                  pathname.includes("/admin/banners") &&
+                  "bg-global-green shadow-md"
+                } w-full p-3 rounded-lg `}
+              >
+                <img
+                  src={
+                    pathname.includes("/admin/banners")
+                      ? SETTINGS_WHITE
+                      : SETTINGS_BLACK
+                  }
+                  className="w-[20px] h-[20px]"
+                  alt=""
+                />
+                <span
+                  className={`text-sm font-medium text-nowrap ${
+                    pathname.includes("/admin/banners") &&
+                    "text-white"
+                  }`}
+                >
+                  Banners
                 </span>
               </Link>
             </div>
