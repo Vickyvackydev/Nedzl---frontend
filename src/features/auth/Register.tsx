@@ -129,7 +129,7 @@ function Register() {
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="lg:w-[30rem] w-full h-auto lg:mt-[20rem] mt-10 shadow-box rounded-lg lg:p-10 p-5 flex flex-col justify-center gap-y-6 items-center"
+          className="lg:w-[30rem] w-full h-auto lg:mt-0 mt-10 shadow-box rounded-lg lg:p-10 p-5 flex flex-col justify-center gap-y-6 items-center"
         >
           <div className="flex flex-col items-center justify-center gap-y-2">
             <Link to={"/"}>

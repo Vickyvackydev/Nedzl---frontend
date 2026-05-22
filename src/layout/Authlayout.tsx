@@ -36,8 +36,10 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      <div className="w-full lg:w-1/2 h-screen overflow-y-scroll lg:px-16 lg:pt-7 px-5 pt-3  bg-white flex items-center justify-center">
-        {children}
+      <div className="w-full lg:w-1/2 h-screen overflow-y-auto lg:px-16 px-5 py-6 lg:py-12 bg-white flex justify-center items-start">
+        <div className="my-auto w-full flex justify-center">
+          {children}
+        </div>
       </div>
     </main>
   );

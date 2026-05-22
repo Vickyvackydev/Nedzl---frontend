@@ -38,7 +38,7 @@ export default function BannerSlider() {
   // const currentBanner = banners[currentIndex];
 
   return (
-    <div className="w-full relative overflow-hidden bg-gray-100 mb-5">
+    <div className="w-full relative overflow-hidden bg-gray-100 rounded-xl mb-5">
       <div
         className="w-full flex transition-transform duration-700 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
