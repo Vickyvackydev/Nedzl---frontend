@@ -51,8 +51,8 @@ export default function BannerSlider() {
             rel="noopener noreferrer"
             className="w-full flex-shrink-0 cursor-pointer block"
             style={{
-              height: "min(300px, 30vw)", // Keep proportional height
-              minHeight: "150px",
+              height: "min(400px, 38vw)", // Keep proportional height
+              minHeight: "200px",
             }}
           >
             <img
@@ -70,9 +70,8 @@ export default function BannerSlider() {
             <button
               key={idx}
               onClick={() => setCurrentIndex(idx)}
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                idx === currentIndex ? "bg-white scale-125" : "bg-white/50"
-              }`}
+              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${idx === currentIndex ? "bg-white scale-125" : "bg-white/50"
+                }`}
               aria-label={`Go to slide ${idx + 1}`}
             />
           ))}

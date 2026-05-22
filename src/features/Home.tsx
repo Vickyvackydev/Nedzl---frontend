@@ -9,7 +9,7 @@ import {
 } from "../services/product.service";
 
 import SEO from "../components/SEO";
-import CategoryBar from "../components/CategoryBar";
+import CategoryIconsRow from "../components/CategoryIconsRow";
 import BannerSlider from "../components/BannerSlider";
 
 const SkeletonCard = () => (
@@ -131,9 +131,9 @@ function Home() {
         }}
       />
       <div className="font-open-sans">
-        <CategoryBar />
         <div className="px-4 md:px-20 mt-4 md:mt-6">
           <BannerSlider />
+          <CategoryIconsRow />
         </div>
         {isFeaturedProductNotComplete && (
           <div className="w-full px-4 md:px-20 mb-10 flex flex-col md:flex-row items-start justify-between gap-3 mt-5">

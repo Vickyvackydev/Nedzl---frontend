@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import MainLayout from "../../layout/MainLayout";
 import clsx from "clsx";
 import {
@@ -31,7 +31,7 @@ import {
   setProductFields,
 } from "../../state/slices/globalReducer";
 import { reset } from "../../state/slices/authReducer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 // import { motion } from "framer-motion";
 // import Button from "../../components/Button";
 
@@ -85,7 +85,9 @@ import { useSidebar } from "../../context/SidebarContext";
 import SEO from "../../components/SEO";
 
 function UserDashboard() {
-  const [activeTab, setActiveTab] = useState<TabTypes>("my_account");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = (searchParams.get("tab") as TabTypes) || "my_account";
+  const setActiveTab = (tab: TabTypes) => setSearchParams({ tab });
   const showProductFields = useSelector(selectProductFields);
   const dispatch = useDispatch();
   const navigate = useNavigate();
