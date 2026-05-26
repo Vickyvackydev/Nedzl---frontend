@@ -15,6 +15,7 @@ import ProductManagement from "./features/admin/ProductManagement";
 import SellerManagement from "./features/admin/SellerManagement";
 import ViewUser from "./features/admin/ViewUser";
 import Banners from "./features/admin/Banners";
+import Newsletter from "./features/admin/Newsletter";
 import PrivateRoute from "./PrivateRoute";
 import { useEffect } from "react";
 import CheckEmailVerification from "./features/auth/CheckEmailVerification";
@@ -107,6 +108,14 @@ function App() {
           element={
             <PrivateRoute>
               <Banners />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/newsletter"
+          element={
+            <PrivateRoute>
+              <Newsletter />
             </PrivateRoute>
           }
         />

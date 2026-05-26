@@ -6,6 +6,8 @@ import { useDispatch } from "react-redux";
 import { reset } from "../state/slices/authReducer";
 import { useMediaQuery } from "../hooks";
 import {
+  INBOX_BLACK,
+  INBOX_WHITE,
   LOG_OUT,
   NEDZL_LOGO_GREEN,
   OVERVIEW_BLACK,
@@ -160,6 +162,31 @@ function AdminSidebar(props: SidebarProps) {
                     Banners
                   </span>
                 </Link>
+                <Link
+                  to="/admin/newsletter"
+                  className={`flex items-center gap-x-3 rounded-lg cursor-pointer  ${
+                    pathname.includes("/admin/newsletter") &&
+                    "bg-global-green shadow-md"
+                  } w-full p-3 rounded-lg `}
+                >
+                  <img
+                    src={
+                      pathname.includes("/admin/newsletter")
+                        ? INBOX_WHITE
+                        : INBOX_BLACK
+                    }
+                    className="w-[20px] h-[20px]"
+                    alt=""
+                  />
+                  <span
+                    className={`text-sm font-medium text-nowrap ${
+                      pathname.includes("/admin/newsletter") &&
+                      "text-white"
+                    }`}
+                  >
+                    Newsletter
+                  </span>
+                </Link>
               </div>
             </div>
             <div className="w-full px-3">
@@ -304,6 +331,31 @@ function AdminSidebar(props: SidebarProps) {
                   }`}
                 >
                   Banners
+                </span>
+              </Link>
+              <Link
+                to="/admin/newsletter"
+                className={`flex items-center gap-x-3 rounded-lg cursor-pointer  ${
+                  pathname.includes("/admin/newsletter") &&
+                  "bg-global-green shadow-md"
+                } w-full p-3 rounded-lg `}
+              >
+                <img
+                  src={
+                    pathname.includes("/admin/newsletter")
+                      ? INBOX_WHITE
+                      : INBOX_BLACK
+                  }
+                  className="w-[20px] h-[20px]"
+                  alt=""
+                />
+                <span
+                  className={`text-sm font-medium text-nowrap ${
+                    pathname.includes("/admin/newsletter") &&
+                    "text-white"
+                  }`}
+                >
+                  Newsletter
                 </span>
               </Link>
             </div>

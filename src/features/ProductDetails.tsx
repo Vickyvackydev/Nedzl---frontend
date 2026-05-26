@@ -104,6 +104,18 @@ function ProductDetails() {
   const maxImages = 5;
   const [showSellerNumber, setShowSellerNumber] = useState(false);
 
+  const getWhatsAppLink = (phone: string, productName: string) => {
+    let cleaned = phone.replace(/\D/g, "");
+    if (cleaned.startsWith("0")) {
+      cleaned = "234" + cleaned.substring(1);
+    }
+    if (cleaned.length === 10 && !cleaned.startsWith("234")) {
+      cleaned = "234" + cleaned;
+    }
+    const text = encodeURIComponent(`Hi, I'm interested in your product "${productName}" on Nedzl. Can we discuss more about it?`);
+    return `https://wa.me/${cleaned}?text=${text}`;
+  };
+
   const [reviewFields, setReviewFields] = useState({
     review_title: "",
     customer_name: "",
@@ -691,14 +703,38 @@ function ProductDetails() {
                             handleClick={() => setShowSellerNumber(true)}
                           />
 
-                          <Button
-                            title="Let Us Handle It"
-                            btnStyles="w-full border border-[#E9EAEB] rounded-xl h-[40px]"
-                            textStyle="text-primary-300 font-medium text-sm"
-                            handleClick={() =>
-                              toast.success("Coming soon on Nedzl")
-                            }
-                          />
+                          {showSellerNumber ? (
+                            <Button
+                              title={
+                                <div className="flex items-center justify-center gap-2">
+                                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.42 9.864-9.864.002-2.637-1.03-5.115-2.906-6.99C16.255 1.876 13.779.845 11.144.845c-5.443 0-9.866 4.42-9.87 9.866-.001 1.902.499 3.757 1.449 5.378L1.691 22.1l6.126-1.606c1.614.88 3.434 1.345 5.34 1.345zM17.91 14.542c-.313-.157-1.854-.915-2.143-1.02-.289-.105-.499-.157-.709.157-.21.314-.813 1.02-.996 1.229-.183.208-.367.234-.68.077-.313-.157-1.32-.486-2.513-1.55-1.282-1.144-1.906-2.457-2.025-2.665-.119-.208-.013-.32.092-.424.095-.095.21-.244.316-.367.105-.123.14-.21.21-.35.07-.14.035-.262-.017-.367-.053-.105-.499-1.205-.683-1.65-.18-.431-.377-.373-.518-.38-.135-.007-.289-.009-.443-.009-.154 0-.405.058-.617.289-.212.23-1.077 1.05-1.077 2.56 0 1.51 1.1 2.97 1.253 3.179.154.208 2.164 3.303 5.244 4.633.732.316 1.304.505 1.748.646.735.234 1.404.2 1.933.12.589-.088 1.854-.758 2.115-1.455.262-.697.262-1.296.183-1.424-.078-.127-.289-.207-.602-.364z"/>
+                                  </svg>
+                                  <span>Message on WhatsApp</span>
+                                </div>
+                              }
+                              btnStyles="w-full bg-[#25D366] hover:bg-[#1EBE57] rounded-xl h-[40px]"
+                              textStyle="text-white font-medium text-sm flex items-center justify-center"
+                              handleClick={() => {
+                                const productName = productDetails?.product?.product_name || "";
+                                const phone = productDetails?.product?.user?.phone_number || "";
+                                if (phone) {
+                                  window.open(getWhatsAppLink(phone, productName), "_blank");
+                                } else {
+                                  toast.error("Seller phone number not found");
+                                }
+                              }}
+                            />
+                          ) : (
+                            <Button
+                              title="Let Us Handle It"
+                              btnStyles="w-full border border-[#E9EAEB] rounded-xl h-[40px]"
+                              textStyle="text-primary-300 font-medium text-sm"
+                              handleClick={() =>
+                                toast.success("Coming soon on Nedzl")
+                              }
+                            />
+                          )}
                           <div className="mt-3 w-full rounded-xl border border-[#FEE2E2] bg-[#FFF1F2] p-3">
                             <p className="text-xs font-semibold text-[#B91C1C]">
                               Safety and fraud disclaimer
