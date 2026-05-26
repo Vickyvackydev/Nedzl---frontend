@@ -111,7 +111,7 @@ function Footer() {
               ))}
             </div>
           </div>
-          <div className="flex flex-col gap-y-3 col-span-2 order-7 md:order-none">
+          {/* <div className="flex flex-col gap-y-3 col-span-2 order-7 md:order-none">
             <span className="text-global-green font-semibold text-[16px]">
               Stay Updated
             </span>
@@ -132,7 +132,7 @@ function Footer() {
                 textStyle={"text-white font-medium"}
               />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="flex items-center justify-center py-5 mt-10">
