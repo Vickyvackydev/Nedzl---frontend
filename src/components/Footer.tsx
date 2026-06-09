@@ -8,7 +8,7 @@ import {
   X,
 } from "../assets";
 import { footer } from "../constant";
-import Button from "./Button";
+// import Button from "./Button";
 
 const FooterLinks = ({
   title,
