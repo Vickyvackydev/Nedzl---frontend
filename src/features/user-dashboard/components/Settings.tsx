@@ -137,7 +137,7 @@ function Settings() {
               Share your Referral Code
             </h3>
             <p className="text-sm text-[#75757A]">
-              Invite your friends to Nedzl and earn rewards!
+              Invite your friends to Nedzl
             </p>
           </div>
           <div className="flex items-center gap-x-3">
@@ -218,7 +218,8 @@ function Settings() {
                 Uploaded Student ID Card
               </span>
               <p className="text-xs text-[#75757A] max-w-md">
-                Your student ID is used for campus verification. Tap or click the card to view it in full size.
+                Your student ID is used for campus verification. Tap or click
+                the card to view it in full size.
               </p>
               <button
                 onClick={() => window.open(user.student_id_card, "_blank")}
@@ -231,9 +232,12 @@ function Settings() {
         ) : (
           <div className="flex flex-col items-center justify-center p-6 border border-dashed border-[#E9EAEB] rounded-xl text-center bg-gray-50/20">
             <span className="text-2xl mb-1.5">🪪</span>
-            <span className="text-sm font-semibold text-primary-300">No Student ID Uploaded</span>
+            <span className="text-sm font-semibold text-primary-300">
+              No Student ID Uploaded
+            </span>
             <p className="text-xs text-[#75757A] max-w-sm mt-0.5">
-              You did not upload a student ID card during registration. If verification is required, please reach out to admin support.
+              You did not upload a student ID card during registration. If
+              verification is required, please reach out to admin support.
             </p>
           </div>
         )}
