@@ -5,7 +5,8 @@ import { reset } from "../state/slices/authReducer";
 // import { reset } from "../state/slices/authReducer";
 
 export const API = axios.create({
-  baseURL: "https://api.nedzl.com",
+  // baseURL: "https://api.nedzl.com",
+  baseURL: "http://localhost:8000",
 });
 
 API.defaults.headers.common.Accept = "application/json";
@@ -21,7 +22,7 @@ API.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // Add response interceptor
@@ -35,7 +36,7 @@ API.interceptors.response.use(
       // window.location.href = "/";
     }
     throw error;
-  }
+  },
 );
 
 // Create a QueryClient instance

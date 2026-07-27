@@ -11,6 +11,7 @@ interface ProductSectionProps {
   loading?: boolean;
   onSeeAll?: () => void;
   layout?: "scroll" | "grid";
+  minCountThreshold?: number;
 }
 
 export default function ProductSection({
@@ -19,7 +20,11 @@ export default function ProductSection({
   loading = false,
   onSeeAll,
   layout = "scroll",
+  minCountThreshold,
 }: ProductSectionProps) {
+  if (!loading && minCountThreshold && (!data || data.length < minCountThreshold)) {
+    return null;
+  }
   return (
     <div className="w-full bg-[#F7F7F7] h-full py-7 px-4 md:px-20 flex flex-col gap-y-5">
       {/* Header */}

@@ -40,3 +40,18 @@ export const getUserProfile = async () => {
   const response = await API.get("/me");
   return response.data;
 };
+
+export const loginWithGoogle = async (token: string) => {
+  const response = await API.post("/auth/google", { token });
+  return response.data;
+};
+
+export const loginWithFacebook = async (token: string) => {
+  const response = await API.post("/auth/facebook", { token });
+  return response.data;
+};
+
+export const resolveBankAccount = async (accountNumber: string, bankCode: string) => {
+  const response = await API.get(`/bank/resolve?account_number=${accountNumber}&bank_code=${bankCode}`);
+  return response.data;
+};

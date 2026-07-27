@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import MainLayout from "../layout/MainLayout";
 import { useNavigate } from "react-router-dom";
 import ProductRow from "../components/product-row";
@@ -6,11 +6,13 @@ import { useQuery } from "@tanstack/react-query";
 import {
   getAllProducts,
   getFeaturedProducts,
+  getPublicStats,
 } from "../services/product.service";
 
 import SEO from "../components/SEO";
 import CategoryIconsRow from "../components/CategoryIconsRow";
 import BannerSlider from "../components/BannerSlider";
+import GuestProductListingModal from "../components/GuestProductListingModal";
 
 const SkeletonCard = () => (
   <div className="w-full flex flex-col gap-y-2 animate-pulse">
@@ -24,6 +26,7 @@ const SkeletonHorizontalCard = () => (
 );
 
 function Home() {
+  const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
   const {
     data: todayProducts,
     isLoading,
@@ -36,6 +39,33 @@ function Home() {
     queryKey: ["all-for-you-products", "for_you"],
     queryFn: () => getAllProducts({ section: "for_you" }),
   });
+
+  const { data: allCategoryProducts, isLoading: loadingAll } = useQuery({
+    queryKey: ["homepage-categories-products"],
+    queryFn: () => getAllProducts({ limit: 150 }),
+  });
+
+  const { data: publicStats } = useQuery({
+    queryKey: ["public-stats"],
+    queryFn: getPublicStats,
+  });
+
+  const productsByCategory = useMemo(() => {
+    if (!allCategoryProducts?.data) return {};
+    const groups: Record<string, any[]> = {};
+    allCategoryProducts.data.forEach((product: any) => {
+      const catName = product.category_name || "Others";
+      if (!groups[catName]) groups[catName] = [];
+      groups[catName].push(product);
+    });
+    return groups;
+  }, [allCategoryProducts]);
+
+  const formatText = (text: string) =>
+    text
+      .replace(/_/g, " ")
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
   const { data: featureedProducts, isLoading: loadingFeaturedProducts } =
     useQuery({ queryKey: ["featured-products"], queryFn: getFeaturedProducts });
 
@@ -335,6 +365,67 @@ function Home() {
         loading={isLoading}
         onSeeAll={() => navigate(`/products?section=for-you`)}
         layout={isFeaturedProductNotComplete ? "scroll" : "grid"}
+      />
+      {/* Categorized Listings (Only categories with at least 5 active items are shown) */}
+      {loadingAll ? (
+        <ProductRow title="Loading Categories..." data={[]} loading={true} />
+      ) : (
+        Object.entries(productsByCategory).map(([categoryName, products]) => (
+          <ProductRow
+            key={categoryName}
+            title={formatText(categoryName)}
+            data={products}
+            minCountThreshold={5}
+            onSeeAll={() => navigate(`/products?category=${categoryName}`)}
+            layout="scroll"
+          />
+        ))
+      )}
+
+      {/* Platform Statistics Section */}
+      <div className="w-full bg-white border-t border-b border-gray-100 py-12 px-4 md:px-20 mt-10">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          <div className="flex flex-col items-center gap-y-2">
+            <span className="text-4xl font-extrabold text-[#07B463]">
+              {(publicStats?.total_products || 0).toLocaleString()}+
+            </span>
+            <span className="text-sm font-semibold text-primary-300 uppercase tracking-wider">
+              Products Listed
+            </span>
+            <p className="text-xs text-gray-500 max-w-xs">
+              Explore thousands of quality pre-loved items from students across
+              major campuses.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center gap-y-2 border-y md:border-y-0 md:border-x border-gray-100 py-6 md:py-0 px-4">
+            <span className="text-4xl font-extrabold text-[#07B463]">
+              {(publicStats?.total_sellers || 0).toLocaleString()}+
+            </span>
+            <span className="text-sm font-semibold text-primary-300 uppercase tracking-wider">
+              Verified Student Sellers
+            </span>
+            <p className="text-xs text-gray-500 max-w-xs">
+              Buy from verified peers at your school or other Nigerian
+              universities safely.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center gap-y-2">
+            <span className="text-4xl font-extrabold text-[#07B463]">100%</span>
+            <span className="text-sm font-semibold text-primary-300 uppercase tracking-wider">
+              Campus Connection
+            </span>
+            <p className="text-xs text-gray-500 max-w-xs">
+              Bridging the gap for student-focused local commerce on campus.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <GuestProductListingModal
+        show={isGuestModalOpen}
+        onClose={() => setIsGuestModalOpen(false)}
       />
     </MainLayout>
   );

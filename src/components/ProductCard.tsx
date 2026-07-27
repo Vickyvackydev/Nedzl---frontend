@@ -20,10 +20,22 @@ function ProductCard({ item }: { item: ProductType }) {
       <span className="text-faded-black text-xs md:text-sm font-medium line-clamp-1">
         {item?.product_name}
       </span>
-      <span className="text-sm md:text-[16px] font-bold text-global-green">
-        ₦{" "}
-        {item?.product_price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-      </span>
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-sm md:text-[16px] font-bold text-global-green">
+          ₦{" "}
+          {item?.product_price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+        </span>
+        {(item?.old_price && item.old_price > item.product_price) || (item?.discount_percent && item.discount_percent > 0) ? (
+          <div className="flex items-center gap-1.5">
+            <span className="line-through text-gray-400 text-xs font-normal">
+              ₦ {item?.old_price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+            </span>
+            <span className="bg-red-500 text-white font-extrabold text-[10px] px-1.5 py-0.5 rounded-md">
+              -{item?.discount_percent || Math.round(((item.old_price! - item.product_price) / item.old_price!) * 100)}% OFF
+            </span>
+          </div>
+        ) : null}
+      </div>
       <div
         className="hidden md:block"
         dangerouslySetInnerHTML={{

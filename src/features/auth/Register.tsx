@@ -1,14 +1,29 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState } from "react";
 
-import { FaCheck, FaEye, FaEyeSlash } from "react-icons/fa";
+import {
+  FaCheck,
+  FaEye,
+  FaEyeSlash,
+  FaFacebook,
+} from "react-icons/fa";
 import { MdPhone } from "react-icons/md";
 
 import { motion } from "framer-motion";
 
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import AuthLayout from "../../layout/Authlayout";
-import { CHECK_GREEN, NEDZL_LOGO_GREEN, PAD_LOCK } from "../../assets";
+import {
+  CHECK_GREEN,
+  GOOGLE_ICON,
+  NEDZL_LOGO_GREEN,
+  PAD_LOCK,
+} from "../../assets";
 import Button from "../../components/Button";
 import { register } from "../../services/auth.service";
 import toast from "react-hot-toast";
@@ -16,12 +31,33 @@ import SEO from "../../components/SEO";
 
 function Register() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [checked, setChecked] = useState(false);
   const [studentIdCard, setStudentIdCard] = useState<File | null>(null);
   const [searchParams] = useSearchParams();
+
+  const handleGoogleLogin = () => {
+    const clientID =
+      import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID";
+    const redirectUri = window.location.origin + "/login";
+    const scope = "email profile openid";
+    const state = "google";
+    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scope)}&state=${state}`;
+    window.location.href = url;
+  };
+
+  const handleFacebookLogin = () => {
+    const clientID =
+      import.meta.env.VITE_FACEBOOK_APP_ID || "YOUR_FACEBOOK_APP_ID";
+    const redirectUri = window.location.origin + "/login";
+    const scope = "email,public_profile";
+    const state = "facebook";
+    const url = `https://www.facebook.com/v12.0/dialog/oauth?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scope)}&state=${state}`;
+    window.location.href = url;
+  };
 
   const ref = searchParams.get("ref");
 
@@ -146,7 +182,7 @@ function Register() {
               Already have an account?{" "}
               <span
                 className="text-global-green font-medium cursor-pointer"
-                onClick={() => navigate("/login")}
+                onClick={() => navigate("/login", { state: location.state })}
               >
                 Login
               </span>
@@ -416,6 +452,33 @@ function Register() {
               textStyle={"text-white text-[16px] text-semibold"}
               handleClick={handleRegister}
             />
+
+            <div className="flex items-center my-2 w-full">
+              <div className="flex-grow border-t border-gray-300"></div>
+              <span className="flex-shrink mx-4 text-gray-500 text-xs uppercase tracking-wider font-medium">
+                Or continue with
+              </span>
+              <div className="flex-grow border-t border-gray-300"></div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 w-full">
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                className="flex items-center justify-center gap-x-2 border border-gray-200 rounded-lg py-2.5 hover:bg-gray-50 transition-all font-medium text-sm text-[#4F5762] cursor-pointer"
+              >
+                <img src={GOOGLE_ICON} className="w-5 h-5" alt="" />
+                Google
+              </button>
+              <button
+                type="button"
+                onClick={handleFacebookLogin}
+                className="flex items-center justify-center gap-x-2 border border-gray-200 rounded-lg py-2.5 hover:bg-gray-50 transition-all font-medium text-sm text-[#4F5762] cursor-pointer"
+              >
+                <FaFacebook size={18} className="text-[#1877F2]" />
+                Facebook
+              </button>
+            </div>
           </form>
         </motion.div>
       </AuthLayout>

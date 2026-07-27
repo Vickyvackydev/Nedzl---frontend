@@ -30,6 +30,9 @@ import FAQs from "./features/FAQs";
 import About from "./features/About";
 import ForgotPassword from "./features/auth/ForgotPassword";
 import ResetPassword from "./features/auth/ResetPassword";
+import Meals from "./features/Meals";
+import Services from "./features/Services";
+import NedzlCommunity from "./features/community/NedzlCommunity";
 
 function App() {
   const location = useLocation();
@@ -54,6 +57,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/product-details/:id" element={<ProductDetails />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/meals" element={<Meals />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/community" element={<NedzlCommunity />} />
 
         <Route path="/search" element={<SearchResults />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />

@@ -2,6 +2,7 @@ import { EDIT_PROFILE, GREEN_USER } from "../../../assets";
 import SelectInput from "../../../components/SelectInput";
 import Button from "../../../components/Button";
 import { useQuery } from "@tanstack/react-query";
+import { Eye, Heart, Package, ShoppingBag } from "lucide-react";
 import { getUserProfile, updateUser } from "../../../services/auth.service";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
@@ -79,21 +80,87 @@ function Account() {
     }
   }, [user]);
 
+  const metrics = userProfile?.data?.metrics || {
+    total_views: 0,
+    total_likes: 0,
+    total_listed: 0,
+    total_sold: 0,
+  };
+
   return (
     <div className="w-full flex items-center gap-y-3 flex-col justify-center py-10">
+      {/* Statistics Cards Grid */}
+      <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-4 px-4 mb-6">
+        <div className="bg-white p-4 rounded-xl border border-gray-50 shadow-sm flex flex-col gap-y-1">
+          <span className="text-[#808080] text-xs font-semibold uppercase tracking-wider">
+            Total Views
+          </span>
+          <div className="flex items-center justify-between mt-1">
+            <span className="text-xl font-bold text-primary-300">
+              {metrics.total_views.toLocaleString()}
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-[#07B4630D] flex items-center justify-center text-global-green">
+              <Eye size={18} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-xl border border-gray-50 shadow-sm flex flex-col gap-y-1">
+          <span className="text-[#808080] text-xs font-semibold uppercase tracking-wider">
+            Total Likes
+          </span>
+          <div className="flex items-center justify-between mt-1">
+            <span className="text-xl font-bold text-primary-300">
+              {metrics.total_likes.toLocaleString()}
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-[#07B4630D] flex items-center justify-center text-global-green">
+              <Heart size={18} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-xl border border-gray-50 shadow-sm flex flex-col gap-y-1">
+          <span className="text-[#808080] text-xs font-semibold uppercase tracking-wider">
+            Listed Products
+          </span>
+          <div className="flex items-center justify-between mt-1">
+            <span className="text-xl font-bold text-primary-300">
+              {metrics.total_listed.toLocaleString()}
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-[#07B4630D] flex items-center justify-center text-global-green">
+              <Package size={18} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-xl border border-gray-50 shadow-sm flex flex-col gap-y-1">
+          <span className="text-[#808080] text-xs font-semibold uppercase tracking-wider">
+            Sold Products
+          </span>
+          <div className="flex items-center justify-between mt-1">
+            <span className="text-xl font-bold text-primary-300">
+              {metrics.total_sold.toLocaleString()}
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-[#07B4630D] flex items-center justify-center text-global-green">
+              <ShoppingBag size={18} />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="w-[100px] h-[100px] rounded-full border relative bg-[#07B4630D] flex justify-center items-center border-dotted border-global-green">
         <img
           src={
             image
               ? URL.createObjectURL(image)
               : user?.image_url
-              ? user?.image_url
-              : GREEN_USER
+                ? user?.image_url
+                : GREEN_USER
           }
           className={clsx(
             user?.image_url || image
               ? "w-full h-full rounded-full object-cover"
-              : "w-[20px] h-[20px]"
+              : "w-[20px] h-[20px]",
           )}
           alt=""
         />

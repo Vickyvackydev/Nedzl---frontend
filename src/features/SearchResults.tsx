@@ -1,40 +1,74 @@
-// import { useMemo } from "react";
+import { useState, useEffect } from "react";
 import MainLayout from "../layout/MainLayout";
 import { Link, useSearchParams } from "react-router-dom";
 import { DOUBLE_DIRECT } from "../assets";
-// import { categories } from "../constant";
-// import Button from "../components/Button";
-import {
-  getAllProducts,
-  // getProductCategoryCounts,
-} from "../services/product.service";
+import { getAllProducts, createSearchAlert } from "../services/product.service";
 import { useQuery } from "@tanstack/react-query";
 import { ProductResponse } from "../types";
 import ProductCard from "../components/ProductCard";
 import { formatText } from "../utils";
 import { SkeletonCard } from "../components/product-row";
 import { motion } from "framer-motion";
+import { X } from "lucide-react";
+import toast from "react-hot-toast";
+import Pagination from "../components/Pagination";
 
 function SearchResults() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const keyword = searchParams.get("q");
   const category = searchParams.get("category");
   const brand = searchParams.get("brand");
+  const page = parseInt(searchParams.get("page") || "1", 10);
+
+  const [showPopup, setShowPopup] = useState(false);
+  const [emailInput, setEmailInput] = useState("");
+  const [submittingAlert, setSubmittingAlert] = useState(false);
 
   const {
     data: categorizedProduct,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["product-search", keyword, category, brand],
+    queryKey: ["product-search", keyword, category, brand, page],
     queryFn: () =>
       getAllProducts({
         search: keyword || "",
         category: category || "",
         brand: brand || "",
+        page: page,
+        limit: 10,
       }),
   });
+
+  const hasNoResults =
+    !isLoading &&
+    (!categorizedProduct?.data || categorizedProduct.data.length === 0);
+
+  const { data: fallbackProduct, isLoading: isLoadingFallback } = useQuery({
+    queryKey: ["product-search-fallback", category],
+    queryFn: () =>
+      getAllProducts({
+        category: category || "",
+        limit: 10,
+      }),
+    enabled: hasNoResults,
+  });
+
+  useEffect(() => {
+    if (hasNoResults) {
+      const promptSessionKey = `search-alert-prompted-${keyword}-${category}`;
+      const prompted = sessionStorage.getItem(promptSessionKey);
+
+      if (!prompted) {
+        const timer = setTimeout(() => {
+          setShowPopup(true);
+          sessionStorage.setItem(promptSessionKey, "true");
+        }, 5000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [hasNoResults, keyword, category]);
 
   // const { data: categorizedProductCount } = useQuery({
   //   queryKey: ["category-count"],
@@ -104,7 +138,7 @@ function SearchResults() {
                     window.history.pushState(
                       {},
                       "",
-                      `?${searchParams.toString()}`
+                      `?${searchParams.toString()}`,
                     );
                     refetch();
                   }}
@@ -126,7 +160,7 @@ function SearchResults() {
                     window.history.pushState(
                       {},
                       "",
-                      `?${searchParams.toString()}`
+                      `?${searchParams.toString()}`,
                     );
                     refetch();
                   }}
@@ -146,7 +180,7 @@ function SearchResults() {
                     window.history.pushState(
                       {},
                       "",
-                      `?${searchParams.toString()}`
+                      `?${searchParams.toString()}`,
                     );
                     refetch();
                   }}
@@ -201,13 +235,13 @@ function SearchResults() {
                 >
                   <ProductCard item={item} />
                 </motion.div>
-              )
+              ),
             )
           ) : (
-            <div className="col-span-2 md:col-span-3 lg:col-span-5 text-center py-16">
-              <div className="max-w-md mx-auto">
+            <div className="col-span-2 md:col-span-3 lg:col-span-5 flex flex-col items-center w-full">
+              <div className="text-center py-8 max-w-md mx-auto">
                 <svg
-                  className="w-24 h-24 mx-auto text-gray-300 mb-4"
+                  className="w-16 h-16 mx-auto text-gray-300 mb-3"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -219,56 +253,159 @@ function SearchResults() {
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                  No products found
+                <h3 className="text-lg font-semibold text-gray-700 mb-1">
+                  No exact matches found
                 </h3>
-                <p className="text-gray-500 mb-6">
-                  We couldn't find any products matching your search criteria.
-                  <br />
-                  Try adjusting your filters or search terms.
+                <p className="text-sm text-gray-500 mb-4">
+                  We couldn't find products matching your search. Here are some
+                  other items:
                 </p>
-                {/* <Button
-                  title="Clear Filters"
-                  handleClick={() => {
-                    window.location.href = "/products";
-                  }}
-                  btnStyles="bg-global-green text-white px-6 py-2 rounded-lg mx-auto"
-                /> */}
+              </div>
+
+              {/* Fallback Suggestions Grid */}
+              <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mt-2">
+                {isLoadingFallback ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <SkeletonCard key={i} />
+                  ))
+                ) : fallbackProduct?.data && fallbackProduct.data.length > 0 ? (
+                  fallbackProduct.data.map(
+                    (item: ProductResponse, index: number) => (
+                      <motion.div
+                        key={item.id || index}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: index * 0.05 }}
+                      >
+                        <ProductCard item={item} />
+                      </motion.div>
+                    ),
+                  )
+                ) : (
+                  <p className="col-span-full text-center text-sm text-gray-400 py-6">
+                    No other products available right now.
+                  </p>
+                )}
               </div>
             </div>
           )}
         </div>
 
-        {/* Pagination (if you have it) */}
-        {categorizedProduct?.total_pages &&
-          categorizedProduct.total_pages > 1 && (
-            <div className="flex justify-center gap-2 mt-8">
-              {Array.from(
-                { length: categorizedProduct.total_pages },
-                (_, i) => i + 1
-              ).map((pageNum) => (
-                <button
-                  key={pageNum}
-                  onClick={() => {
-                    searchParams.set("page", pageNum.toString());
-                    window.history.pushState(
-                      {},
-                      "",
-                      `?${searchParams.toString()}`
-                    );
-                    refetch();
+        {/* Pagination */}
+        {categorizedProduct?.totalpages && (
+          <Pagination
+            currentPage={page}
+            totalPages={categorizedProduct.totalpages}
+            onPageChange={(pageNum) => {
+              searchParams.set("page", pageNum.toString());
+              setSearchParams(searchParams);
+              refetch();
+            }}
+          />
+        )}
+
+        {/* Waitlist Subscription Modal */}
+        {showPopup && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 50 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 50 }}
+              className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative border border-gray-100"
+            >
+              <button
+                onClick={() => setShowPopup(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="text-center flex flex-col items-center gap-y-3 mt-2">
+                <div className="w-12 h-12 rounded-full bg-[#07B4630D] flex items-center justify-center text-global-green">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M14.828 14.828a4 4 0 0 1-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                    />
+                  </svg>
+                </div>
+
+                <h3 className="text-lg font-bold text-[#313133]">
+                  Can't find what you're looking for?
+                </h3>
+                <p className="text-sm text-gray-500">
+                  Leave your email and we'll notify you the moment a matching
+                  product is listed on campus!
+                </p>
+
+                <div className="w-full text-left bg-gray-50 p-3 rounded-xl border border-gray-100 text-xs text-gray-600 mb-2">
+                  <span className="font-semibold">Notification Alert:</span>
+                  <div className="mt-1">
+                    {keyword && (
+                      <span className="block">• Keyword: "{keyword}"</span>
+                    )}
+                    {category && (
+                      <span className="block">
+                        • Category: {formatText(category)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (!emailInput.trim()) return;
+                    setSubmittingAlert(true);
+                    try {
+                      await createSearchAlert({
+                        email: emailInput,
+                        keyword: keyword || "",
+                        category: category || "",
+                      });
+                      toast.success(
+                        "Success! We'll email you when matching products are posted.",
+                      );
+                      setShowPopup(false);
+                    } catch (err: any) {
+                      toast.error(
+                        err?.response?.data?.error ||
+                          "Failed to create notification alert",
+                      );
+                    } finally {
+                      setSubmittingAlert(false);
+                    }
                   }}
-                  className={`px-4 py-2 rounded ${
-                    pageNum === (categorizedProduct.page || 1)
-                      ? "bg-global-green text-white"
-                      : "bg-white text-gray-700 hover:bg-gray-100 shadow-box"
-                  }`}
+                  className="w-full flex flex-col gap-y-3"
                 >
-                  {pageNum}
-                </button>
-              ))}
-            </div>
-          )}
+                  <input
+                    type="email"
+                    required
+                    placeholder="Enter your email address"
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                    className="w-full h-[45px] rounded-xl px-3 border border-borderColor shadow-input outline-none text-sm text-primary-300 focus:border-global-green transition-all"
+                  />
+                  <button
+                    type="submit"
+                    disabled={submittingAlert}
+                    className="w-full h-[45px] bg-global-green text-white font-semibold rounded-xl text-sm hover:bg-green-700 transition-colors shadow-md disabled:opacity-50 cursor-pointer"
+                  >
+                    {submittingAlert ? "Subscribing..." : "Notify Me"}
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </div>
     </MainLayout>
   );

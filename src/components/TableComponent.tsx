@@ -86,30 +86,47 @@ export default function TableComponent({
               ))}
             </thead>
             <tbody className="divide-y divide-gray-100 text-gray-700">
-              {table.getRowModel().rows.map((row, rowIndex) => (
-                <tr
-                  key={row.id}
-                  className={`even:bg-gray-50 hover:bg-gray-100 transition-colors duration-150`}
-                >
-                  {row.getVisibleCells().map((cell, i) => (
-                    <td
-                      key={cell.id}
-                      className={`px-4 py-2 whitespace-nowrap overflow-visible ${
-                        i === 0
-                          ? `sticky left-0 z-[5] ${
-                              rowIndex % 2 ? "bg-gray-100" : "bg-white"
-                            }  shadow-[4px_0_6px_-4px_rgba(0,0,0,0.1)] border-r border-gray-200`
-                          : ""
-                      }`}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
+              {table.getRowModel().rows.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={table.getAllColumns().length || 10}
+                    className="px-6 py-12 text-center text-gray-500 bg-white"
+                  >
+                    <div className="flex flex-col items-center justify-center gap-y-2 py-4">
+                      <span className="text-4xl">📂</span>
+                      <p className="text-sm font-bold text-gray-800">No records found</p>
+                      <p className="text-xs text-gray-500 max-w-sm">
+                        There are no orders or bookings recorded yet. New entries will show up here automatically.
+                      </p>
+                    </div>
+                  </td>
                 </tr>
-              ))}
+              ) : (
+                table.getRowModel().rows.map((row, rowIndex) => (
+                  <tr
+                    key={row.id}
+                    className={`even:bg-gray-50 hover:bg-gray-100 transition-colors duration-150`}
+                  >
+                    {row.getVisibleCells().map((cell, i) => (
+                      <td
+                        key={cell.id}
+                        className={`px-4 py-2 whitespace-nowrap overflow-visible ${
+                          i === 0
+                            ? `sticky left-0 z-[5] ${
+                                rowIndex % 2 ? "bg-gray-100" : "bg-white"
+                              }  shadow-[4px_0_6px_-4px_rgba(0,0,0,0.1)] border-r border-gray-200`
+                            : ""
+                        }`}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

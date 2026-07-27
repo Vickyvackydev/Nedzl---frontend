@@ -35,8 +35,13 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 // import { motion } from "framer-motion";
 // import Button from "../../components/Button";
 
+import MyOrders from "./components/MyOrders";
+import MyBookings from "./components/MyBookings";
+
 type TabTypes =
   | "my_account"
+  | "my_orders"
+  | "service_bookings"
   | "my_products"
   | "store_settings"
   | "inbox"
@@ -49,6 +54,18 @@ const SideBarMenus = [
     active_icon: SINGLE_USER_WHITE,
     inactive_icon: SINGLE_USER_BLACK,
     Component: Account,
+  },
+  {
+    title: "My Orders",
+    active_icon: ADS_WHITE,
+    inactive_icon: ADS_BLACK,
+    Component: MyOrders,
+  },
+  {
+    title: "Service Bookings",
+    active_icon: STORE_SETTINGS_WHITE,
+    inactive_icon: STORE_SETTINGS_BLACK,
+    Component: MyBookings,
   },
   {
     title: "My Products",

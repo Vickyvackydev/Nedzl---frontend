@@ -70,6 +70,15 @@ export interface ProductType {
   university?: string;
   created_at: string;
   updated_at: string;
+  product_type?: string;
+  sub_menus?: any;
+  delivery_fee?: number;
+  old_price?: number;
+  discount_percent?: number;
+  guest_email?: string;
+  guest_phone?: string;
+  is_guest_listing?: boolean;
+  user?: User;
 }
 
 export interface ProductResponse {

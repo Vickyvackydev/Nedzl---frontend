@@ -117,10 +117,17 @@ export default function CategoriesOverlay() {
               <div className="space-y-2">
                 {categoriesWithCount.map((cat) => {
                   const Icon = iconMap[cat.value] || Tv;
+                  const targetUrl =
+                    cat.value === "prepared-food" || cat.value === "foodstuffs" || cat.value === "fruits-vegetables"
+                      ? "/meals"
+                      : cat.value === "other-services"
+                      ? "/services"
+                      : `/products?category=${cat.value}`;
+
                   return (
                     <Link
                       key={cat.value}
-                      to={`/products?category=${cat.value}`}
+                      to={targetUrl}
                       onClick={() => setOpen(false)}
                       className="flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition-colors p-3 rounded-xl cursor-pointer"
                     >

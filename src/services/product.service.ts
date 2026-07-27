@@ -86,3 +86,29 @@ export const toggleLike = async (id: string) => {
   const response = await API.post(`/products/${id}/toggle-like`);
   return response.data;
 };
+
+export const createSearchAlert = async (payload: {
+  email: string;
+  keyword: string;
+  category: string;
+}) => {
+  const response = await API.post("/products/search-alert", payload);
+  return response.data;
+};
+
+export const getPublicStats = async () => {
+  const response = await API.get("/public-stats");
+  return response.data?.data;
+};
+
+export const uploadGuestProduct = async (data: FormData, setProgress: Function) => {
+  const response = await API.post(`/products/guest-create`, data, {
+    headers: { "Content-Type": "multipart/form-data" },
+    onUploadProgress(progressEvent) {
+      const total = progressEvent.total || 1;
+      const percentCompleted = Math.round((progressEvent.loaded / total) * 100);
+      setProgress(percentCompleted);
+    },
+  });
+  return response.data;
+};

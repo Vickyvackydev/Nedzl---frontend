@@ -27,6 +27,10 @@ export const moreDetails = [
   },
 ];
 export const categories = [
+  { label: "Prepared Food", value: "prepared-food" },
+  { label: "Foodstuffs", value: "foodstuffs" },
+  { label: "Fruits & Vegetables", value: "fruits-vegetables" },
+  { label: "Other Services", value: "other-services" },
   {
     label: "Electricals",
     value: "electricals",
@@ -193,6 +197,10 @@ export const footer = [
       {
         title: "Report a Product",
         link: "/contact",
+      },
+      {
+        title: "Nedzl Community",
+        link: "/community",
       },
     ],
   },

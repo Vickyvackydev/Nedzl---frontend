@@ -16,7 +16,7 @@ interface Suggestion {
 interface SearchBarProps {
   onSearch?: (
     query: string,
-    filters?: { category?: string; brand?: string }
+    filters?: { category?: string; brand?: string },
   ) => void;
 }
 
@@ -68,7 +68,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
     setLoading(true);
     try {
       const res = await API.get(
-        `/products/search?q=${encodeURIComponent(searchQuery)}`
+        `/products/search?q=${encodeURIComponent(searchQuery)}`,
       );
       const suggestionData = res.data?.data?.suggestions || [];
       setSuggestions(suggestionData);
@@ -100,7 +100,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
 
   const performSearch = (
     searchQuery: string,
-    filters?: { category?: string; brand?: string }
+    filters?: { category?: string; brand?: string },
   ) => {
     setQuery(searchQuery);
 
@@ -236,13 +236,13 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
         )}
       </div>
 
-      <button
+      {/* <button
         onClick={handleSearchButtonClick}
         disabled={!query.trim()}
         className="w-[90px] lg:flex items-center justify-center hidden bg-global-green rounded-xl h-[40px] text-white text-[16px] font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-600 transition-colors"
       >
         Search
-      </button>
+      </button> */}
     </div>
   );
 };

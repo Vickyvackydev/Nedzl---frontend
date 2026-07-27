@@ -1,14 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaFacebook } from "react-icons/fa";
 
 import { motion } from "framer-motion";
 
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import AuthLayout from "../../layout/Authlayout";
-import { NEDZL_LOGO_GREEN, PAD_LOCK } from "../../assets";
+import { GOOGLE_ICON, NEDZL_LOGO_GREEN, PAD_LOCK } from "../../assets";
 import Button from "../../components/Button";
-import { login } from "../../services/auth.service";
+import {
+  login,
+  loginWithGoogle,
+  loginWithFacebook,
+} from "../../services/auth.service";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { setToken, setUser } from "../../state/slices/authReducer";
@@ -16,6 +25,12 @@ import SEO from "../../components/SEO";
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  const redirectPath =
+    location.state?.from || searchParams.get("redirect") || "/dashboard";
+
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
@@ -23,6 +38,76 @@ function Login() {
     email: "",
     password: "",
   });
+
+  const [socialLoading, setSocialLoading] = useState(false);
+  const [socialProvider, setSocialProvider] = useState("");
+
+  const handleGoogleLogin = () => {
+    const clientID =
+      import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID";
+    const redirectUri = window.location.origin + "/login";
+    const scope = "email profile openid";
+    const state = "google";
+    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scope)}&state=${state}`;
+    window.location.href = url;
+  };
+
+  const handleFacebookLogin = () => {
+    const clientID =
+      import.meta.env.VITE_FACEBOOK_APP_ID || "YOUR_FACEBOOK_APP_ID";
+    const redirectUri = window.location.origin + "/login";
+    const scope = "email,public_profile";
+    const state = "facebook";
+    const url = `https://www.facebook.com/v12.0/dialog/oauth?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scope)}&state=${state}`;
+    window.location.href = url;
+  };
+
+  const handleSocialLogin = async (accessToken: string, provider: string) => {
+    setSocialLoading(true);
+    setSocialProvider(provider);
+    try {
+      let response;
+      if (provider === "google") {
+        response = await loginWithGoogle(accessToken);
+      } else {
+        response = await loginWithFacebook(accessToken);
+      }
+
+      if (response) {
+        toast.success(response?.message);
+        dispatch(setToken(response?.data?.token));
+        dispatch(setUser(response?.data?.user));
+
+        if (response?.data?.user?.role === "ADMIN") {
+          navigate("/admin/overview");
+        } else {
+          navigate(redirectPath, { replace: true });
+        }
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          "Social Login failed",
+      );
+    } finally {
+      setSocialLoading(false);
+      setSocialProvider("");
+    }
+  };
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const params = new URLSearchParams(hash.substring(1));
+      const accessToken = params.get("access_token") || params.get("id_token");
+      const state = params.get("state");
+      if (accessToken && (state === "google" || state === "facebook")) {
+        window.history.replaceState(null, "", window.location.pathname);
+        handleSocialLogin(accessToken, state);
+      }
+    }
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -54,14 +139,10 @@ function Login() {
         dispatch(setToken(response?.data?.token));
         dispatch(setUser(response?.data?.user));
 
-        // window.history.pushState({}, "", "/dashboard");
-        // setTimeout(() => {
-        //   window.location.reload();
-        // }, 1000);
         if (response?.data?.user?.role === "ADMIN") {
           navigate("/admin/overview");
         } else {
-          navigate("/dashboard");
+          navigate(redirectPath, { replace: true });
         }
 
         reset();
@@ -72,6 +153,18 @@ function Login() {
       setLoading(false);
     }
   };
+
+  if (socialLoading) {
+    return (
+      <div className="flex flex-col space-y-3 h-screen justify-center items-center">
+        <div className="w-8 h-8 border-4 border-global-green border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-sm font-medium text-gray-600">
+          Signing in with {socialProvider}...
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       <SEO
@@ -101,7 +194,7 @@ function Login() {
               Dont have an account?{" "}
               <span
                 className="text-global-green font-medium cursor-pointer"
-                onClick={() => navigate("/register")}
+                onClick={() => navigate("/register", { state: location.state })}
               >
                 Create an account
               </span>
@@ -178,6 +271,33 @@ function Login() {
               textStyle={"text-white text-[16px] text-semibold"}
               handleClick={handleLogin}
             />
+
+            <div className="flex items-center my-2 w-full">
+              <div className="flex-grow border-t border-gray-300"></div>
+              <span className="flex-shrink mx-4 text-gray-500 text-xs uppercase tracking-wider font-medium">
+                Or continue with
+              </span>
+              <div className="flex-grow border-t border-gray-300"></div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 w-full">
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                className="flex items-center justify-center gap-x-2 border border-gray-200 rounded-lg py-2.5 hover:bg-gray-50 transition-all font-medium text-sm text-[#4F5762] cursor-pointer"
+              >
+                <img src={GOOGLE_ICON} className="w-5 h-5" alt="" />
+                Google
+              </button>
+              <button
+                type="button"
+                onClick={handleFacebookLogin}
+                className="flex items-center justify-center gap-x-2 border border-gray-200 rounded-lg py-2.5 hover:bg-gray-50 transition-all font-medium text-sm text-[#4F5762] cursor-pointer"
+              >
+                <FaFacebook size={18} className="text-[#1877F2]" />
+                Facebook
+              </button>
+            </div>
           </form>
         </motion.div>
       </AuthLayout>
