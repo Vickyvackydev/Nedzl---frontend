@@ -1,12 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import {
-  FaCheck,
-  FaEye,
-  FaEyeSlash,
-  FaFacebook,
-} from "react-icons/fa";
+import { FaCheck, FaEye, FaEyeSlash, FaFacebook } from "react-icons/fa";
 import { MdPhone } from "react-icons/md";
 
 import { motion } from "framer-motion";
@@ -60,15 +55,22 @@ function Register() {
   };
 
   const ref = searchParams.get("ref");
+  const emailParam = searchParams.get("email");
 
   const [formInput, setFormInput] = useState({
     user_name: "",
-    email: "",
+    email: emailParam || "",
     password: "",
     confirm_password: "",
     phone_number: "",
     referral_code: ref,
   });
+
+  useEffect(() => {
+    if (emailParam) {
+      setFormInput((prev) => ({ ...prev, email: emailParam }));
+    }
+  }, [emailParam]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
