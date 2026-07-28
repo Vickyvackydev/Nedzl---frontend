@@ -61,6 +61,15 @@ function Home() {
     return groups;
   }, [allCategoryProducts]);
 
+  const discountProducts = useMemo(() => {
+    if (!allCategoryProducts?.data) return [];
+    return allCategoryProducts.data.filter(
+      (product: any) =>
+        (product.discount_percent && product.discount_percent > 0) ||
+        (product.old_price && product.old_price > product.product_price)
+    );
+  }, [allCategoryProducts]);
+
   const formatText = (text: string) =>
     text
       .replace(/_/g, " ")
@@ -167,9 +176,7 @@ function Home() {
         </div>
         {isFeaturedProductNotComplete && (
           <div className="w-full px-4 md:px-20 mb-10 flex flex-col md:flex-row items-start justify-between gap-3 mt-5">
-            {/* LEFT TWO BOXES */}
             <div className="flex w-full flex-col md:flex-row items-start h-auto md:h-[650px] gap-x-3 gap-y-3 md:gap-y-0  md:w-[50%]">
-              {/* BOX 1 */}
               <div
                 ref={box1Ref}
                 className="w-full h-full overflow-y-scroll bg-[#F5F5F5] p-5 rounded-xl no-scrollbar"
@@ -212,7 +219,6 @@ function Home() {
                 </div>
               </div>
 
-              {/* BOX 2 */}
               <div
                 ref={box2Ref}
                 className="w-full h-full overflow-y-scroll bg-[#F5F5F5] p-5 rounded-xl no-scrollbar"
@@ -256,9 +262,7 @@ function Home() {
               </div>
             </div>
 
-            {/* RIGHT TWO BOXES */}
             <div className="flex flex-col items-start gap-3 w-full md:w-[50%]">
-              {/* BOX 3 */}
               <div className="w-full p-5 bg-[#F5F5F5] rounded-xl flex flex-col items-start gap-3">
                 <div className="flex flex-col items-start gap-y-1">
                   <span className="text-[#044706] font-semibold text-xl">
@@ -303,7 +307,6 @@ function Home() {
                 </div>
               </div>
 
-              {/* BOX 4 */}
               <div className="w-full p-5 bg-[#F5F5F5] rounded-xl flex flex-col items-start gap-3">
                 <div className="flex flex-col items-start gap-y-1">
                   <span className="text-[#044706] font-semibold text-xl">
@@ -359,6 +362,16 @@ function Home() {
           onSeeAll={() => navigate(`/products?section=todays-deal`)}
         />
       )}
+      {discountProducts.length > 5 && (
+        <ProductRow
+          title="Discount Sales"
+          data={discountProducts}
+          loading={loadingAll}
+          minCountThreshold={5}
+          onSeeAll={() => navigate(`/products?discount=true`)}
+          layout="scroll"
+        />
+      )}
       <ProductRow
         title="For you"
         data={forYouProducts?.data}
@@ -366,7 +379,6 @@ function Home() {
         onSeeAll={() => navigate(`/products?section=for-you`)}
         layout={isFeaturedProductNotComplete ? "scroll" : "grid"}
       />
-      {/* Categorized Listings (Only categories with at least 5 active items are shown) */}
       {loadingAll ? (
         <ProductRow title="Loading Categories..." data={[]} loading={true} />
       ) : (

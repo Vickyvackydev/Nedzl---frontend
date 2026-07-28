@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BAR, HELP, NEDZL_LOGO_GREEN } from "../assets";
+import { BAR, NEDZL_LOGO_GREEN } from "../assets";
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AccountDropdown from "./AccountDropdown";
@@ -50,13 +50,13 @@ function Header() {
           </Link>
         </div>
         <div className="lg:hidden flex items-center gap-x-2">
-          <AccountDropdown user={user} />
           <button
-            onClick={() => navigate("/faqs")}
-            className="h-[40px] w-[40px] rounded-lg bg-[#F7F7F7] flex items-center justify-center"
+            onClick={handlePostProductClick}
+            className="bg-global-green hover:bg-emerald-600 text-white font-bold text-xs px-2.5 py-2 rounded-xl transition-all shadow-sm flex items-center gap-1 flex-shrink-0 cursor-pointer"
           >
-            <img src={HELP} alt="" />
+            <span>+ Post Product</span>
           </button>
+          <AccountDropdown user={user} />
           {location.pathname === "/dashboard" && (
             <button
               onClick={toggleSidebar}
