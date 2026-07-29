@@ -640,10 +640,10 @@ function ProductDetails() {
                         "";
 
                       const sellerAvatar = sellerUser?.image_url || PROFILE;
-                      const isSellerVerified = sellerUser ? sellerUser.is_verified : true;
+                      const isSellerVerified = sellerUser ? sellerUser.is_verified : false;
                       const membershipText = sellerUser?.created_at
                         ? getMembershipDuration(sellerUser.created_at)
-                        : "Verified Vendor";
+                        : "Guest Listing";
 
                       return (
                         <>
