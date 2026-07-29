@@ -44,18 +44,31 @@ function Header() {
           <Link to={"/"}>
             <img
               src={NEDZL_LOGO_GREEN}
-              className="w-[130px] h-[33.41px] object-contain"
+              className="w-[110px] sm:w-[130px] h-[32px] sm:h-[33.41px] object-contain"
               alt=""
             />
           </Link>
         </div>
-        <div className="lg:hidden flex items-center gap-x-2">
+        <div className="lg:hidden flex items-center gap-x-2.5">
+          {/* <button
+            onClick={handlePostProductClick}
+            className="bg-gradient-to-r from-[#07B463] to-[#059a54] hover:from-[#059a54] hover:to-[#047a42] text-white font-black text-xs sm:text-sm px-3.5 py-2.5 rounded-xl transition-all shadow-md shadow-emerald-500/30 flex items-center gap-1.5 flex-shrink-0 cursor-pointer active:scale-95 border border-emerald-400/40 tracking-wider"
+          >
+            <span className="text-sm sm:text-base font-extrabold leading-none">
+              +
+            </span>
+            <span>Post Product</span>
+          </button> */}
           <button
             onClick={handlePostProductClick}
-            className="bg-global-green hover:bg-emerald-600 text-white font-bold text-xs px-2.5 py-2 rounded-xl transition-all shadow-sm flex items-center gap-1 flex-shrink-0 cursor-pointer"
+            className="bg-gradient-to-r from-[#FF9900] to-[#FF5500] hover:from-[#FF5500] hover:to-[#D44400] text-white font-black text-xs sm:text-sm px-3.5 py-2.5 rounded-xl transition-all shadow-md shadow-orange-500/40 flex items-center gap-1.5 flex-shrink-0 cursor-pointer active:scale-95 border border-orange-400/40 tracking-wider"
           >
-            <span>+ Post Product</span>
+            <span className="text-sm sm:text-base font-extrabold leading-none">
+              +
+            </span>
+            <span>Post Product</span>
           </button>
+
           <AccountDropdown user={user} />
           {location.pathname === "/dashboard" && (
             <button
@@ -71,9 +84,15 @@ function Header() {
         <SearchBar />
       </div>
       <div className="lg:flex items-center gap-5 w-full md:w-auto justify-between md:justify-end hidden">
+        {/* <button
+          onClick={handlePostProductClick}
+          className="flex items-center gap-x-1.5 bg-global-green hover:bg-emerald-600 text-white font-bold text-sm px-4 py-2  rounded-xl transition-all shadow-sm hover:shadow-emerald-500/20 flex-shrink-0 cursor-pointer"
+        >
+          <span>+ Post a Product</span>
+        </button> */}
         <button
           onClick={handlePostProductClick}
-          className="flex items-center gap-x-1.5 bg-global-green hover:bg-emerald-600 text-white font-bold text-sm px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow-emerald-500/20 flex-shrink-0 cursor-pointer"
+          className="flex items-center gap-x-1.5 bg-gradient-to-r from-[#FF9900] to-[#FF5500] hover:from-[#FF5500] hover:to-[#D44400] text-white font-bold text-sm px-4 py-2 rounded-xl transition-all shadow-md shadow-orange-500/30 hover:shadow-orange-500/50 flex-shrink-0 cursor-pointer active:scale-95"
         >
           <span>+ Post a Product</span>
         </button>
@@ -81,9 +100,22 @@ function Header() {
         <AccountDropdown user={user} />
         <div className="relative group cursor-pointer py-2">
           <div className="flex items-center gap-x-2 py-1 px-3 rounded-lg hover:bg-emerald-50 transition-colors border border-emerald-200 bg-emerald-50/40">
-            <span className="text-faded-black text-[15px] font-bold text-global-green">Order / Services</span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-global-green transition-transform duration-200 group-hover:rotate-180">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            <span className="text-faded-black text-[15px] font-bold text-global-green">
+              Order / Services
+            </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2.5}
+              stroke="currentColor"
+              className="w-4 h-4 text-global-green transition-transform duration-200 group-hover:rotate-180"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m19.5 8.25-7.5 7.5-7.5-7.5"
+              />
             </svg>
           </div>
           <div className="absolute right-0 top-full pt-1 w-60 hidden group-hover:block z-50 transition-all">
@@ -94,8 +126,12 @@ function Header() {
               >
                 <span className="text-xl">🍲</span>
                 <div>
-                  <p className="font-bold text-gray-800">Order your First Meal</p>
-                  <p className="text-xs text-gray-500">Nedzl Food & Fast Delivery</p>
+                  <p className="font-bold text-gray-800">
+                    Order your First Meal
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Nedzl Food & Fast Delivery
+                  </p>
                 </div>
               </Link>
               <div className="border-t border-gray-100 my-1"></div>
@@ -106,7 +142,9 @@ function Header() {
                 <span className="text-xl">🛠️</span>
                 <div>
                   <p className="font-bold text-gray-800">Order a Service</p>
-                  <p className="text-xs text-gray-500">Book Qualified Artisans</p>
+                  <p className="text-xs text-gray-500">
+                    Book Qualified Artisans
+                  </p>
                 </div>
               </Link>
             </div>
