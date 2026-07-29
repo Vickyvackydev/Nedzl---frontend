@@ -626,141 +626,141 @@ function ProductDetails() {
                     </div>
                   </div>
                   <div className="p-5">
-                    {storeDetails?.data || productDetails?.product.user ? (
-                      <>
-                        <div className="flex items-center gap-x-2">
-                          <div className="relative">
-                            <img
-                              src={
-                                productDetails?.product?.user?.image_url ||
-                                PROFILE
-                              }
-                              className="w-[60px] h-[60px] rounded-full"
-                              alt=""
-                            />
-                            <div className="border-4 w-[15px] h-[15px] -right-1 top-11 bg-global-green absolute rounded-full border-white"></div>
-                          </div>
-                          <div className="flex flex-col items-start gap-y-1">
-                            <span className="text-[16px] font-semibold text-primary-300">
-                              {storeDetails?.data?.business_name ||
-                                productDetails?.product.user?.user_name}
-                            </span>
-                            <div className="flex items-center gap-x-2">
+                    {(() => {
+                      const productObj = productDetails?.product;
+                      const sellerUser = productObj?.user;
+                      const sellerDisplayName =
+                        storeDetails?.data?.business_name ||
+                        sellerUser?.user_name ||
+                        "Nedzl Vendor";
+
+                      const sellerPhone =
+                        sellerUser?.phone_number ||
+                        productObj?.guest_phone ||
+                        "";
+
+                      const sellerAvatar = sellerUser?.image_url || PROFILE;
+                      const isSellerVerified = sellerUser ? sellerUser.is_verified : true;
+                      const membershipText = sellerUser?.created_at
+                        ? getMembershipDuration(sellerUser.created_at)
+                        : "Verified Vendor";
+
+                      return (
+                        <>
+                          <div className="flex items-center gap-x-2">
+                            <div className="relative">
                               <img
-                                src={VERIFIED}
-                                className="w-[16px] h-[16px]"
+                                src={sellerAvatar}
+                                className="w-[60px] h-[60px] rounded-full object-cover"
                                 alt=""
                               />
-
-                              <span className="text-[#75757A] text-xs font-medium">
-                                {productDetails?.product.user?.is_verified
-                                  ? "Verified"
-                                  : "Not Verified"}
-                              </span>
+                              <div className="border-4 w-[15px] h-[15px] -right-1 top-11 bg-global-green absolute rounded-full border-white"></div>
                             </div>
-                            <div className="flex items-center gap-x-2">
-                              <img
-                                src={SINGLE_USER}
-                                className="w-[16px] h-[16px]"
-                                alt=""
-                              />
-                              <span className="text-[#75757A] text-xs font-medium">
-                                {getMembershipDuration(
-                                  productDetails?.product.user
-                                    ?.created_at as string,
-                                )}
+                            <div className="flex flex-col items-start gap-y-1">
+                              <span className="text-[16px] font-semibold text-primary-300">
+                                {sellerDisplayName}
                               </span>
+                              <div className="flex items-center gap-x-2">
+                                <img
+                                  src={VERIFIED}
+                                  className="w-[16px] h-[16px]"
+                                  alt=""
+                                />
+
+                                <span className="text-[#75757A] text-xs font-medium">
+                                  {isSellerVerified ? "Verified" : "Not Verified"}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-x-2">
+                                <img
+                                  src={SINGLE_USER}
+                                  className="w-[16px] h-[16px]"
+                                  alt=""
+                                />
+                                <span className="text-[#75757A] text-xs font-medium">
+                                  {membershipText}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="mt-3 flex flex-col w-full gap-y-2">
-                          <Button
-                            title={
-                              showSellerNumber ? (
-                                <div className="flex items-center justify-center gap-2">
-                                  <span>
-                                    {productDetails?.product.user?.phone_number}
-                                  </span>
-
-                                  <Copy
-                                    className={clsx("w-4 h-4 cursor-pointer")}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      navigator.clipboard.writeText(
-                                        productDetails?.product.user
-                                          ?.phone_number || "",
-                                      );
-                                      toast.success("Copied to clipboard");
-                                    }}
-                                  />
-                                </div>
-                              ) : (
-                                "Show Seller Contact"
-                              )
-                            }
-                            btnStyles="w-full bg-global-green rounded-xl h-[40px]"
-                            textStyle="text-white font-medium text-sm"
-                            handleClick={() => setShowSellerNumber(true)}
-                          />
-
-                          {showSellerNumber ? (
+                          <div className="mt-3 flex flex-col w-full gap-y-2">
                             <Button
                               title={
-                                <div className="flex items-center justify-center gap-2">
-                                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.42 9.864-9.864.002-2.637-1.03-5.115-2.906-6.99C16.255 1.876 13.779.845 11.144.845c-5.443 0-9.866 4.42-9.87 9.866-.001 1.902.499 3.757 1.449 5.378L1.691 22.1l6.126-1.606c1.614.88 3.434 1.345 5.34 1.345zM17.91 14.542c-.313-.157-1.854-.915-2.143-1.02-.289-.105-.499-.157-.709.157-.21.314-.813 1.02-.996 1.229-.183.208-.367.234-.68.077-.313-.157-1.32-.486-2.513-1.55-1.282-1.144-1.906-2.457-2.025-2.665-.119-.208-.013-.32.092-.424.095-.095.21-.244.316-.367.105-.123.14-.21.21-.35.07-.14.035-.262-.017-.367-.053-.105-.499-1.205-.683-1.65-.18-.431-.377-.373-.518-.38-.135-.007-.289-.009-.443-.009-.154 0-.405.058-.617.289-.212.23-1.077 1.05-1.077 2.56 0 1.51 1.1 2.97 1.253 3.179.154.208 2.164 3.303 5.244 4.633.732.316 1.304.505 1.748.646.735.234 1.404.2 1.933.12.589-.088 1.854-.758 2.115-1.455.262-.697.262-1.296.183-1.424-.078-.127-.289-.207-.602-.364z"/>
-                                  </svg>
-                                  <span>Message on WhatsApp</span>
-                                </div>
+                                showSellerNumber ? (
+                                  <div className="flex items-center justify-center gap-2">
+                                    <span>
+                                      {sellerPhone || "Contact number available"}
+                                    </span>
+
+                                    {sellerPhone && (
+                                      <Copy
+                                        className={clsx("w-4 h-4 cursor-pointer")}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          navigator.clipboard.writeText(sellerPhone);
+                                          toast.success("Copied to clipboard");
+                                        }}
+                                      />
+                                    )}
+                                  </div>
+                                ) : (
+                                  "Show Seller Contact"
+                                )
                               }
-                              btnStyles="w-full bg-[#25D366] hover:bg-[#1EBE57] rounded-xl h-[40px]"
-                              textStyle="text-white font-medium text-sm flex items-center justify-center"
-                              handleClick={() => {
-                                const productName = productDetails?.product?.product_name || "";
-                                const phone = productDetails?.product?.user?.phone_number || "";
-                                if (phone) {
-                                  window.open(getWhatsAppLink(phone, productName), "_blank");
-                                } else {
-                                  toast.error("Seller phone number not found");
+                              btnStyles="w-full bg-global-green rounded-xl h-[40px]"
+                              textStyle="text-white font-medium text-sm"
+                              handleClick={() => setShowSellerNumber(true)}
+                            />
+
+                            {showSellerNumber ? (
+                              <Button
+                                title={
+                                  <div className="flex items-center justify-center gap-2">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.42 9.864-9.864.002-2.637-1.03-5.115-2.906-6.99C16.255 1.876 13.779.845 11.144.845c-5.443 0-9.866 4.42-9.87 9.866-.001 1.902.499 3.757 1.449 5.378L1.691 22.1l6.126-1.606c1.614.88 3.434 1.345 5.34 1.345zM17.91 14.542c-.313-.157-1.854-.915-2.143-1.02-.289-.105-.499-.157-.709.157-.21.314-.813 1.02-.996 1.229-.183.208-.367.234-.68.077-.313-.157-1.32-.486-2.513-1.55-1.282-1.144-1.906-2.457-2.025-2.665-.119-.208-.013-.32.092-.424.095-.095.21-.244.316-.367.105-.123.14-.21.21-.35.07-.14.035-.262-.017-.367-.053-.105-.499-1.205-.683-1.65-.18-.431-.377-.373-.518-.38-.135-.007-.289-.009-.443-.009-.154 0-.405.058-.617.289-.212.23-1.077 1.05-1.077 2.56 0 1.51 1.1 2.97 1.253 3.179.154.208 2.164 3.303 5.244 4.633.732.316 1.304.505 1.748.646.735.234 1.404.2 1.933.12.589-.088 1.854-.758 2.115-1.455.262-.697.262-1.296.183-1.424-.078-.127-.289-.207-.602-.364z"/>
+                                    </svg>
+                                    <span>Message on WhatsApp</span>
+                                  </div>
                                 }
-                              }}
-                            />
-                          ) : (
-                            <Button
-                              title="Let Us Handle It"
-                              btnStyles="w-full border border-[#E9EAEB] rounded-xl h-[40px]"
-                              textStyle="text-primary-300 font-medium text-sm"
-                              handleClick={() =>
-                                toast.success("Coming soon on Nedzl")
-                              }
-                            />
-                          )}
-                          <div className="mt-3 w-full rounded-xl border border-[#FEE2E2] bg-[#FFF1F2] p-3">
-                            <p className="text-xs font-semibold text-[#B91C1C]">
-                              Safety and fraud disclaimer
-                            </p>
-                            <p className="mt-1 text-xs md:text-sm text-[#4B5563]">
-                              Nedzl only connects buyers and sellers and does
-                              not handle payments, shipping, or delivery. Always
-                              meet in a safe public place, inspect items before
-                              paying, and use secure payment methods. Never send
-                              money before receiving your goods. Nedzl is not
-                              responsible for any loss or fraud resulting from
-                              payments made directly to sellers.
-                            </p>
+                                btnStyles="w-full bg-[#25D366] hover:bg-[#1EBE57] rounded-xl h-[40px]"
+                                textStyle="text-white font-medium text-sm flex items-center justify-center"
+                                handleClick={() => {
+                                  const productName = productDetails?.product?.product_name || "";
+                                  if (sellerPhone) {
+                                    window.open(getWhatsAppLink(sellerPhone, productName), "_blank");
+                                  } else {
+                                    toast.error("Seller phone number not found");
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <Button
+                                title="Let Us Handle It"
+                                btnStyles="w-full border border-[#E9EAEB] rounded-xl h-[40px]"
+                                textStyle="text-primary-300 font-medium text-sm"
+                                handleClick={() =>
+                                  toast.success("Coming soon on Nedzl")
+                                }
+                              />
+                            )}
+                            <div className="mt-3 w-full rounded-xl border border-[#FEE2E2] bg-[#FFF1F2] p-3">
+                              <p className="text-xs font-semibold text-[#B91C1C]">
+                                Safety and fraud disclaimer
+                              </p>
+                              <p className="mt-1 text-xs md:text-sm text-[#4B5563]">
+                                Nedzl only connects buyers and sellers and does
+                                not handle payments, shipping, or delivery. Always
+                                meet in a safe public place, inspect items before
+                                paying, and use secure payment methods. Never send
+                                money before receiving your goods. Nedzl is not
+                                responsible for any loss or fraud resulting from
+                                payments made directly to sellers.
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="w-full py-5 flex flex-col items-center justify-center text-center gap-y-2">
-                        <span className="text-sm font-semibold text-red-600 uppercase">
-                          Inactive Seller
-                        </span>
-                        <p className="text-sm text-gray-500 font-medium">
-                          this user is not active on nedzl
-                        </p>
-                      </div>
-                    )}
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>

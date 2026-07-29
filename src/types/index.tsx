@@ -106,6 +106,9 @@ export interface ProductResponse {
   created_at: string; // ISO date string
   updated_at: string; // ISO date string
   deleted_at: string | null;
+  guest_email?: string;
+  guest_phone?: string;
+  is_guest_listing?: boolean;
 }
 export interface SingleProductResponse {
   product: ProductResponse;
