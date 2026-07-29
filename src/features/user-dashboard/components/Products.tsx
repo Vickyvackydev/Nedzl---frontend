@@ -23,7 +23,7 @@ import {
 } from "../../../constant";
 import imageCompression from "browser-image-compression";
 
-import { FiEdit2, FiX } from "react-icons/fi";
+import { FiEdit2, FiSearch, FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
 import FullScreenLoader from "../../../components/FullScreenLoader";
 import { ProductType } from "../../../types";
@@ -92,18 +92,20 @@ function Products() {
   const [newSubMenuPrice, setNewSubMenuPrice] = useState("");
 
   const [selectedProductType, setSelectedProductType] = useState<string>("ALL");
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   const {
     data: userProducts,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["user-products", activeTab, currentPage, selectedProductType],
+    queryKey: ["user-products", activeTab, currentPage, selectedProductType, searchKeyword],
     queryFn: () =>
       getUserProducts({
         status: activeTab === "active" ? "ONGOING" : activeTab.toUpperCase(),
         page: currentPage,
         product_type: selectedProductType === "ALL" ? undefined : selectedProductType,
+        search: searchKeyword.trim() || undefined,
       }),
   });
 
@@ -925,7 +927,10 @@ function Products() {
               {tabs.map((t) => (
                 <div key={t.label} className="w-fit relative">
                   <span
-                    onClick={() => setActiveTab(t.label.toLowerCase() as Tabs)}
+                    onClick={() => {
+                      setActiveTab(t.label.toLowerCase() as Tabs);
+                      dispatch(setCurrentPage(1));
+                    }}
                     className={`text-sm cursor-pointer relative px-3 ${
                       activeTab === t.label.toLowerCase()
                         ? "text-global-green font-semibold"
@@ -941,27 +946,60 @@ function Products() {
               ))}
             </div>
 
-            {/* Category / Section Filter */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-              {[
-                { label: "All Items", value: "ALL" },
-                { label: "Marketplace", value: "MARKET" },
-                { label: "Meals", value: "FOOD" },
-                { label: "Bookings & Services", value: "SERVICE" },
-              ].map((filter) => (
-                <button
-                  key={filter.value}
-                  type="button"
-                  onClick={() => setSelectedProductType(filter.value)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                    selectedProductType === filter.value
-                      ? "bg-global-green text-white shadow-sm"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200"
-                  }`}
-                >
-                  {filter.label}
-                </button>
-              ))}
+            {/* Search Input & Category Filter */}
+            <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full md:w-auto">
+              {/* Search Field */}
+              <div className="relative w-full sm:w-[240px] flex items-center">
+                <FiSearch className="absolute left-3 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Search your listed items..."
+                  value={searchKeyword}
+                  onChange={(e) => {
+                    setSearchKeyword(e.target.value);
+                    dispatch(setCurrentPage(1));
+                  }}
+                  className="w-full pl-9 pr-8 py-1.5 text-xs rounded-xl border border-gray-200 focus:border-global-green focus:ring-1 focus:ring-global-green outline-none transition-all bg-gray-50/50"
+                />
+                {searchKeyword && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchKeyword("");
+                      dispatch(setCurrentPage(1));
+                    }}
+                    className="absolute right-2.5 text-gray-400 hover:text-gray-600"
+                  >
+                    <FiX className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+
+              {/* Section Type Filter */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 w-full sm:w-auto">
+                {[
+                  { label: "All Items", value: "ALL" },
+                  { label: "Marketplace", value: "MARKET" },
+                  { label: "Meals", value: "FOOD" },
+                  { label: "Bookings", value: "SERVICE" },
+                ].map((filter) => (
+                  <button
+                    key={filter.value}
+                    type="button"
+                    onClick={() => {
+                      setSelectedProductType(filter.value);
+                      dispatch(setCurrentPage(1));
+                    }}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                      selectedProductType === filter.value
+                        ? "bg-global-green text-white shadow-sm"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200"
+                    }`}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
           {userProducts?.data?.data?.length > 0 ? (
@@ -1124,7 +1162,9 @@ function Products() {
             <div className="w-full flex flex-col items-center gap-y-2 justify-center h-[70vh]">
               <img src={ART_WORK} className="w-[90.1px] h-[100px]" alt="" />
               <span className="text-xl font-semibold text-black text-center">
-                {activeTab === "closed"
+                {searchKeyword
+                  ? `No items found matching "${searchKeyword}"`
+                  : activeTab === "closed"
                   ? `You have no closed ${
                       selectedProductType === "FOOD"
                         ? "meals"
