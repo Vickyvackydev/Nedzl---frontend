@@ -78,6 +78,7 @@ export interface ProductType {
   guest_email?: string;
   guest_phone?: string;
   is_guest_listing?: boolean;
+  service_type?: string;
   user?: User;
 }
 
@@ -105,10 +106,12 @@ export interface ProductResponse {
   university?: string;
   created_at: string; // ISO date string
   updated_at: string; // ISO date string
-  deleted_at: string | null;
   guest_email?: string;
   guest_phone?: string;
   is_guest_listing?: boolean;
+  old_price?: number;
+  discount_percent?: number;
+  service_type?: string;
 }
 export interface SingleProductResponse {
   product: ProductResponse;

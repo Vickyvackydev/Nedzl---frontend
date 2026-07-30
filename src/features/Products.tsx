@@ -21,13 +21,6 @@ import { SkeletonCard } from "../components/product-row";
 import { motion, AnimatePresence } from "framer-motion";
 // import clsx from "clsx";
 import { LocationDropdown } from "../components/LocationDropdown";
-import Pagination from "../components/Pagination";
-import {
-  selectCurrentPage,
-  setCurrentPage,
-} from "../state/slices/globalReducer";
-import { useDispatch, useSelector } from "react-redux";
-
 interface FilterContentProps {
   selectedLocation: string;
   setSelectedLocation: (val: string) => void;
@@ -41,8 +34,6 @@ interface FilterContentProps {
   handleApplyFilters: () => void;
   resetFilters: () => void;
   section: string | null;
-  setCurrentPage: (page: number) => void;
-  dispatch: (action: any) => void;
 }
 
 const FilterContent = ({
@@ -58,8 +49,6 @@ const FilterContent = ({
   handleApplyFilters,
   resetFilters,
   section,
-  setCurrentPage,
-  dispatch,
 }: FilterContentProps) => (
   <div className="flex flex-col gap-y-3">
     <LocationDropdown
@@ -111,7 +100,6 @@ const FilterContent = ({
               onClick={() => {
                 const value = item.value;
                 setSelectedCatgory(value);
-                dispatch(setCurrentPage(1));
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 window.history.replaceState(
                   {},
@@ -196,15 +184,17 @@ function Products() {
   const [searchParams] = useSearchParams();
   const category = searchParams.get("category");
   const keyword = searchParams.get("q");
-  const section = searchParams.get("section");
+  const rawSection = searchParams.get("section");
+  const discountParam = searchParams.get("discount");
+
+  const sectionParam = rawSection || (discountParam === "true" ? "discount-sales" : null);
 
   const [selectedCatgory, setSelectedCatgory] = useState(category);
 
-  // const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(12);
+  const [page, setPage] = useState(1);
+  const [accumulatedProducts, setAccumulatedProducts] = useState<ProductResponse[]>([]);
 
-  //   const [location, setLocation] = useState("");
-  const currentPage = useSelector(selectCurrentPage);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedUniversity, setSelectedUniversity] = useState("");
   const [payload, setPayload] = useState({});
@@ -214,49 +204,87 @@ function Products() {
   });
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (category && selectedCatgory !== "") {
+    if (category && selectedCatgory !== category) {
       setSelectedCatgory(category);
     }
   }, [category, keyword]);
 
+  // Reset page and accumulated list when filters change
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [currentPage]);
+    setPage(1);
+    setAccumulatedProducts([]);
+  }, [selectedCatgory, keyword, sectionParam, payload]);
 
   const {
     data: categorizedProduct,
     isLoading,
+    isFetching,
     refetch,
   } = useQuery({
     queryKey: [
       "product-category",
       selectedCatgory,
       keyword,
-      section,
+      sectionParam,
       payload,
-      currentPage,
+      page,
     ],
     queryFn: () =>
       getAllProducts({
         category_name: selectedCatgory || "",
         search: keyword || "",
-        section: section?.split("-")?.join("_") || "",
-        page: currentPage,
+        section: sectionParam === "discount-sales" ? "discount_sales" : sectionParam?.split("-")?.join("_") || "",
+        page: page,
         limit: limit,
         ...payload,
       }),
   });
+
   const {
     data: categorizedProductCount,
-    // isLoading,
-    // refetch,
   } = useQuery({
     queryKey: ["category-count"],
     queryFn: getProductCategoryCounts,
   });
+
+  // Accumulate items for scroll pagination
+  useEffect(() => {
+    if (categorizedProduct?.data) {
+      if (page === 1) {
+        setAccumulatedProducts(categorizedProduct.data);
+      } else {
+        setAccumulatedProducts((prev) => {
+          const existingIds = new Set(prev.map((item) => item.id));
+          const newItems = categorizedProduct.data.filter(
+            (item: ProductResponse) => !existingIds.has(item.id)
+          );
+          return [...prev, ...newItems];
+        });
+      }
+    }
+  }, [categorizedProduct, page]);
+
+  const totalPages = categorizedProduct?.totalpages || 1;
+  const hasMore = page < totalPages;
+
+  // Infinite Scroll Listener
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 500 &&
+        hasMore &&
+        !isLoading &&
+        !isFetching
+      ) {
+        setPage((prev) => prev + 1);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hasMore, isLoading, isFetching]);
 
   const categoriesWithCount = useMemo(() => {
     if (!categorizedProductCount)
@@ -272,8 +300,6 @@ function Products() {
     });
   }, [categories, categorizedProductCount]);
 
-  // console.log("categories with count", categoriesWithCount);
-
   const handleApplyFilters = () => {
     const filters = {
       state: selectedLocation,
@@ -282,6 +308,8 @@ function Products() {
       max_price: Number(priceRange.max.replace(/,/g, "")),
     };
     setPayload(filters);
+    setPage(1);
+    setAccumulatedProducts([]);
 
     refetch();
     setIsFilterOpen(false);
@@ -294,27 +322,43 @@ function Products() {
     setSelectedCatgory(category);
     setSelectedLocation("");
     setSelectedUniversity("");
-    dispatch(setCurrentPage(1));
+    setPage(1);
+    setAccumulatedProducts([]);
 
     refetch();
     setIsFilterOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // console.log("selected category", selectedCatgory);
+  const getSectionTitle = (secStr: string | null) => {
+    if (!secStr) return "Products";
+    if (secStr === "discount-sales" || secStr === "discount_sales" || secStr === "discount") {
+      return "Discount Sales";
+    }
+    return formatText(secStr);
+  };
+
+  const displayProducts = useMemo(() => {
+    if (sectionParam === "discount-sales" || sectionParam === "discount_sales") {
+      return accumulatedProducts.filter(
+        (item) =>
+          (item.discount_percent && item.discount_percent > 0) ||
+          (item.old_price && item.old_price > item.product_price)
+      );
+    }
+    return accumulatedProducts;
+  }, [accumulatedProducts, sectionParam]);
+
+  const currentTitle = keyword
+    ? `Search results for "${keyword}"`
+    : selectedCatgory
+      ? formatText(selectedCatgory)
+      : getSectionTitle(sectionParam);
 
   return (
     <MainLayout>
       <SEO
-        title={
-          keyword
-            ? `Search results for "${keyword}"`
-            : selectedCatgory
-              ? formatText(selectedCatgory)
-              : section
-                ? formatText(section)
-                : "Products"
-        }
+        title={currentTitle}
         description={`Browse ${
           selectedCatgory ? formatText(selectedCatgory) : "items"
         } on Nedzl.com. Find used items easily within your campus community in Nigeria.`}
@@ -331,19 +375,9 @@ function Products() {
             {
               "@type": "ListItem",
               position: 2,
-              name: "Products",
+              name: currentTitle,
               item: "https://www.nedzl.com/products",
             },
-            ...(selectedCatgory
-              ? [
-                  {
-                    "@type": "ListItem",
-                    position: 3,
-                    name: formatText(selectedCatgory),
-                    item: `https://www.nedzl.com/products?category=${selectedCatgory}`,
-                  },
-                ]
-              : []),
           ],
         }}
       />
@@ -358,18 +392,20 @@ function Products() {
             </Link>
             <img src={DOUBLE_DIRECT} className="w-[20px] h-[20px]" alt="" />
             <div className="w-fit h-fit flex items-center gap-x-2 px-2 py-1.5 rounded-full text-xs font-semibold text-primary-300 bg-white shadow-box">
-              {selectedCatgory && (
-                <span className="text-[#808080]">
-                  {categoriesWithCount
-                    ?.find((item) => item.value === selectedCatgory)
-                    ?.count.toString()
-                    ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0}{" "}
-                  Ads
-                </span>
+              {selectedCatgory ? (
+                <>
+                  <span className="text-[#808080]">
+                    {categoriesWithCount
+                      ?.find((item) => item.value === selectedCatgory)
+                      ?.count.toString()
+                      ?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0}{" "}
+                    Ads
+                  </span>
+                  {formatText(selectedCatgory)}
+                </>
+              ) : (
+                getSectionTitle(sectionParam)
               )}
-              {!selectedCatgory
-                ? formatText(section as string)
-                : formatText(selectedCatgory as string)}
             </div>
           </div>
 
@@ -386,8 +422,8 @@ function Products() {
         </div>
 
         <div className="w-full flex flex-col md:flex-row items-start justify-between gap-x-3 gap-y-4 md:gap-y-0 mt-5">
-          {/* Desktop Filter Sidebar */}
-          <div className="hidden md:flex w-full md:w-[30%] flex-col gap-y-3">
+          {/* Fixed/Sticky Desktop Filter Sidebar */}
+          <div className="hidden md:flex w-full md:w-[30%] flex-col gap-y-3 sticky top-24 self-start max-h-[calc(100vh-110px)] overflow-y-auto pr-1 no-scrollbar">
             <FilterContent
               selectedLocation={selectedLocation}
               setSelectedLocation={setSelectedLocation}
@@ -400,50 +436,45 @@ function Products() {
               setPriceRange={setPriceRange}
               handleApplyFilters={handleApplyFilters}
               resetFilters={resetFilters}
-              section={section}
-              setCurrentPage={setCurrentPage}
-              dispatch={dispatch}
+              section={sectionParam}
             />
           </div>
 
           {/* Product Grid */}
-          <div className="w-full md:w-[70%] grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {isLoading ? (
-              Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
-            ) : categorizedProduct?.data &&
-              categorizedProduct.data?.length > 0 ? (
-              categorizedProduct.data?.map(
-                (item: ProductResponse, index: number) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.05 }}
-                  >
-                    <ProductCard item={item} />
-                  </motion.div>
-                ),
-              )
-            ) : (
-              <div className="col-span-3 text-center text-gray-500 font-medium py-10">
-                No products found for the selected filter.
+          <div className="w-full md:w-[70%] flex flex-col gap-y-4">
+            <div className="w-full grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {isLoading && page === 1 ? (
+                Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+              ) : displayProducts.length > 0 ? (
+                displayProducts.map(
+                  (item: ProductResponse, index: number) => (
+                    <motion.div
+                      key={`${item.id}-${index}`}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: (index % 6) * 0.04 }}
+                    >
+                      <ProductCard item={item} />
+                    </motion.div>
+                  ),
+                )
+              ) : (
+                <div className="col-span-3 text-center text-gray-500 font-medium py-10">
+                  No products found for the selected filter.
+                </div>
+              )}
+            </div>
+
+            {/* Scroll Loading Indicator */}
+            {isFetching && page > 1 && (
+              <div className="w-full grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <SkeletonCard key={`more-skel-${i}`} />
+                ))}
               </div>
             )}
           </div>
         </div>
-
-        {/* Pagination */}
-        {categorizedProduct?.totalpages > 1 && (
-          <div className="w-full flex justify-end mt-4">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={categorizedProduct?.totalpages}
-              onPageChange={(page) => {
-                dispatch(setCurrentPage(page));
-              }}
-            />
-          </div>
-        )}
       </div>
 
       {/* Mobile Filter Bottom Sheet */}
@@ -485,9 +516,7 @@ function Products() {
                 setPriceRange={setPriceRange}
                 handleApplyFilters={handleApplyFilters}
                 resetFilters={resetFilters}
-                section={section}
-                setCurrentPage={setCurrentPage}
-                dispatch={dispatch}
+                section={sectionParam}
               />
             </motion.div>
           </>

@@ -14,13 +14,35 @@ export default function Services() {
   const location = useLocation();
   const [selectedService, setSelectedService] = useState<ProductType | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [selectedServiceType, setSelectedServiceType] = useState<string>("ALL");
+
+  const serviceCategories = [
+    "ALL",
+    "Plumbing",
+    "Nail Tech",
+    "Tailoring & Fashion",
+    "Electrical Repair",
+    "Hair Styling",
+    "Carpentry",
+    "Cleaning & Laundry",
+    "Other Services",
+  ];
 
   const { data, isLoading } = useQuery({
-    queryKey: ["services-products"],
-    queryFn: () => getAllProducts({ category_name: "other-services", product_type: "SERVICE" }),
+    queryKey: ["services-products", selectedServiceType],
+    queryFn: () =>
+      getAllProducts({
+        category_name: "other-services",
+        product_type: "SERVICE",
+        service_type: selectedServiceType === "ALL" ? undefined : selectedServiceType,
+      }),
   });
 
-  const services: ProductType[] = data?.data || [];
+  const services: ProductType[] = (data?.data || []).filter((item: ProductType) => {
+    if (selectedServiceType === "ALL") return true;
+    if (!item.service_type) return false;
+    return item.service_type.toLowerCase() === selectedServiceType.toLowerCase();
+  });
 
   return (
     <MainLayout>
@@ -46,12 +68,24 @@ export default function Services() {
         </div>
 
         {/* Skill Badges */}
-        <div className="w-full flex items-center gap-2 overflow-x-auto py-2 custom-scrollbar-gray text-xs font-semibold text-gray-700">
-          {["Plumbing", "Nail Tech", "Tailoring & Fashion", "Electrical Repair", "Hair Styling", "Carpentry", "Cleaning & Laundry"].map((skill, idx) => (
-            <span key={idx} className="bg-white border border-gray-200 px-3 py-1.5 rounded-full shadow-sm whitespace-nowrap">
-              ✨ {skill}
-            </span>
-          ))}
+        <div className="w-full flex items-center gap-2 overflow-x-auto py-2 no-scrollbar text-xs font-semibold select-none">
+          {serviceCategories.map((skill, idx) => {
+            const isSelected = selectedServiceType === skill;
+            return (
+              <button
+                key={idx}
+                onClick={() => setSelectedServiceType(skill)}
+                className={`px-4 py-2 rounded-full shadow-sm whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                  isSelected
+                    ? "bg-blue-600 text-white font-bold ring-2 ring-blue-600/30 shadow-blue-500/20 scale-105"
+                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                }`}
+              >
+                <span>{skill === "ALL" ? "🌐" : "✨"}</span>
+                <span>{skill}</span>
+              </button>
+            );
+          })}
         </div>
 
         {isLoading ? (

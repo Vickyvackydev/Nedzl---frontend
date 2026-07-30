@@ -57,6 +57,35 @@ html {
   scrollbar-color: #687086 #a2adc2; /* thumb and track colors for Firefox */
 }
 
+/* Hide scrollbar completely */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Modern, ultra-sleek custom scrollbar */
+.sleek-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+.sleek-scrollbar::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+.sleek-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sleek-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+.sleek-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
 .geist-family {
   font-family: "Geist", sans-serif;
 }

@@ -354,22 +354,22 @@ function Home() {
           </div>
         )}
       </div>
-      {todayProducts?.data?.length > 0 && (
-        <ProductRow
-          title="Today's deal"
-          data={todayProducts?.data}
-          loading={isLoading}
-          onSeeAll={() => navigate(`/products?section=todays-deal`)}
-        />
-      )}
       {discountProducts.length > 5 && (
         <ProductRow
           title="Discount Sales"
           data={discountProducts}
           loading={loadingAll}
           minCountThreshold={5}
-          onSeeAll={() => navigate(`/products?discount=true`)}
+          onSeeAll={() => navigate(`/products?section=discount-sales`)}
           layout="scroll"
+        />
+      )}
+      {todayProducts?.data?.length > 0 && (
+        <ProductRow
+          title="Today's deal"
+          data={todayProducts?.data}
+          loading={isLoading}
+          onSeeAll={() => navigate(`/products?section=todays-deal`)}
         />
       )}
       <ProductRow

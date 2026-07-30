@@ -11,23 +11,31 @@ import { SkeletonCard } from "../components/product-row";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
-import Pagination from "../components/Pagination";
 
 function SearchResults() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const keyword = searchParams.get("q");
   const category = searchParams.get("category");
   const brand = searchParams.get("brand");
-  const page = parseInt(searchParams.get("page") || "1", 10);
+
+  const [page, setPage] = useState(1);
+  const [accumulatedProducts, setAccumulatedProducts] = useState<ProductResponse[]>([]);
 
   const [showPopup, setShowPopup] = useState(false);
   const [emailInput, setEmailInput] = useState("");
   const [submittingAlert, setSubmittingAlert] = useState(false);
 
+  // Reset page and accumulated list when query parameters change
+  useEffect(() => {
+    setPage(1);
+    setAccumulatedProducts([]);
+  }, [keyword, category, brand]);
+
   const {
     data: categorizedProduct,
     isLoading,
+    isFetching,
     refetch,
   } = useQuery({
     queryKey: ["product-search", keyword, category, brand, page],
@@ -41,9 +49,46 @@ function SearchResults() {
       }),
   });
 
+  // Accumulate loaded search results
+  useEffect(() => {
+    if (categorizedProduct?.data) {
+      if (page === 1) {
+        setAccumulatedProducts(categorizedProduct.data);
+      } else {
+        setAccumulatedProducts((prev) => {
+          const existingIds = new Set(prev.map((item) => item.id));
+          const newItems = categorizedProduct.data.filter(
+            (item: ProductResponse) => !existingIds.has(item.id)
+          );
+          return [...prev, ...newItems];
+        });
+      }
+    }
+  }, [categorizedProduct, page]);
+
+  const totalPages = categorizedProduct?.totalpages || 1;
+  const hasMore = page < totalPages;
+
+  // Infinite Scroll Listener
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 500 &&
+        hasMore &&
+        !isLoading &&
+        !isFetching
+      ) {
+        setPage((prev) => prev + 1);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hasMore, isLoading, isFetching]);
+
   const hasNoResults =
     !isLoading &&
-    (!categorizedProduct?.data || categorizedProduct.data.length === 0);
+    (accumulatedProducts.length === 0);
 
   const { data: fallbackProduct, isLoading: isLoadingFallback } = useQuery({
     queryKey: ["product-search-fallback", category],
@@ -220,89 +265,86 @@ function SearchResults() {
         </div>
 
         {/* Products Grid */}
-        <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-          {isLoading ? (
-            Array.from({ length: 10 }).map((_, i) => <SkeletonCard key={i} />)
-          ) : categorizedProduct?.data &&
-            categorizedProduct.data?.length > 0 ? (
-            categorizedProduct.data?.map(
-              (item: ProductResponse, index: number) => (
-                <motion.div
-                  key={item.id || index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                >
-                  <ProductCard item={item} />
-                </motion.div>
-              ),
-            )
-          ) : (
-            <div className="col-span-2 md:col-span-3 lg:col-span-5 flex flex-col items-center w-full">
-              <div className="text-center py-8 max-w-md mx-auto">
-                <svg
-                  className="w-16 h-16 mx-auto text-gray-300 mb-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-                <h3 className="text-lg font-semibold text-gray-700 mb-1">
-                  No exact matches found
-                </h3>
-                <p className="text-sm text-gray-500 mb-4">
-                  We couldn't find products matching your search. Here are some
-                  other items:
-                </p>
-              </div>
-
-              {/* Fallback Suggestions Grid */}
-              <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mt-2">
-                {isLoadingFallback ? (
-                  Array.from({ length: 5 }).map((_, i) => (
-                    <SkeletonCard key={i} />
-                  ))
-                ) : fallbackProduct?.data && fallbackProduct.data.length > 0 ? (
-                  fallbackProduct.data.map(
-                    (item: ProductResponse, index: number) => (
-                      <motion.div
-                        key={item.id || index}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: index * 0.05 }}
-                      >
-                        <ProductCard item={item} />
-                      </motion.div>
-                    ),
-                  )
-                ) : (
-                  <p className="col-span-full text-center text-sm text-gray-400 py-6">
-                    No other products available right now.
+        <div className="w-full flex flex-col gap-y-4">
+          <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            {isLoading && page === 1 ? (
+              Array.from({ length: 10 }).map((_, i) => <SkeletonCard key={i} />)
+            ) : accumulatedProducts.length > 0 ? (
+              accumulatedProducts.map(
+                (item: ProductResponse, index: number) => (
+                  <motion.div
+                    key={`${item.id}-${index}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: (index % 5) * 0.04 }}
+                  >
+                    <ProductCard item={item} />
+                  </motion.div>
+                ),
+              )
+            ) : (
+              <div className="col-span-2 md:col-span-3 lg:col-span-5 flex flex-col items-center w-full">
+                <div className="text-center py-8 max-w-md mx-auto">
+                  <svg
+                    className="w-16 h-16 mx-auto text-gray-300 mb-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-1">
+                    No exact matches found
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-4">
+                    We couldn't find products matching your search. Here are some
+                    other items:
                   </p>
-                )}
+                </div>
+
+                {/* Fallback Suggestions Grid */}
+                <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mt-2">
+                  {isLoadingFallback ? (
+                    Array.from({ length: 5 }).map((_, i) => (
+                      <SkeletonCard key={i} />
+                    ))
+                  ) : fallbackProduct?.data && fallbackProduct.data.length > 0 ? (
+                    fallbackProduct.data.map(
+                      (item: ProductResponse, index: number) => (
+                        <motion.div
+                          key={item.id || index}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: index * 0.05 }}
+                        >
+                          <ProductCard item={item} />
+                        </motion.div>
+                      ),
+                    )
+                  ) : (
+                    <p className="col-span-full text-center text-sm text-gray-400 py-6">
+                      No other products available right now.
+                    </p>
+                  )}
+                </div>
               </div>
+            )}
+          </div>
+
+          {/* Scroll Loading Indicator */}
+          {isFetching && page > 1 && (
+            <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 pt-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <SkeletonCard key={`more-search-skel-${i}`} />
+              ))}
             </div>
           )}
         </div>
-
-        {/* Pagination */}
-        {categorizedProduct?.totalpages && (
-          <Pagination
-            currentPage={page}
-            totalPages={categorizedProduct.totalpages}
-            onPageChange={(pageNum) => {
-              searchParams.set("page", pageNum.toString());
-              setSearchParams(searchParams);
-              refetch();
-            }}
-          />
-        )}
 
         {/* Waitlist Subscription Modal */}
         {showPopup && (

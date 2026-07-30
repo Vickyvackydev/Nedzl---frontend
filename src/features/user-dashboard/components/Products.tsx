@@ -9,7 +9,6 @@ import {
 import Button from "../../../components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectCurrentPage,
   selectProductFields,
   setCurrentPage,
   setProductFields,
@@ -39,7 +38,6 @@ import moment from "moment";
 import { formatText } from "../../../utils";
 import Modal from "../../../components/Modal";
 import { Ban } from "lucide-react";
-import Pagination from "../../../components/Pagination";
 import { sanitizeRichText } from "../../../utils/sanitize";
 
 type Tabs = "active" | "closed" | "reviewed";
@@ -55,7 +53,6 @@ function Products() {
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
     null,
   );
-  const currentPage = useSelector(selectCurrentPage);
   const [deleteModal, setDeleteModal] = useState(false);
   // const [closeProductModal, setCloseProductModal] = useState(false);
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
@@ -86,6 +83,7 @@ function Products() {
     university: "",
     product_type: "MARKET", // MARKET, FOOD, SERVICE
     delivery_fee: "",
+    service_type: "",
   });
   const [subMenus, setSubMenus] = useState<{ name: string; price: string }[]>([]);
   const [newSubMenuName, setNewSubMenuName] = useState("");
@@ -94,20 +92,57 @@ function Products() {
   const [selectedProductType, setSelectedProductType] = useState<string>("ALL");
   const [searchKeyword, setSearchKeyword] = useState("");
 
+  const [dashboardPage, setDashboardPage] = useState(1);
+  const [accumulatedDashboardProducts, setAccumulatedDashboardProducts] = useState<ProductType[]>([]);
+
+  // Reset page & list when filters or search keyword change
+  useEffect(() => {
+    setDashboardPage(1);
+    setAccumulatedDashboardProducts([]);
+  }, [activeTab, selectedProductType, searchKeyword]);
+
   const {
     data: userProducts,
     isLoading,
+    isFetching,
     refetch,
   } = useQuery({
-    queryKey: ["user-products", activeTab, currentPage, selectedProductType, searchKeyword],
+    queryKey: ["user-products", activeTab, dashboardPage, selectedProductType, searchKeyword],
     queryFn: () =>
       getUserProducts({
         status: activeTab === "active" ? "ONGOING" : activeTab.toUpperCase(),
-        page: currentPage,
+        page: dashboardPage,
         product_type: selectedProductType === "ALL" ? undefined : selectedProductType,
         search: searchKeyword.trim() || undefined,
       }),
   });
+
+  // Accumulate loaded user products
+  useEffect(() => {
+    if (userProducts?.data?.data) {
+      if (dashboardPage === 1) {
+        setAccumulatedDashboardProducts(userProducts.data.data);
+      } else {
+        setAccumulatedDashboardProducts((prev) => {
+          const existingIds = new Set(prev.map((item) => item.id));
+          const newItems = userProducts.data.data.filter(
+            (item: ProductType) => !existingIds.has(item.id)
+          );
+          return [...prev, ...newItems];
+        });
+      }
+    }
+  }, [userProducts, dashboardPage]);
+
+  const totalPages = userProducts?.data?.totalPages || 1;
+  const hasMore = dashboardPage < totalPages;
+
+  const handleDashboardScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (scrollHeight - scrollTop - clientHeight < 150 && hasMore && !isLoading && !isFetching) {
+      setDashboardPage((prev) => prev + 1);
+    }
+  };
 
   const tabs = [
     {
@@ -210,6 +245,7 @@ function Products() {
       university: (product as any).university || "",
       product_type: product.product_type || "MARKET",
       delivery_fee: product.delivery_fee?.toString() || "",
+      service_type: (product as any).service_type || "",
     });
 
     // Handle existing images (URLs)
@@ -323,6 +359,7 @@ function Products() {
     formData.append("university", formFields.university || "N/A");
     formData.append("product_type", formFields.product_type);
     formData.append("delivery_fee", formFields.delivery_fee.replace(/,/g, "") || "0");
+    formData.append("service_type", formFields.service_type);
     formData.append("sub_menus", JSON.stringify(subMenus));
 
     if (editingProduct) {
@@ -394,6 +431,7 @@ function Products() {
       university: "",
       product_type: "MARKET",
       delivery_fee: "",
+      service_type: "",
     });
     setSubMenus([]);
 
@@ -578,6 +616,32 @@ function Products() {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* Additional Service Fields */}
+          {formFields.product_type === "SERVICE" && (
+            <div className="w-full bg-blue-50/60 p-4 rounded-xl border border-blue-100 flex flex-col gap-y-3">
+              <h4 className="text-sm font-bold text-blue-700 flex items-center gap-1.5">
+                <span>🛠️</span> Service Type / Skill Category
+              </h4>
+              <SelectInput
+                required
+                label="Service Type"
+                options={[
+                  { label: "Plumbing", value: "Plumbing" },
+                  { label: "Nail Tech", value: "Nail Tech" },
+                  { label: "Tailoring & Fashion", value: "Tailoring & Fashion" },
+                  { label: "Electrical Repair", value: "Electrical Repair" },
+                  { label: "Hair Styling", value: "Hair Styling" },
+                  { label: "Carpentry", value: "Carpentry" },
+                  { label: "Cleaning & Laundry", value: "Cleaning & Laundry" },
+                  { label: "Other Services", value: "Other Services" },
+                ]}
+                value={formFields.service_type || "Other Services"}
+                placeholder="Select Service Type"
+                onChange={(val) => setFormFields({ ...formFields, service_type: val })}
+              />
             </div>
           )}
 
@@ -1002,10 +1066,10 @@ function Products() {
               </div>
             </div>
           </div>
-          {userProducts?.data?.data?.length > 0 ? (
-            <div className="max-h-[500px] w-full overflow-auto px-4 py-7">
+          {accumulatedDashboardProducts?.length > 0 ? (
+            <div className="max-h-[600px] w-full overflow-auto px-4 py-7 font-sans" onScroll={handleDashboardScroll}>
               <div className="flex items-start flex-col gap-y-3 w-full">
-                {userProducts?.data?.data?.map((item: ProductType) => (
+                {accumulatedDashboardProducts?.map((item: ProductType) => (
                   <div key={item.id} className="w-full flex flex-col md:flex-row items-start justify-between p-3 rounded-lg gap-y-3 border border-gray-100 bg-white">
                     <div className="w-full flex flex-col md:flex-row items-start gap-3">
                       <img
@@ -1131,15 +1195,9 @@ function Products() {
                 ))}
               </div>
 
-              {userProducts?.data?.totalPages > 1 && (
-                <div className="w-full flex justify-end mt-4">
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={userProducts?.data?.totalPages}
-                    onPageChange={(page) => {
-                      dispatch(setCurrentPage(page));
-                    }}
-                  />
+              {isFetching && dashboardPage > 1 && (
+                <div className="w-full flex justify-center py-4">
+                  <div className="w-5 h-5 border-2 border-global-green border-t-transparent rounded-full animate-spin"></div>
                 </div>
               )}
             </div>

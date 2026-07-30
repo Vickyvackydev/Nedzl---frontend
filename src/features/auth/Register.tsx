@@ -71,9 +71,9 @@ function Register() {
     const clientID =
       import.meta.env.VITE_FACEBOOK_APP_ID || "YOUR_FACEBOOK_APP_ID";
     const redirectUri = window.location.origin + "/login";
-    const scope = "email,public_profile";
+    const scope = "public_profile,email";
     const state = "facebook";
-    const url = `https://www.facebook.com/v12.0/dialog/oauth?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scope)}&state=${state}`;
+    const url = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scope)}&state=${state}`;
     window.location.href = url;
   };
 

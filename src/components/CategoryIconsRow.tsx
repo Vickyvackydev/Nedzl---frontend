@@ -10,6 +10,9 @@ import {
   Home,
   WashingMachine,
 
+  UtensilsCrossed,
+  Salad,
+  Wrench,
   MoreHorizontal,
   ChevronRight,
   Tv,
@@ -52,6 +55,10 @@ export default function CategoryIconsRow() {
   }, [categorizedProductCount]);
 
   const iconMap: Record<string, any> = {
+    "prepared-food": UtensilsCrossed,
+    foodstuffs: Wheat,
+    "fruits-vegetables": Salad,
+    "other-services": Wrench,
     electricals: Tv,
     "home-appliances": WashingMachine,
     furniture: Sofa,
