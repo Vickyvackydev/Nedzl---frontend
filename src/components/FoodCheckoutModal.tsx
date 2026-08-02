@@ -32,6 +32,10 @@ export default function FoodCheckoutModal({
 
   if (!meal) return null;
 
+  const images = Array.isArray(meal.image_urls) ? meal.image_urls : [];
+  const imageUrl =
+    typeof images[0] === "string" ? images[0] : "https://nedzl.com/placeholder.png";
+
   // Parse sub-menus from meal
   let subMenuOptions: { name: string; price: number }[] = [];
   if (meal.sub_menus) {
@@ -123,124 +127,176 @@ export default function FoodCheckoutModal({
 
   return (
     <Modal show={isOpen} onClose={onClose}>
-      <div className="p-5 md:p-6 max-w-lg w-full max-h-[85vh] overflow-y-auto custom-scrollbar-gray bg-white rounded-2xl flex flex-col gap-y-4 shadow-2xl">
-        <div className="flex items-center justify-between border-b pb-3">
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">
-              Order {meal.product_name}
-            </h3>
-            <p className="text-xs text-gray-500">
-              Vendor: {meal.user?.user_name || "Nedzl Vendor"}
-            </p>
+      <div className="p-0 max-w-lg w-full max-h-[90vh] overflow-y-auto custom-scrollbar-gray bg-white rounded-3xl flex flex-col shadow-2xl relative border border-gray-100">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 z-20 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold transition-all shadow-md"
+        >
+          &times;
+        </button>
+
+        {/* Meal Image Header */}
+        <div className="relative h-56 w-full bg-gray-100 flex-shrink-0">
+          <img
+            src={imageUrl}
+            alt={meal.product_name}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white">
+            <span className="bg-emerald-600/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+              ₦{basePrice.toLocaleString()}
+            </span>
+            {meal.delivery_fee ? (
+              <span className="bg-white/90 backdrop-blur-md text-emerald-700 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                🛵 Delivery: ₦{meal.delivery_fee.toLocaleString()}
+              </span>
+            ) : (
+              <span className="bg-blue-600/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                Free Delivery
+              </span>
+            )}
           </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-xl font-bold"
-          >
-            &times;
-          </button>
         </div>
 
-        {/* Sub-menus Extras Selection */}
-        {subMenuOptions.length > 0 && (
-          <div className="bg-gray-50 p-3.5 rounded-xl flex flex-col gap-y-2">
-            <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-              Add Extras & Sides
-            </h4>
-            <div className="flex flex-col gap-y-1.5">
-              {subMenuOptions.map((item, idx) => {
-                const isSelected = selectedSubMenus.some(
-                  (s) => s.name === item.name,
-                );
-                return (
-                  <label
-                    key={idx}
-                    className={`flex items-center justify-between p-2 rounded-lg border text-sm cursor-pointer transition-all ${
-                      isSelected
-                        ? "bg-emerald-50 border-global-green text-global-green font-semibold"
-                        : "bg-white border-gray-200 text-gray-700 hover:bg-gray-100"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleSubMenu(item)}
-                        className="rounded accent-global-green"
-                      />
-                      <span>{item.name}</span>
-                    </div>
-                    <span>+₦{item.price.toLocaleString()}</span>
-                  </label>
-                );
-              })}
+        <div className="p-5 flex flex-col gap-y-4">
+          {/* Header info */}
+          <div className="flex flex-col gap-y-1 border-b border-gray-100 pb-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">
+                Vendor: {meal.user?.user_name || "Nedzl Food Vendor"}
+              </span>
+              {meal.user?.phone_number && (
+                <span className="text-xs font-medium text-gray-500 flex items-center gap-1">
+                  📞 {meal.user.phone_number}
+                </span>
+              )}
             </div>
+            <h3 className="text-xl font-extrabold text-gray-900 mt-1">
+              {meal.product_name}
+            </h3>
           </div>
-        )}
 
-        {/* Customer Address & Phone Inputs */}
-        <div className="flex flex-col gap-y-3">
-          <div>
-            <label className="text-xs font-semibold text-gray-700 mb-1 block">
-              Your Phone Number *
-            </label>
-            <input
-              type="tel"
-              placeholder="e.g. 08012345678"
-              value={customerPhone}
-              onChange={(e) => setCustomerPhone(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl outline-none focus:border-global-green"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-gray-700 mb-1 block">
-              Delivery Address *
-            </label>
-            <textarea
-              rows={2}
-              placeholder="Enter full delivery location, hostel, or house address..."
-              value={deliveryAddress}
-              onChange={(e) => setDeliveryAddress(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl outline-none focus:border-global-green"
-            />
-          </div>
-        </div>
-
-        {/* Order Price Breakdown */}
-        <div className="bg-emerald-50/70 p-4 rounded-xl border border-emerald-100 flex flex-col gap-y-1.5 text-sm">
-          <div className="flex justify-between text-gray-600">
-            <span>Base Meal Price</span>
-            <span>₦{basePrice.toLocaleString()}</span>
-          </div>
-          {extrasTotal > 0 && (
-            <div className="flex justify-between text-gray-600">
-              <span>Extras Total</span>
-              <span>+₦{extrasTotal.toLocaleString()}</span>
+          {/* Full Meal Description */}
+          {meal.description && (
+            <div className="bg-gray-50 p-3.5 rounded-2xl border border-gray-100 flex flex-col gap-y-1 text-xs sm:text-sm text-gray-700 leading-relaxed">
+              <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
+                Meal Details & Description
+              </h4>
+              <div
+                className="prose prose-sm max-w-none text-gray-600"
+                dangerouslySetInnerHTML={{ __html: meal.description }}
+              />
             </div>
           )}
-          <div className="flex justify-between text-gray-600">
-            <span>Delivery Fee</span>
-            <span>₦{deliveryFee.toLocaleString()}</span>
-          </div>
-          <div className="border-t border-emerald-200 my-1 pt-1.5 flex justify-between font-bold text-gray-900 text-base">
-            <span>Total Payable</span>
-            <span className="text-global-green">
-              ₦{grandTotal.toLocaleString()}
-            </span>
-          </div>
-        </div>
 
-        <Button
-          title={
-            isSubmitting
-              ? "Processing Checkout..."
-              : `Pay ₦${grandTotal.toLocaleString()}`
-          }
-          handleClick={handleCheckout}
-          disabled={isSubmitting}
-          btnStyles="w-full bg-global-green rounded-xl py-3 text-white font-bold"
-          textStyle="text-white text-sm font-bold"
-        />
+          {/* Sub-menus Extras Selection */}
+          {subMenuOptions.length > 0 && (
+            <div className="bg-emerald-50/50 p-3.5 rounded-2xl border border-emerald-100 flex flex-col gap-y-2">
+              <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-wider">
+                Customize Your Order (Extras & Sides)
+              </h4>
+              <div className="flex flex-col gap-y-1.5">
+                {subMenuOptions.map((item, idx) => {
+                  const isSelected = selectedSubMenus.some(
+                    (s) => s.name === item.name,
+                  );
+                  return (
+                    <label
+                      key={idx}
+                      className={`flex items-center justify-between p-2.5 rounded-xl border text-xs sm:text-sm cursor-pointer transition-all ${
+                        isSelected
+                          ? "bg-emerald-50 border-emerald-500 text-emerald-900 font-semibold shadow-sm"
+                          : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleSubMenu(item)}
+                          className="w-4 h-4 rounded accent-emerald-600"
+                        />
+                        <span>{item.name}</span>
+                      </div>
+                      <span className="font-bold text-emerald-700">
+                        +₦{item.price.toLocaleString()}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Customer Address & Phone Inputs */}
+          <div className="flex flex-col gap-y-3 pt-1">
+            <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
+              Delivery Information
+            </h4>
+            <div>
+              <label className="text-xs font-semibold text-gray-700 mb-1 block">
+                Your Phone Number *
+              </label>
+              <input
+                type="tel"
+                placeholder="e.g. 08012345678"
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+                className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-gray-700 mb-1 block">
+                Delivery Address *
+              </label>
+              <textarea
+                rows={2}
+                placeholder="Enter full delivery location, hostel name, or room number..."
+                value={deliveryAddress}
+                onChange={(e) => setDeliveryAddress(e.target.value)}
+                className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+              />
+            </div>
+          </div>
+
+          {/* Order Price Breakdown */}
+          <div className="bg-gray-50 p-4 rounded-2xl border border-gray-200 flex flex-col gap-y-1.5 text-xs sm:text-sm">
+            <div className="flex justify-between text-gray-600">
+              <span>Base Meal Price</span>
+              <span>₦{basePrice.toLocaleString()}</span>
+            </div>
+            {extrasTotal > 0 && (
+              <div className="flex justify-between text-gray-600">
+                <span>Extras Total</span>
+                <span className="text-emerald-600">+₦{extrasTotal.toLocaleString()}</span>
+              </div>
+            )}
+            <div className="flex justify-between text-gray-600">
+              <span>Delivery Fee</span>
+              <span>₦{deliveryFee.toLocaleString()}</span>
+            </div>
+            <div className="border-t border-gray-200 my-1 pt-2 flex justify-between font-extrabold text-gray-900 text-base">
+              <span>Total Payable</span>
+              <span className="text-emerald-600">
+                ₦{grandTotal.toLocaleString()}
+              </span>
+            </div>
+          </div>
+
+          <Button
+            title={
+              isSubmitting
+                ? "Processing Checkout..."
+                : `Place Order • Pay ₦${grandTotal.toLocaleString()}`
+            }
+            handleClick={handleCheckout}
+            disabled={isSubmitting}
+            btnStyles="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-98 rounded-2xl py-3.5 text-white font-extrabold shadow-lg shadow-emerald-600/30 transition-all cursor-pointer"
+            textStyle="text-white text-sm font-bold"
+          />
+        </div>
       </div>
     </Modal>
   );

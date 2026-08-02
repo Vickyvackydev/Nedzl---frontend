@@ -10,7 +10,7 @@ const CategoryBar = () => {
         {categories.slice(0, 6).map((li) => {
           const targetUrl =
             li.value === "prepared-food" || li.value === "foodstuffs" || li.value === "fruits-vegetables"
-              ? "/meals"
+              ? `/meals?category=${li.value}`
               : li.value === "other-services"
               ? "/services"
               : `/products?category=${li.value}`;

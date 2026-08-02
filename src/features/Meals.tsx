@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import MainLayout from "../layout/MainLayout";
 import SEO from "../components/SEO";
 import { useQuery } from "@tanstack/react-query";
@@ -13,13 +13,43 @@ import toast from "react-hot-toast";
 export default function Meals() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryParam = searchParams.get("category");
+
   const [selectedMeal, setSelectedMeal] = useState<ProductType | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>("prepared-food");
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    categoryParam || "prepared-food"
+  );
+
+  useEffect(() => {
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    }
+  }, [categoryParam]);
+
+  const handleCategoryChange = (catVal: string) => {
+    setSelectedCategory(catVal);
+    setSearchParams({ category: catVal });
+  };
+
+  const handleMealCardClick = (meal: ProductType) => {
+    const token = Store.getState().auths.token;
+    if (!token) {
+      toast.error("Please login or create an account to view meal details & order");
+      navigate("/login", {
+        state: { from: location.pathname + location.search },
+      });
+      return;
+    }
+    setSelectedMeal(meal);
+    setIsCheckoutOpen(true);
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: ["meals-products", selectedCategory],
-    queryFn: () => getAllProducts({ category_name: selectedCategory, product_type: "FOOD" }),
+    queryFn: () =>
+      getAllProducts({ category_name: selectedCategory, product_type: "FOOD" }),
   });
 
   const products: ProductType[] = data?.data || [];
@@ -48,18 +78,18 @@ export default function Meals() {
         </div>
 
         {/* Category Pills */}
-        <div className="w-full flex items-center gap-3 overflow-x-auto py-2 custom-scrollbar-gray">
+        <div className="w-full flex items-center gap-3 overflow-x-auto py-2 custom-scrollbar-gray select-none">
           {[
-            { label: "All Prepared Food", value: "prepared-food" },
+            { label: "Prepared Food", value: "prepared-food" },
             { label: "Foodstuffs", value: "foodstuffs" },
             { label: "Fruits & Vegetables", value: "fruits-vegetables" },
           ].map((cat) => (
             <button
               key={cat.value}
-              onClick={() => setSelectedCategory(cat.value)}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all ${
+              onClick={() => handleCategoryChange(cat.value)}
+              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
                 selectedCategory === cat.value
-                  ? "bg-global-green text-white shadow-md"
+                  ? "bg-global-green text-white shadow-md shadow-emerald-600/30 scale-102"
                   : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
               }`}
             >
@@ -86,34 +116,41 @@ export default function Meals() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.map((meal) => {
               const images = Array.isArray(meal.image_urls) ? meal.image_urls : [];
-              const imageUrl = typeof images[0] === "string" ? images[0] : "https://nedzl.com/placeholder.png";
+              const imageUrl =
+                typeof images[0] === "string"
+                  ? images[0]
+                  : "https://nedzl.com/placeholder.png";
 
               return (
                 <div
                   key={meal.id}
-                  className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-100 flex flex-col justify-between"
+                  onClick={() => handleMealCardClick(meal)}
+                  className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 flex flex-col justify-between cursor-pointer"
                 >
                   <div>
                     <div className="relative h-48 w-full bg-gray-100 overflow-hidden">
                       <img
                         src={imageUrl}
                         alt={meal.product_name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                       {meal.delivery_fee ? (
-                        <span className="absolute top-3 right-3 bg-emerald-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+                        <span className="absolute top-3 right-3 bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
                           🛵 Delivery: ₦{meal.delivery_fee.toLocaleString()}
                         </span>
                       ) : (
-                        <span className="absolute top-3 right-3 bg-blue-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+                        <span className="absolute top-3 right-3 bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
                           Free Delivery
                         </span>
                       )}
+                      <span className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-white text-[10px] font-medium px-2 py-0.5 rounded">
+                        Click for Details & Order
+                      </span>
                     </div>
                     <div className="p-4 flex flex-col gap-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
-                          {meal.user?.user_name || "Vendor"}
+                          👤 {meal.user?.user_name || "Vendor"}
                         </span>
                         {meal.user?.phone_number && (
                           <span className="text-xs text-gray-500">
@@ -121,32 +158,31 @@ export default function Meals() {
                           </span>
                         )}
                       </div>
-                      <h3 className="font-bold text-gray-900 text-base line-clamp-1">
+                      <h3 className="font-extrabold text-gray-900 text-base line-clamp-1 group-hover:text-emerald-600 transition-colors">
                         {meal.product_name}
                       </h3>
-                      <p className="text-xs text-gray-500 line-clamp-2" dangerouslySetInnerHTML={{ __html: meal.description }} />
+                      <p
+                        className="text-xs text-gray-500 line-clamp-2 leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: meal.description }}
+                      />
                     </div>
                   </div>
 
                   <div className="p-4 pt-0 border-t border-gray-50 flex items-center justify-between mt-3">
                     <div>
-                      <span className="text-xs text-gray-400 block">Price</span>
+                      <span className="text-[10px] text-gray-400 block uppercase tracking-wider font-semibold">
+                        Price
+                      </span>
                       <span className="text-lg font-extrabold text-global-green">
                         ₦{meal.product_price?.toLocaleString()}
                       </span>
                     </div>
                     <button
-                      onClick={() => {
-                        const token = Store.getState().auths.token;
-                        if (!token) {
-                          toast.error("Please login or create an account to order meals");
-                          navigate("/login", { state: { from: location.pathname + location.search } });
-                          return;
-                        }
-                        setSelectedMeal(meal);
-                        setIsCheckoutOpen(true);
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleMealCardClick(meal);
                       }}
-                      className="bg-global-green hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+                      className="bg-global-green hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm shadow-emerald-500/20 flex items-center gap-1.5 active:scale-95 cursor-pointer"
                     >
                       <span>Order Now</span>
                       <span>&rarr;</span>

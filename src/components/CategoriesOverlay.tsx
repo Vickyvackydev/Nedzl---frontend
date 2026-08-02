@@ -119,7 +119,7 @@ export default function CategoriesOverlay() {
                   const Icon = iconMap[cat.value] || Tv;
                   const targetUrl =
                     cat.value === "prepared-food" || cat.value === "foodstuffs" || cat.value === "fruits-vegetables"
-                      ? "/meals"
+                      ? `/meals?category=${cat.value}`
                       : cat.value === "other-services"
                       ? "/services"
                       : `/products?category=${cat.value}`;

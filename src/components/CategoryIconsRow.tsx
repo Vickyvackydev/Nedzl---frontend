@@ -81,23 +81,37 @@ export default function CategoryIconsRow() {
     others: MoreHorizontal,
   };
 
+  const getCategoryTargetUrl = (catValue: string) => {
+    if (
+      catValue === "prepared-food" ||
+      catValue === "foodstuffs" ||
+      catValue === "fruits-vegetables"
+    ) {
+      return `/meals?category=${catValue}`;
+    }
+    if (catValue === "other-services") {
+      return "/services";
+    }
+    return `/products?category=${catValue}`;
+  };
+
   const rowItems: Array<{
     label: string;
     icon: any;
     link?: string;
     action?: () => void;
   }> = [
-      {
-        label: "All Categories",
-        icon: LayoutGrid,
-        action: () => setOpen(true),
-      },
-      ...categories.map((cat) => ({
-        label: cat.label,
-        icon: iconMap[cat.value] || MoreHorizontal,
-        link: `/products?category=${cat.value}`,
-      })),
-    ];
+    {
+      label: "All Categories",
+      icon: LayoutGrid,
+      action: () => setOpen(true),
+    },
+    ...categories.map((cat) => ({
+      label: cat.label,
+      icon: iconMap[cat.value] || MoreHorizontal,
+      link: getCategoryTargetUrl(cat.value),
+    })),
+  ];
 
   return (
     <div className="w-full flex items-center justify-start overflow-x-auto gap-x-4 md:gap-x-6 py-6 px-1 no-scrollbar select-none md:gap-x-8">
@@ -163,7 +177,7 @@ export default function CategoryIconsRow() {
                   return (
                     <Link
                       key={cat.value}
-                      to={`/products?category=${cat.value}`}
+                      to={getCategoryTargetUrl(cat.value)}
                       onClick={() => setOpen(false)}
                       className="flex items-center justify-between bg-gray-50 hover:bg-[#E8F8EE] transition-colors p-3 rounded-xl cursor-pointer group"
                     >
