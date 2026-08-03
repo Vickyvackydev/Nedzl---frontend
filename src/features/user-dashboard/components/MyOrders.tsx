@@ -256,21 +256,21 @@ export default function MyOrders() {
   return (
     <div className="w-full p-4 md:p-6 flex flex-col gap-y-4">
       {/* Tab Switcher */}
-      <div className="flex items-center gap-2 border-b border-borderColor pb-3">
+      <div className="w-full flex items-center gap-2 border-b border-gray-100 pb-3 overflow-x-auto custom-scrollbar-gray select-none">
         <button
           onClick={() => setActiveTab("customer")}
-          className={`px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all flex items-center gap-2 ${
+          className={`px-3.5 py-2.5 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap flex-shrink-0 transition-all flex items-center gap-2 cursor-pointer ${
             activeTab === "customer"
               ? "bg-global-green text-white shadow-sm"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
           }`}
         >
-          <FiShoppingBag size={16} />
+          <FiShoppingBag size={15} />
           <span>Food Orders Placed</span>
         </button>
         <button
           onClick={() => setActiveTab("vendor")}
-          className={`px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all flex items-center gap-2 ${
+          className={`px-3.5 py-2.5 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap flex-shrink-0 transition-all flex items-center gap-2 cursor-pointer ${
             activeTab === "vendor"
               ? "bg-global-green text-white shadow-sm"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -286,25 +286,193 @@ export default function MyOrders() {
           <div className="text-center py-8 text-sm text-gray-500">
             Loading orders...
           </div>
+        ) : customerOrders.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-2xl border border-gray-100 p-6 flex flex-col items-center gap-2">
+            <span className="text-4xl">🍲</span>
+            <p className="text-sm font-semibold text-gray-700">No Food Orders Placed Yet</p>
+            <p className="text-xs text-gray-400">Order delicious food from local vendors on Nedzl!</p>
+          </div>
         ) : (
-          <TableComponent
-            DATA={customerOrders}
-            COLUMNS={customerColumns}
-            sorting={sorting}
-            setSorting={setSorting}
-          />
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block">
+              <TableComponent
+                DATA={customerOrders}
+                COLUMNS={customerColumns}
+                sorting={sorting}
+                setSorting={setSorting}
+              />
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="flex flex-col gap-3.5 md:hidden">
+              {customerOrders.map((order: any) => {
+                const imageUrl =
+                  order.product?.image_urls?.[0] ||
+                  "https://nedzl.com/placeholder.png";
+
+                return (
+                  <div
+                    key={order.id}
+                    onClick={() => {
+                      setSelectedOrder(order);
+                      setIsDetailsOpen(true);
+                    }}
+                    className="bg-white rounded-2xl p-4 border border-gray-100 shadow-xs flex flex-col gap-y-3 active:bg-gray-50 transition-all cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
+                      <span className="font-mono text-xs font-bold text-gray-900">
+                        #{order.order_number}
+                      </span>
+                      <span className="bg-emerald-100 text-emerald-800 text-[11px] px-2.5 py-0.5 rounded-full font-bold">
+                        {order.status || "PAID"}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={imageUrl}
+                        alt={order.product?.name}
+                        className="w-14 h-14 rounded-xl object-cover border border-gray-100 flex-shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-bold text-gray-900 truncate">
+                          {order.product?.name || "Meal Order"}
+                        </h4>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-xs font-semibold text-gray-500">
+                            Vendor: {order.vendor?.user_name || "Food Vendor"}
+                          </span>
+                          <span className="text-sm font-extrabold text-global-green">
+                            ₦{Number(order.total_amount || 0).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
+                      <span className="text-gray-400">
+                        {moment(order.created_at).format("MMM DD, YYYY")}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedOrder(order);
+                          setIsDetailsOpen(true);
+                        }}
+                        className="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center gap-1 active:scale-95"
+                      >
+                        <FiEye size={13} />
+                        <span>View Details</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )
       ) : isLoadingVendor ? (
         <div className="text-center py-8 text-sm text-gray-500">
           Loading vendor orders...
         </div>
+      ) : vendorOrders.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-2xl border border-gray-100 p-6 flex flex-col items-center gap-2">
+          <span className="text-4xl">👨‍🍳</span>
+          <p className="text-sm font-semibold text-gray-700">No Vendor Food Orders Received</p>
+          <p className="text-xs text-gray-400">Orders placed for your food items will appear here.</p>
+        </div>
       ) : (
-        <TableComponent
-          DATA={vendorOrders}
-          COLUMNS={vendorColumns}
-          sorting={sorting}
-          setSorting={setSorting}
-        />
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden md:block">
+            <TableComponent
+              DATA={vendorOrders}
+              COLUMNS={vendorColumns}
+              sorting={sorting}
+              setSorting={setSorting}
+            />
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="flex flex-col gap-3.5 md:hidden">
+            {vendorOrders.map((order: any) => {
+              const imageUrl =
+                order.product?.image_urls?.[0] ||
+                "https://nedzl.com/placeholder.png";
+
+              return (
+                <div
+                  key={order.id}
+                  onClick={() => {
+                    setSelectedOrder(order);
+                    setIsDetailsOpen(true);
+                  }}
+                  className="bg-white rounded-2xl p-4 border border-gray-100 shadow-xs flex flex-col gap-y-3 active:bg-gray-50 transition-all cursor-pointer"
+                >
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
+                    <span className="font-mono text-xs font-bold text-gray-900">
+                      #{order.order_number}
+                    </span>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <select
+                        value={order.status}
+                        onChange={(e) =>
+                          handleUpdateStatus(order.id, e.target.value)
+                        }
+                        className="text-xs border border-emerald-300 rounded-xl px-2 py-1 bg-emerald-50 text-emerald-800 font-bold outline-none"
+                      >
+                        <option value="PAID">PAID</option>
+                        <option value="PREPARING">PREPARING</option>
+                        <option value="OUT_FOR_DELIVERY">OUT FOR DELIVERY</option>
+                        <option value="DELIVERED">DELIVERED</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={imageUrl}
+                      alt={order.product?.name}
+                      className="w-14 h-14 rounded-xl object-cover border border-gray-100 flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-bold text-gray-900 truncate">
+                        {order.product?.name || "Meal Order"}
+                      </h4>
+                      <p className="text-xs text-gray-500 font-medium mt-0.5">
+                        Customer: {order.customer_name} ({order.customer_phone})
+                      </p>
+                      <div className="flex items-center justify-between mt-1 text-xs">
+                        <span className="text-gray-500">Payout:</span>
+                        <span className="font-extrabold text-global-green">
+                          ₦{Number(order.vendor_payout || 0).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
+                    <span className="text-gray-400">
+                      {moment(order.created_at).format("MMM DD, YYYY")}
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedOrder(order);
+                        setIsDetailsOpen(true);
+                      }}
+                      className="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center gap-1 active:scale-95"
+                    >
+                      <FiEye size={13} />
+                      <span>View Details</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
       )}
 
       {/* Detail Order Modal - Matching Screenshot Layout */}

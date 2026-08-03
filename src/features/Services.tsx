@@ -52,7 +52,7 @@ export default function Services() {
       />
       <div className="w-full bg-[#F5F5F5] min-h-screen py-8 px-4 md:px-20 flex flex-col gap-y-6">
         {/* Banner Section */}
-        <div className="w-full bg-gradient-to-r from-blue-700 via-indigo-600 to-teal-600 rounded-2xl p-6 md:p-10 text-white flex flex-col md:flex-row items-center justify-between shadow-lg">
+        <div className="w-full bg-gradient-to-r from-blue-800 via-blue-600 to-teal-600 rounded-2xl p-6 md:p-10 text-white flex flex-col md:flex-row items-center justify-between shadow-lg">
           <div className="flex flex-col gap-y-2 max-w-xl text-center md:text-left">
             <span className="text-xs uppercase font-bold tracking-widest bg-white/20 px-3 py-1 rounded-full w-fit mx-auto md:mx-0">
               🛠️ Nedzl Artisan & Skill Bookings
@@ -90,7 +90,7 @@ export default function Services() {
 
         {isLoading ? (
           <div className="w-full flex justify-center py-20">
-            <div className="w-12 h-12 border-4 border-t-indigo-600 border-gray-300 rounded-full animate-spin"></div>
+            <div className="w-12 h-12 border-4 border-t-blue-600 border-gray-300 rounded-full animate-spin"></div>
           </div>
         ) : services.length === 0 ? (
           <div className="w-full bg-white rounded-2xl p-12 text-center flex flex-col items-center justify-center gap-y-3 shadow-sm">
@@ -160,7 +160,7 @@ export default function Services() {
                         setSelectedService(service);
                         setIsBookingModalOpen(true);
                       }}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+                      className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
                     >
                       <span>Book Service</span>
                       <span>&rarr;</span>

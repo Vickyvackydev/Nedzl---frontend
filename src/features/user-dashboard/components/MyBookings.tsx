@@ -128,7 +128,7 @@ export default function MyBookings() {
       header: "Fee Paid",
       accessorKey: "booking_fee",
       cell: (info: any) => (
-        <span className="font-bold text-indigo-600">
+        <span className="font-bold text-blue-600">
           ₦{Number(info.getValue() || 0).toLocaleString()}
         </span>
       ),
@@ -158,7 +158,7 @@ export default function MyBookings() {
             setSelectedBooking(info.row.original);
             setIsDetailsOpen(true);
           }}
-          className="text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-lg border border-indigo-200 transition-colors flex items-center gap-1"
+          className="text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-lg border border-blue-200 transition-colors flex items-center gap-1"
         >
           <FiEye size={13} />
           <span>Details</span>
@@ -212,25 +212,22 @@ export default function MyBookings() {
     },
     {
       header: "Customer",
-      accessorKey: "user.user_name",
+      accessorKey: "customer_phone",
       cell: (info: any) => (
-        <div className="flex flex-col text-xs">
-          <span className="font-semibold">{info.getValue()}</span>
-          <a
-            href={`tel:${info.row.original?.customer_phone}`}
-            className="text-global-green flex items-center gap-1 font-medium"
-          >
-            <FiPhone size={12} />
-            <span>{info.row.original?.customer_phone}</span>
-          </a>
-        </div>
+        <a
+          href={`tel:${info.getValue()}`}
+          className="text-global-green flex items-center gap-1 text-xs font-medium"
+        >
+          <FiPhone size={12} />
+          <span>{info.getValue()}</span>
+        </a>
       ),
     },
     {
       header: "Booking Fee",
       accessorKey: "booking_fee",
       cell: (info: any) => (
-        <span className="font-semibold text-gray-700 text-xs">
+        <span className="font-bold text-blue-600">
           ₦{Number(info.getValue() || 0).toLocaleString()}
         </span>
       ),
@@ -264,7 +261,7 @@ export default function MyBookings() {
             setSelectedBooking(info.row.original);
             setIsDetailsOpen(true);
           }}
-          className="text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-lg border border-indigo-200 transition-colors flex items-center gap-1"
+          className="text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-lg border border-blue-200 transition-colors flex items-center gap-1"
         >
           <FiEye size={13} />
           <span>Details</span>
@@ -295,7 +292,7 @@ export default function MyBookings() {
         return (
           <button
             onClick={() => handleArtisanComplete(info.row.original.id)}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm"
           >
             Mark Completed
           </button>
@@ -307,12 +304,12 @@ export default function MyBookings() {
   return (
     <div className="w-full p-4 md:p-6 flex flex-col gap-y-4">
       {/* Tab Switcher */}
-      <div className="flex items-center gap-2 border-b border-borderColor pb-3">
+      <div className="w-full flex items-center gap-2 border-b border-gray-100 pb-3 overflow-x-auto custom-scrollbar-gray select-none">
         <button
           onClick={() => setActiveTab("customer")}
-          className={`px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all flex items-center gap-2 ${
+          className={`px-3.5 py-2.5 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap flex-shrink-0 transition-all flex items-center gap-2 cursor-pointer ${
             activeTab === "customer"
-              ? "bg-indigo-600 text-white shadow-sm"
+              ? "bg-blue-600 text-white shadow-sm"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
           }`}
         >
@@ -321,9 +318,9 @@ export default function MyBookings() {
         </button>
         <button
           onClick={() => setActiveTab("artisan")}
-          className={`px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all flex items-center gap-2 ${
+          className={`px-3.5 py-2.5 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap flex-shrink-0 transition-all flex items-center gap-2 cursor-pointer ${
             activeTab === "artisan"
-              ? "bg-indigo-600 text-white shadow-sm"
+              ? "bg-blue-600 text-white shadow-sm"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
           }`}
         >
@@ -337,28 +334,230 @@ export default function MyBookings() {
           <div className="text-center py-8 text-sm text-gray-500">
             Loading bookings...
           </div>
+        ) : customerBookings.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-2xl border border-gray-100 p-6 flex flex-col items-center gap-2">
+            <span className="text-4xl">🛠️</span>
+            <p className="text-sm font-semibold text-gray-700">No Service Bookings Yet</p>
+            <p className="text-xs text-gray-400">Book qualified artisans with 100% Escrow Protection!</p>
+          </div>
         ) : (
-          <TableComponent
-            DATA={customerBookings}
-            COLUMNS={customerColumns}
-            sorting={sorting}
-            setSorting={setSorting}
-          />
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block">
+              <TableComponent
+                DATA={customerBookings}
+                COLUMNS={customerColumns}
+                sorting={sorting}
+                setSorting={setSorting}
+              />
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="flex flex-col gap-3.5 md:hidden">
+              {customerBookings.map((booking: any) => {
+                const imageUrl =
+                  booking.service?.image_urls?.[0] ||
+                  "https://nedzl.com/placeholder.png";
+
+                return (
+                  <div
+                    key={booking.id}
+                    onClick={() => {
+                      setSelectedBooking(booking);
+                      setIsDetailsOpen(true);
+                    }}
+                    className="bg-white rounded-2xl p-4 border border-gray-100 shadow-xs flex flex-col gap-y-3 active:bg-gray-50 transition-all cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
+                      <span className="font-mono text-xs font-bold text-gray-900">
+                        #{booking.booking_number}
+                      </span>
+                      <span
+                        className={`text-[11px] px-2.5 py-0.5 rounded-full font-bold ${
+                          booking.payment_status === "RELEASED_TO_ARTISAN"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-amber-100 text-amber-800"
+                        }`}
+                      >
+                        {booking.payment_status === "RELEASED_TO_ARTISAN"
+                          ? "RELEASED"
+                          : "ESCROW HELD"}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={imageUrl}
+                        alt={booking.service?.name}
+                        className="w-14 h-14 rounded-xl object-cover border border-gray-100 flex-shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-bold text-gray-900 truncate">
+                          {booking.service?.name || "Artisan Service"}
+                        </h4>
+                        <p className="text-xs text-gray-500 font-medium mt-0.5">
+                          Artisan: {booking.artisan?.user_name || "Nedzl Artisan"}
+                        </p>
+                        <div className="flex items-center justify-between mt-1 text-xs">
+                          <span className="text-gray-400">
+                            {moment(booking.created_at).format("MMM DD, YYYY")}
+                          </span>
+                          <span className="text-sm font-extrabold text-blue-600">
+                            ₦{Number(booking.booking_fee || 0).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
+                      {booking.status === "COMPLETED" ? (
+                        <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                          <FiCheckCircle /> Completed
+                        </span>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCustomerComplete(booking.id);
+                          }}
+                          className="bg-global-green hover:bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs"
+                        >
+                          Mark as Completed
+                        </button>
+                      )}
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedBooking(booking);
+                          setIsDetailsOpen(true);
+                        }}
+                        className="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200 flex items-center gap-1 active:scale-95"
+                      >
+                        <FiEye size={13} />
+                        <span>Details</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )
       ) : isLoadingArtisan ? (
         <div className="text-center py-8 text-sm text-gray-500">
           Loading artisan jobs...
         </div>
+      ) : artisanBookings.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-2xl border border-gray-100 p-6 flex flex-col items-center gap-2">
+          <span className="text-4xl">🧰</span>
+          <p className="text-sm font-semibold text-gray-700">No Artisan Jobs Received</p>
+          <p className="text-xs text-gray-400">Bookings for your services will appear here.</p>
+        </div>
       ) : (
-        <TableComponent
-          DATA={artisanBookings}
-          COLUMNS={artisanColumns}
-          sorting={sorting}
-          setSorting={setSorting}
-        />
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden md:block">
+            <TableComponent
+              DATA={artisanBookings}
+              COLUMNS={artisanColumns}
+              sorting={sorting}
+              setSorting={setSorting}
+            />
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="flex flex-col gap-3.5 md:hidden">
+            {artisanBookings.map((booking: any) => {
+              const imageUrl =
+                booking.service?.image_urls?.[0] ||
+                "https://nedzl.com/placeholder.png";
+
+              return (
+                <div
+                  key={booking.id}
+                  onClick={() => {
+                    setSelectedBooking(booking);
+                    setIsDetailsOpen(true);
+                  }}
+                  className="bg-white rounded-2xl p-4 border border-gray-100 shadow-xs flex flex-col gap-y-3 active:bg-gray-50 transition-all cursor-pointer"
+                >
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
+                    <span className="font-mono text-xs font-bold text-gray-900">
+                      #{booking.booking_number}
+                    </span>
+                    <span
+                      className={`text-[11px] px-2.5 py-0.5 rounded-full font-bold ${
+                        booking.status === "COMPLETED"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-blue-100 text-blue-800"
+                      }`}
+                    >
+                      {booking.status}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={imageUrl}
+                      alt={booking.service?.name}
+                      className="w-14 h-14 rounded-xl object-cover border border-gray-100 flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-bold text-gray-900 truncate">
+                        {booking.service?.name || "Artisan Service"}
+                      </h4>
+                      <p className="text-xs text-gray-500 font-medium mt-0.5">
+                        Customer: {booking.customer_phone}
+                      </p>
+                      <div className="flex items-center justify-between mt-1 text-xs">
+                        <span className="text-gray-400">
+                          {moment(booking.created_at).format("MMM DD, YYYY")}
+                        </span>
+                        <span className="text-sm font-extrabold text-blue-600">
+                          ₦{Number(booking.booking_fee || 0).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
+                    {booking.status === "COMPLETED" ? (
+                      <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                        <FiCheckCircle /> Completed
+                      </span>
+                    ) : (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleArtisanComplete(booking.id);
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs"
+                      >
+                        Mark Completed
+                      </button>
+                    )}
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedBooking(booking);
+                        setIsDetailsOpen(true);
+                      }}
+                      className="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200 flex items-center gap-1 active:scale-95"
+                    >
+                      <FiEye size={13} />
+                      <span>Details</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
       )}
 
-      {/* Detail Booking Modal - Matching Screenshot Layout */}
+      {/* Detail Booking Modal */}
       {selectedBooking && (
         <Modal show={isDetailsOpen} onClose={() => setIsDetailsOpen(false)}>
           <div className="p-5 md:p-6 max-w-lg w-full max-h-[85vh] overflow-y-auto custom-scrollbar-gray bg-white rounded-2xl flex flex-col gap-y-4 shadow-2xl geist-family">
