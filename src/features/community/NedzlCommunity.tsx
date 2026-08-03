@@ -135,27 +135,29 @@ export default function NedzlCommunity() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-2 sm:p-6 flex flex-col h-[calc(100vh-40px)] min-h-[750px] geist-family">
+    <div className="w-full max-w-5xl mx-auto p-2 sm:p-6 flex flex-col h-[calc(100vh-60px)] sm:h-[calc(100vh-40px)] geist-family">
       {/* Header */}
-      <div className="bg-white border border-borderColor rounded-2xl p-4 mb-4 shadow-sm flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-global-green/10 flex items-center justify-center text-global-green">
-            <FiMessageSquare className="w-5 h-5" />
+      <div className="bg-white border border-borderColor rounded-2xl p-3 sm:p-4 mb-2.5 sm:mb-4 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-global-green/10 flex items-center justify-center text-global-green flex-shrink-0">
+            <FiMessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
-              <span>Nedzl Community</span>
-              <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-sm sm:text-base font-bold text-gray-900 truncate">
+                Nedzl Community
+              </h2>
+              <span className="bg-emerald-100 text-emerald-800 text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full flex-shrink-0">
                 LIVE FORUM
               </span>
-            </h2>
-            <p className="text-xs text-gray-500">
+            </div>
+            <p className="text-[11px] sm:text-xs text-gray-500 truncate">
               Network with fellow campus marketers & buyers. No links allowed.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-end gap-2 border-t sm:border-t-0 pt-2 sm:pt-0 border-gray-100">
           <span className="text-xs font-semibold text-gray-600 hidden sm:inline">
             Identity:
           </span>
@@ -164,24 +166,24 @@ export default function NedzlCommunity() {
               setTempNameInput(displayName);
               setShowNameModal(true);
             }}
-            className="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1.5"
+            className="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1.5 flex-shrink-0 active:scale-95"
           >
             <FiUser size={13} className="text-global-green" />
-            <span>{displayName || "Set Name"}</span>
+            <span className="max-w-[140px] truncate">{displayName || "Set Name"}</span>
           </button>
         </div>
       </div>
 
       {/* Warning Alert Banner */}
-      <div className="bg-amber-50 border border-amber-200 p-2.5 px-4 rounded-xl mb-3 flex items-center gap-2 text-xs text-amber-900">
-        <FiAlertCircle className="text-amber-600 w-4 h-4 flex-shrink-0" />
+      <div className="bg-amber-50 border border-amber-200 p-2.5 px-3.5 rounded-xl mb-2.5 flex items-start gap-2 text-[11px] sm:text-xs text-amber-900 leading-snug">
+        <FiAlertCircle className="text-amber-600 w-4 h-4 flex-shrink-0 mt-0.5" />
         <span>
           <strong>Community Guidelines:</strong> Be respectful. Posting links or domain URLs is strictly prohibited to keep Nedzl Community safe & spam-free.
         </span>
       </div>
 
       {/* Messages Feed */}
-      <div className="flex-1 bg-white border border-borderColor rounded-2xl p-4 overflow-y-auto custom-scrollbar-gray space-y-4 shadow-sm">
+      <div className="flex-1 bg-white border border-borderColor rounded-2xl p-3 sm:p-4 overflow-y-auto custom-scrollbar-gray space-y-3 sm:space-y-4 shadow-sm min-h-0">
         {isLoading ? (
           <div className="flex items-center justify-center h-full text-gray-400 text-xs">
             Loading community messages...
@@ -198,7 +200,7 @@ export default function NedzlCommunity() {
             return (
               <div
                 key={msg.id}
-                className={`group flex flex-col gap-1 max-w-[85%] sm:max-w-[75%] relative ${
+                className={`group flex flex-col gap-1 max-w-[90%] sm:max-w-[75%] relative ${
                   isMe ? "ml-auto items-end" : "items-start"
                 }`}
               >
@@ -221,7 +223,7 @@ export default function NedzlCommunity() {
                 </div>
 
                 {/* Sender Header */}
-                <div className="flex items-center gap-2 text-[11px] text-gray-500 px-1">
+                <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-gray-500 px-1">
                   <span className="font-bold text-gray-800">
                     {msg.sender_name} {isMe && "(You)"}
                   </span>
@@ -231,7 +233,7 @@ export default function NedzlCommunity() {
 
                 {/* Quoted Reply if present */}
                 {msg.reply_to && (
-                  <div className="bg-gray-100 border-l-4 border-global-green p-2 rounded-r-xl text-xs text-gray-600 mb-0.5">
+                  <div className="bg-gray-100 border-l-4 border-global-green p-2 rounded-r-xl text-[11px] sm:text-xs text-gray-600 mb-0.5">
                     <span className="font-bold block text-[10px] text-emerald-800">
                       Replying to {msg.reply_to.sender_name}:
                     </span>
@@ -241,7 +243,7 @@ export default function NedzlCommunity() {
 
                 {/* Message Bubble */}
                 <div
-                  className={`p-3 rounded-2xl text-sm leading-relaxed relative ${
+                  className={`p-2.5 sm:p-3 rounded-2xl text-xs sm:text-sm leading-relaxed relative ${
                     isMe
                       ? "bg-global-green text-white rounded-tr-xs"
                       : "bg-gray-100 text-gray-900 rounded-tl-xs"
@@ -270,7 +272,7 @@ export default function NedzlCommunity() {
                         <button
                           key={rIdx}
                           onClick={() => handleEmojiClick(msg.id, r.emoji)}
-                          className={`text-xs px-2 py-0.5 rounded-full border flex items-center gap-1 font-semibold ${
+                          className={`text-[10px] sm:text-xs px-2 py-0.5 rounded-full border flex items-center gap-1 font-semibold ${
                             r.users?.includes(displayName)
                               ? "bg-emerald-100 border-emerald-300 text-emerald-900"
                               : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
@@ -312,7 +314,7 @@ export default function NedzlCommunity() {
       {/* Input Message Form */}
       <form
         onSubmit={handleSendMessage}
-        className={`bg-white border border-borderColor p-3 shadow-md flex items-center gap-2 ${
+        className={`bg-white border border-borderColor p-2 sm:p-2.5 shadow-md flex items-center gap-2 ${
           replyToMessage ? "rounded-b-2xl" : "rounded-2xl mt-2"
         }`}
       >
@@ -320,17 +322,17 @@ export default function NedzlCommunity() {
           type="text"
           placeholder={
             displayName
-              ? `Message Nedzl Community as ${displayName}...`
+              ? `Message as ${displayName}...`
               : "Enter display name to join discussion..."
           }
           value={messageText}
           onChange={(e) => setMessageText(e.target.value)}
-          className="flex-1 px-3 py-2 text-sm bg-transparent border-none focus:outline-none text-gray-900"
+          className="flex-1 min-w-0 px-2.5 sm:px-3 py-2 text-xs sm:text-sm bg-transparent border-none outline-none focus:outline-none text-gray-900"
         />
         <button
           type="submit"
           disabled={sendMessageMutation.isPending || !messageText.trim()}
-          className="bg-global-green hover:bg-emerald-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5 flex-shrink-0 disabled:opacity-50"
+          className="bg-global-green hover:bg-emerald-600 text-white font-bold text-xs px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5 flex-shrink-0 disabled:opacity-50 cursor-pointer active:scale-95"
         >
           <span>Send</span>
           <FiSend size={13} />

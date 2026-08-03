@@ -120,3 +120,4 @@ export { default as PHONE_CONTACT } from "../assets/icons/phone-contact.svg";
 export { default as SVG_LOCATION } from "../assets/icons/svg-location.svg";
 export { default as SVG_CONTACT } from "../assets/icons/svg-location.svg";
 export { default as GOOGLE_ICON } from "../assets/icons/google-icon.png";
+export { default as NO_TEXT_LOGO } from "../assets/images/no-text-logo.png";

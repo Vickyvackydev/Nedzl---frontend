@@ -1,27 +1,24 @@
 import { useState } from "react";
-import { BAR, NEDZL_LOGO_GREEN } from "../assets";
+import { BAR, NEDZL_LOGO_GREEN, NO_TEXT_LOGO } from "../assets";
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AccountDropdown from "./AccountDropdown";
 import SearchBar from "./SearchBar";
-// import { useMediaQuery } from "../hooks";
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile } from "../services/auth.service";
 import { useSidebar } from "../context/SidebarContext";
 import { Store } from "../state/store";
 import GuestProductListingModal from "./GuestProductListingModal";
+import { useMediaQuery } from "../hooks";
 
 function Header() {
   const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
   const [isOrderServicesOpen, setIsOrderServicesOpen] = useState(false);
-  // const mobile = useMediaQuery("(max-width: 640px)");
   const { toggleSidebar } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
   const {
     data: userProfile,
-    // isLoading,
-    // refetch,
   } = useQuery({
     queryKey: ["profile"],
     queryFn: getUserProfile,
@@ -30,6 +27,7 @@ function Header() {
   const user = userProfile?.data?.user;
   const isLoggedIn = !!Store.getState().auths.token || !!user;
   const isDashboard = location.pathname.startsWith("/dashboard");
+  const isMobileView = useMediaQuery("(max-width: 640px)");
 
   const handlePostProductClick = () => {
     if (isLoggedIn) {
@@ -40,13 +38,17 @@ function Header() {
   };
 
   return (
-    <div className="w-full flex flex-col md:flex-row items-center justify-between py-4 px-4 md:px-20 gap-y-4 md:gap-y-0">
+    <div className="w-full flex flex-col md:flex-row items-center justify-between py-3.5 px-4 md:px-20 gap-y-3.5 md:gap-y-0">
       <div className="lg:w-auto w-full flex items-center justify-between">
-        <div className="flex items-center gap-x-2">
-          <Link to={"/"}>
+        <div className="flex items-center gap-x-2 flex-shrink-0">
+          <Link to={"/"} className="flex items-center">
             <img
-              src={NEDZL_LOGO_GREEN}
-              className="w-[100px] sm:w-[130px] h-[30px] sm:h-[33.41px] object-contain"
+              src={isMobileView ? NO_TEXT_LOGO : NEDZL_LOGO_GREEN}
+              className={
+                isMobileView
+                  ? "w-[34px] h-[34px] object-contain"
+                  : "w-[100px] sm:w-[130px] h-[30px] sm:h-[33.41px] object-contain"
+              }
               alt="Nedzl Logo"
             />
           </Link>
