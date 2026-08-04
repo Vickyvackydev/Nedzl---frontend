@@ -44,7 +44,7 @@ function Header() {
               src={NEDZL_LOGO_GREEN}
               className={
                 isMobileView
-                  ? "w-[75px] h-[75px] object-contain"
+                  ? "w-[89px] h-[89px] object-contain"
                   : "w-[100px] sm:w-[130px] h-[30px] sm:h-[33.41px] object-contain"
               }
               alt="Nedzl Logo"
