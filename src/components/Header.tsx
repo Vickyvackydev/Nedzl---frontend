@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BAR, NEDZL_LOGO_GREEN, NO_TEXT_LOGO } from "../assets";
+import { BAR, NEDZL_LOGO_GREEN } from "../assets";
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AccountDropdown from "./AccountDropdown";
@@ -17,9 +17,7 @@ function Header() {
   const { toggleSidebar } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
-  const {
-    data: userProfile,
-  } = useQuery({
+  const { data: userProfile } = useQuery({
     queryKey: ["profile"],
     queryFn: getUserProfile,
     enabled: !!Store.getState().auths.token,
@@ -43,10 +41,10 @@ function Header() {
         <div className="flex items-center gap-x-2 flex-shrink-0">
           <Link to={"/"} className="flex items-center">
             <img
-              src={isMobileView ? NO_TEXT_LOGO : NEDZL_LOGO_GREEN}
+              src={NEDZL_LOGO_GREEN}
               className={
                 isMobileView
-                  ? "w-[34px] h-[34px] object-contain"
+                  ? "w-[75px] h-[75px] object-contain"
                   : "w-[100px] sm:w-[130px] h-[30px] sm:h-[33.41px] object-contain"
               }
               alt="Nedzl Logo"
