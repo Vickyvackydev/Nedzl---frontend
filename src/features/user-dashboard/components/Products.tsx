@@ -570,21 +570,25 @@ function Products() {
               />
               <div className="flex flex-col gap-y-2">
                 <label className="text-xs font-semibold text-gray-700">Sub-Menus / Extras (Optional)</label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    placeholder="Extra Item (e.g., Fried Plantain)"
-                    value={newSubMenuName}
-                    onChange={(e) => setNewSubMenuName(e.target.value)}
-                    className="flex-1 px-3 py-2 text-xs border rounded-lg outline-none focus:border-global-green"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Price (₦)"
-                    value={newSubMenuPrice}
-                    onChange={(e) => setNewSubMenuPrice(e.target.value.replace(/\D/g, ""))}
-                    className="w-28 px-3 py-2 text-xs border rounded-lg outline-none focus:border-global-green"
-                  />
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <div className="flex-1 min-w-0">
+                    <input
+                      type="text"
+                      placeholder="Extra Item (e.g., Fried Plantain)"
+                      value={newSubMenuName}
+                      onChange={(e) => setNewSubMenuName(e.target.value)}
+                      className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg outline-none focus:border-global-green focus:ring-1 focus:ring-global-green bg-white"
+                    />
+                  </div>
+                  <div className="w-full sm:w-28 shrink-0">
+                    <input
+                      type="text"
+                      placeholder="Price (₦)"
+                      value={newSubMenuPrice}
+                      onChange={(e) => setNewSubMenuPrice(e.target.value.replace(/\D/g, ""))}
+                      className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg outline-none focus:border-global-green focus:ring-1 focus:ring-global-green bg-white"
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={() => {
@@ -594,7 +598,7 @@ function Products() {
                         setNewSubMenuPrice("");
                       }
                     }}
-                    className="px-3 py-2 bg-global-green text-white text-xs font-semibold rounded-lg hover:bg-emerald-600 transition-colors"
+                    className="w-full sm:w-auto shrink-0 px-4 py-2 bg-global-green text-white text-xs font-semibold rounded-lg hover:bg-emerald-600 transition-colors flex items-center justify-center cursor-pointer"
                   >
                     Add Extra
                   </button>

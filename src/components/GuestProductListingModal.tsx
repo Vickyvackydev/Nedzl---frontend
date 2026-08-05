@@ -145,16 +145,16 @@ export default function GuestProductListingModal({
     <Modal show={show} onClose={onClose}>
       <div className="p-5 md:p-6 max-w-xl w-full bg-white rounded-2xl flex flex-col gap-y-4 shadow-2xl geist-family max-h-[90vh] overflow-y-auto custom-scrollbar-gray">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-borderColor pb-3">
-          <div className="flex items-center gap-2">
-            <FiTag className="text-global-green w-5 h-5" />
-            <h3 className="text-base font-bold text-gray-900">
+        <div className="flex items-start justify-between gap-x-2 border-b border-borderColor pb-3">
+          <div className="flex items-start gap-2.5 flex-1 pr-2">
+            <FiTag className="text-global-green w-5 h-5 mt-0.5 shrink-0" />
+            <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-snug">
               Quick List a Selling Product (No Registration Needed)
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors shrink-0 mt-0.5"
           >
             <FiX size={16} />
           </button>

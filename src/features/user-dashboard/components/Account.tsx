@@ -2,7 +2,7 @@ import { EDIT_PROFILE, GREEN_USER } from "../../../assets";
 import SelectInput from "../../../components/SelectInput";
 import Button from "../../../components/Button";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, Heart, Package, ShoppingBag } from "lucide-react";
+import { Eye, Heart, Package, ShoppingBag, TrendingUp } from "lucide-react";
 import { getUserProfile, updateUser } from "../../../services/auth.service";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
@@ -82,6 +82,7 @@ function Account() {
 
   const metrics = userProfile?.data?.metrics || {
     total_views: 0,
+    weekly_views: 0,
     total_likes: 0,
     total_listed: 0,
     total_sold: 0,
@@ -96,10 +97,16 @@ function Account() {
             Total Views
           </span>
           <div className="flex items-center justify-between mt-1">
-            <span className="text-xl font-bold text-primary-300">
-              {metrics.total_views.toLocaleString()}
-            </span>
-            <div className="w-8 h-8 rounded-lg bg-[#07B4630D] flex items-center justify-center text-global-green">
+            <div className="flex flex-col">
+              <span className="text-xl font-bold text-primary-300">
+                {metrics.total_views.toLocaleString()}
+              </span>
+              <span className="text-[11px] font-medium text-emerald-600 flex items-center gap-1 mt-0.5">
+                <TrendingUp size={13} className="text-emerald-600 shrink-0" />
+                <span>+{(metrics.weekly_views ?? metrics.total_views).toLocaleString()} this week</span>
+              </span>
+            </div>
+            <div className="w-8 h-8 rounded-lg bg-[#07B4630D] flex items-center justify-center text-global-green shrink-0">
               <Eye size={18} />
             </div>
           </div>

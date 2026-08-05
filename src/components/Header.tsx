@@ -1,3 +1,4 @@
+import { ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { BAR, NEDZL_LOGO_GREEN } from "../assets";
 
@@ -9,7 +10,6 @@ import { getUserProfile } from "../services/auth.service";
 import { useSidebar } from "../context/SidebarContext";
 import { Store } from "../state/store";
 import GuestProductListingModal from "./GuestProductListingModal";
-import { useMediaQuery } from "../hooks";
 
 function Header() {
   const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
@@ -25,7 +25,6 @@ function Header() {
   const user = userProfile?.data?.user;
   const isLoggedIn = !!Store.getState().auths.token || !!user;
   const isDashboard = location.pathname.startsWith("/dashboard");
-  const isMobileView = useMediaQuery("(max-width: 640px)");
 
   const handlePostProductClick = () => {
     if (isLoggedIn) {
@@ -43,9 +42,7 @@ function Header() {
             <img
               src={NEDZL_LOGO_GREEN}
               className={
-                isMobileView
-                  ? "w-[89px] h-[89px] object-contain"
-                  : "w-[100px] sm:w-[130px] h-[30px] sm:h-[33.41px] object-contain"
+                "w-[100px] sm:w-[130px] h-[30px] sm:h-[33.41px] object-contain"
               }
               alt="Nedzl Logo"
             />
@@ -70,9 +67,11 @@ function Header() {
           <div className="relative">
             <button
               onClick={() => setIsOrderServicesOpen((prev) => !prev)}
-              className="flex items-center gap-x-1 py-1.5 px-2.5 rounded-xl transition-colors border border-emerald-200 bg-emerald-50 text-global-green text-[11px] sm:text-xs font-bold shadow-sm active:scale-95 cursor-pointer"
+              className="flex items-center gap-x-1 py-1.5 px-2 rounded-xl transition-colors border border-emerald-200 bg-emerald-50 text-global-green text-[11px] sm:text-xs font-bold shadow-sm active:scale-95 cursor-pointer"
+              title="Order / Services"
             >
-              <span>Order/Services</span>
+              <ShoppingBag className="w-4 h-4 text-global-green sm:hidden" />
+              <span className="hidden sm:inline">Order/Services</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
