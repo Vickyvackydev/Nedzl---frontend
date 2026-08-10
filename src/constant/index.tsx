@@ -177,6 +177,14 @@ export const footer = [
         title: "Terms Of Use",
         link: "/terms-of-service",
       },
+      {
+        title: "Shipping policy",
+        link: "/shipping-policy",
+      },
+      {
+        title: "Returns & Refund policy",
+        link: "/refund-policy",
+      },
     ],
   },
   {

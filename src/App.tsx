@@ -25,6 +25,8 @@ import NotFound from "./features/NotFound";
 import { SidebarProvider } from "./context/SidebarContext";
 import PrivacyPolicy from "./features/PrivacyPolicy";
 import TermsOfService from "./features/TermsOfService";
+import ShippingPolicy from "./features/ShippingPolicy";
+import RefundPolicy from "./features/RefundPolicy";
 import Contact from "./features/Contact";
 import FAQs from "./features/FAQs";
 import About from "./features/About";
@@ -64,6 +66,8 @@ function App() {
         <Route path="/search" element={<SearchResults />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/shipping-policy" element={<ShippingPolicy />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/faqs" element={<FAQs />} />
         <Route path="/about-us" element={<About />} />
