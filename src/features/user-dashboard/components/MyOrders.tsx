@@ -410,8 +410,8 @@ export default function MyOrders() {
                   }}
                   className="bg-white rounded-2xl p-4 border border-gray-100 shadow-xs flex flex-col gap-y-3 active:bg-gray-50 transition-all cursor-pointer"
                 >
-                  <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
-                    <span className="font-mono text-xs font-bold text-gray-900">
+                  <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-gray-100 pb-2.5">
+                    <span className="font-mono text-[11px] font-bold text-gray-900 truncate max-w-[150px]">
                       #{order.order_number}
                     </span>
                     <div onClick={(e) => e.stopPropagation()}>
@@ -420,7 +420,7 @@ export default function MyOrders() {
                         onChange={(e) =>
                           handleUpdateStatus(order.id, e.target.value)
                         }
-                        className="text-xs border border-emerald-300 rounded-xl px-2 py-1 bg-emerald-50 text-emerald-800 font-bold outline-none"
+                        className="text-[10px] sm:text-xs border border-emerald-300 rounded-lg px-1.5 py-0.5 sm:px-2 sm:py-1 bg-emerald-50 text-emerald-800 font-bold outline-none cursor-pointer max-w-[130px]"
                       >
                         <option value="PAID">PAID</option>
                         <option value="PREPARING">PREPARING</option>

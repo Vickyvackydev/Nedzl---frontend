@@ -1,17 +1,12 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import MainLayout from "../layout/MainLayout";
 import SEO from "../components/SEO";
 import { useQuery } from "@tanstack/react-query";
 import { ProductType } from "../types";
 import BookingCheckoutModal from "../components/BookingCheckoutModal";
 import { getAllProducts } from "../services/product.service";
-import { Store } from "../state/store";
-import toast from "react-hot-toast";
 
 export default function Services() {
-  const navigate = useNavigate();
-  const location = useLocation();
   const [selectedService, setSelectedService] = useState<ProductType | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [selectedServiceType, setSelectedServiceType] = useState<string>("ALL");
@@ -111,7 +106,11 @@ export default function Services() {
               return (
                 <div
                   key={service.id}
-                  className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-100 flex flex-col justify-between"
+                  onClick={() => {
+                    setSelectedService(service);
+                    setIsBookingModalOpen(true);
+                  }}
+                  className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-100 flex flex-col justify-between cursor-pointer"
                 >
                   <div>
                     <div className="relative h-48 w-full bg-gray-100 overflow-hidden">
@@ -150,13 +149,8 @@ export default function Services() {
                       </span>
                     </div>
                     <button
-                      onClick={() => {
-                        const token = Store.getState().auths.token;
-                        if (!token) {
-                          toast.error("Please login or create an account to book services");
-                          navigate("/login", { state: { from: location.pathname + location.search } });
-                          return;
-                        }
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setSelectedService(service);
                         setIsBookingModalOpen(true);
                       }}

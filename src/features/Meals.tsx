@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import MainLayout from "../layout/MainLayout";
 import SEO from "../components/SEO";
 import { useQuery } from "@tanstack/react-query";
@@ -7,12 +7,8 @@ import { ProductType } from "../types";
 import FoodCheckoutModal from "../components/FoodCheckoutModal";
 import { formatText } from "../utils";
 import { getAllProducts } from "../services/product.service";
-import { Store } from "../state/store";
-import toast from "react-hot-toast";
 
 export default function Meals() {
-  const navigate = useNavigate();
-  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get("category");
 
@@ -34,14 +30,6 @@ export default function Meals() {
   };
 
   const handleMealCardClick = (meal: ProductType) => {
-    const token = Store.getState().auths.token;
-    if (!token) {
-      toast.error("Please login or create an account to view meal details & order");
-      navigate("/login", {
-        state: { from: location.pathname + location.search },
-      });
-      return;
-    }
     setSelectedMeal(meal);
     setIsCheckoutOpen(true);
   };
