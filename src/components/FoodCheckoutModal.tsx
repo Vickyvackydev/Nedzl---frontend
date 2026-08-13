@@ -22,9 +22,11 @@ export default function FoodCheckoutModal({
 }: FoodCheckoutModalProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedSubMenus, setSelectedSubMenus] = useState<
-    { name: string; price: number }[]
-  >([]);
+  const [quantity, setQuantity] = useState<number>(1);
+  const [portionExtras, setPortionExtras] = useState<
+    Record<number, { name: string; price: number }[]>
+  >({ 1: [] });
+  const [activePortionTab, setActivePortionTab] = useState<number>(1);
   const [customerPhone, setCustomerPhone] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [customerName] = useState("");
@@ -57,18 +59,45 @@ export default function FoodCheckoutModal({
 
   const basePrice = meal.product_price || 0;
   const deliveryFee = meal.delivery_fee || 0;
-  const extrasTotal = selectedSubMenus.reduce(
-    (sum, item) => sum + item.price,
-    0,
-  );
-  const grandTotal = basePrice + extrasTotal + deliveryFee;
+  const totalBasePrice = basePrice * quantity;
 
-  const toggleSubMenu = (item: { name: string; price: number }) => {
-    if (selectedSubMenus.some((s) => s.name === item.name)) {
-      setSelectedSubMenus(selectedSubMenus.filter((s) => s.name !== item.name));
-    } else {
-      setSelectedSubMenus([...selectedSubMenus, item]);
+  let totalExtrasPrice = 0;
+  for (let p = 1; p <= quantity; p++) {
+    const extrasForP = portionExtras[p] || [];
+    totalExtrasPrice += extrasForP.reduce((sum, item) => sum + item.price, 0);
+  }
+
+  const grandTotal = totalBasePrice + totalExtrasPrice + deliveryFee;
+
+  const handleIncreaseQty = () => {
+    const nextQty = quantity + 1;
+    setQuantity(nextQty);
+    if (!portionExtras[nextQty]) {
+      setPortionExtras((prev) => ({ ...prev, [nextQty]: [] }));
     }
+  };
+
+  const handleDecreaseQty = () => {
+    if (quantity <= 1) return;
+    const nextQty = quantity - 1;
+    setQuantity(nextQty);
+    if (activePortionTab > nextQty) {
+      setActivePortionTab(nextQty);
+    }
+  };
+
+  const toggleSubMenuForPortion = (
+    portionNum: number,
+    item: { name: string; price: number },
+  ) => {
+    setPortionExtras((prev) => {
+      const currentList = prev[portionNum] || [];
+      const isSelected = currentList.some((s) => s.name === item.name);
+      const updated = isSelected
+        ? currentList.filter((s) => s.name !== item.name)
+        : [...currentList, item];
+      return { ...prev, [portionNum]: updated };
+    });
   };
 
   const handleCheckout = async () => {
@@ -96,9 +125,21 @@ export default function FoodCheckoutModal({
 
     try {
       const callbackUrl = `${window.location.origin}/dashboard?tab=my_orders`;
+      const allSubMenusToSend: any[] = [];
+      for (let p = 1; p <= quantity; p++) {
+        const extrasForP = portionExtras[p] || [];
+        extrasForP.forEach((extra) => {
+          allSubMenusToSend.push({
+            portion: p,
+            name: quantity > 1 ? `${extra.name} (Portion ${p})` : extra.name,
+            price: extra.price,
+          });
+        });
+      }
+
       const response = await createFoodOrder({
         product_id: meal.id,
-        sub_menus: selectedSubMenus,
+        sub_menus: allSubMenusToSend,
         customer_name: user?.user_name || customerName || "Customer",
         customer_phone: customerPhone,
         delivery_address: deliveryAddress,
@@ -146,7 +187,7 @@ export default function FoodCheckoutModal({
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white">
             <span className="bg-emerald-600/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-              ₦{basePrice.toLocaleString()}
+              ₦{basePrice.toLocaleString()} / portion
             </span>
             {meal.delivery_fee ? (
               <span className="bg-white/90 backdrop-blur-md text-emerald-700 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
@@ -191,15 +232,91 @@ export default function FoodCheckoutModal({
             </div>
           )}
 
+          {/* Quantity Selector */}
+          <div className="flex items-center justify-between bg-gray-50 p-3.5 rounded-2xl border border-gray-100">
+            <div>
+              <span className="text-xs font-bold text-gray-900 uppercase tracking-wider block">
+                Quantity / Portions
+              </span>
+              <span className="text-xs text-gray-500">
+                Select number of meals to order
+              </span>
+            </div>
+            <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl p-1 shadow-sm">
+              <button
+                type="button"
+                onClick={handleDecreaseQty}
+                disabled={quantity <= 1}
+                className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-40 text-gray-800 font-bold flex items-center justify-center transition-all cursor-pointer"
+              >
+                -
+              </button>
+              <span className="text-sm font-extrabold text-gray-900 w-6 text-center">
+                {quantity}
+              </span>
+              <button
+                type="button"
+                onClick={handleIncreaseQty}
+                className="w-8 h-8 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center justify-center transition-all cursor-pointer shadow-xs"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
           {/* Sub-menus Extras Selection */}
           {subMenuOptions.length > 0 && (
-            <div className="bg-emerald-50/50 p-3.5 rounded-2xl border border-emerald-100 flex flex-col gap-y-2">
-              <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-wider">
-                Customize Your Order (Extras & Sides)
-              </h4>
+            <div className="bg-emerald-50/50 p-3.5 rounded-2xl border border-emerald-100 flex flex-col gap-y-3">
+              <div className="flex flex-col gap-y-0.5">
+                <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-wider">
+                  Customize Extras & Sides
+                </h4>
+                <p className="text-xs text-emerald-700">
+                  {quantity > 1
+                    ? "Each portion can have unique extras selected below."
+                    : "Choose extras for your meal portion."}
+                </p>
+              </div>
+
+              {/* Portion Selector Tabs (When Quantity > 1) */}
+              {quantity > 1 && (
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 custom-scrollbar-gray">
+                  {Array.from({ length: quantity }, (_, i) => i + 1).map(
+                    (pNum) => {
+                      const hasExtras =
+                        (portionExtras[pNum] || []).length > 0;
+                      const isActive = activePortionTab === pNum;
+                      return (
+                        <button
+                          key={pNum}
+                          type="button"
+                          onClick={() => setActivePortionTab(pNum)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition-all flex items-center gap-1 cursor-pointer ${
+                            isActive
+                              ? "bg-emerald-600 text-white shadow-sm"
+                              : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-100"
+                          }`}
+                        >
+                          Portion {pNum}
+                          {hasExtras && (
+                            <span
+                              className={`w-2 h-2 rounded-full ${
+                                isActive ? "bg-white" : "bg-emerald-500"
+                              }`}
+                            />
+                          )}
+                        </button>
+                      );
+                    },
+                  )}
+                </div>
+              )}
+
+              {/* Checkboxes for currently active portion */}
               <div className="flex flex-col gap-y-1.5">
                 {subMenuOptions.map((item, idx) => {
-                  const isSelected = selectedSubMenus.some(
+                  const currentExtras = portionExtras[activePortionTab] || [];
+                  const isSelected = currentExtras.some(
                     (s) => s.name === item.name,
                   );
                   return (
@@ -215,7 +332,9 @@ export default function FoodCheckoutModal({
                         <input
                           type="checkbox"
                           checked={isSelected}
-                          onChange={() => toggleSubMenu(item)}
+                          onChange={() =>
+                            toggleSubMenuForPortion(activePortionTab, item)
+                          }
                           className="w-4 h-4 rounded accent-emerald-600"
                         />
                         <span>{item.name}</span>
@@ -264,13 +383,17 @@ export default function FoodCheckoutModal({
           {/* Order Price Breakdown */}
           <div className="bg-gray-50 p-4 rounded-2xl border border-gray-200 flex flex-col gap-y-1.5 text-xs sm:text-sm">
             <div className="flex justify-between text-gray-600">
-              <span>Base Meal Price</span>
-              <span>₦{basePrice.toLocaleString()}</span>
+              <span>
+                Meal Price ({quantity} {quantity === 1 ? "portion" : "portions"})
+              </span>
+              <span>₦{totalBasePrice.toLocaleString()}</span>
             </div>
-            {extrasTotal > 0 && (
+            {totalExtrasPrice > 0 && (
               <div className="flex justify-between text-gray-600">
                 <span>Extras Total</span>
-                <span className="text-emerald-600">+₦{extrasTotal.toLocaleString()}</span>
+                <span className="text-emerald-600">
+                  +₦{totalExtrasPrice.toLocaleString()}
+                </span>
               </div>
             )}
             <div className="flex justify-between text-gray-600">

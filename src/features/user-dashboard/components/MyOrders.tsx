@@ -532,32 +532,44 @@ export default function MyOrders() {
                         0,
                     ).toLocaleString()}
                   </span>
-                  <span className="text-xs text-gray-400 font-medium">
-                    Qty: 1 Item
-                  </span>
+                  {(() => {
+                    const parsedSub = parseSubMenus(selectedOrder.sub_menus);
+                    const maxPortion = parsedSub.reduce(
+                      (max: number, item: any) =>
+                        Math.max(max, Number(item.portion || 1)),
+                      1,
+                    );
+                    return (
+                      <span className="text-xs text-gray-500 font-semibold bg-gray-100 px-2.5 py-0.5 rounded-full">
+                        {maxPortion > 1 ? `${maxPortion} Portions` : "1 Portion"}
+                      </span>
+                    );
+                  })()}
                 </div>
 
                 {/* Submenus / Extras */}
-                {parseSubMenus(selectedOrder.sub_menus).length > 0 && (
-                  <div className="mt-2.5 pt-2 border-t border-gray-100 space-y-1">
-                    <span className="text-xs font-semibold text-gray-600 block mb-1">
-                      Selected Extras:
-                    </span>
-                    {parseSubMenus(selectedOrder.sub_menus).map(
-                      (extra: any, i: number) => (
+                {(() => {
+                  const parsedSub = parseSubMenus(selectedOrder.sub_menus);
+                  if (parsedSub.length === 0) return null;
+                  return (
+                    <div className="mt-2 pt-2 border-t border-gray-100 space-y-1">
+                      <span className="text-xs font-semibold text-gray-600 block mb-1">
+                        Selected Extras:
+                      </span>
+                      {parsedSub.map((extra: any, i: number) => (
                         <div
                           key={i}
                           className="flex justify-between text-xs text-gray-700 font-medium"
                         >
-                          <span>+ {extra.name}</span>
-                          <span className="font-semibold text-gray-900">
+                          <span>+ {extra.name || extra.label}</span>
+                          <span className="font-semibold text-emerald-700">
                             ₦{Number(extra.price || 0).toLocaleString()}
                           </span>
                         </div>
-                      ),
-                    )}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
 

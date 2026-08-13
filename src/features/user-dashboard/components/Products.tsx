@@ -551,78 +551,6 @@ function Products() {
             </div>
           </div>
 
-          {/* Additional Food Fields */}
-          {formFields.product_type === "FOOD" && (
-            <div className="w-full bg-emerald-50/60 p-4 rounded-xl border border-emerald-100 flex flex-col gap-y-3">
-              <h4 className="text-sm font-bold text-global-green flex items-center gap-1.5">
-                <span>🍲</span> Prepared Food & Meal Options
-              </h4>
-              <SelectInput
-                isInput
-                label="Delivery Fee (₦)"
-                placeholder="Enter delivery fee (e.g. 1,000)"
-                value={formFields.delivery_fee}
-                setValue={(val) => {
-                  const numeric = val.replace(/\D/g, "");
-                  const formatted = numeric.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                  setFormFields({ ...formFields, delivery_fee: formatted });
-                }}
-              />
-              <div className="flex flex-col gap-y-2">
-                <label className="text-xs font-semibold text-gray-700">Sub-Menus / Extras (Optional)</label>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                  <div className="flex-1 min-w-0">
-                    <input
-                      type="text"
-                      placeholder="Extra Item (e.g., Fried Plantain)"
-                      value={newSubMenuName}
-                      onChange={(e) => setNewSubMenuName(e.target.value)}
-                      className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg outline-none focus:border-global-green focus:ring-1 focus:ring-global-green bg-white"
-                    />
-                  </div>
-                  <div className="w-full sm:w-28 shrink-0">
-                    <input
-                      type="text"
-                      placeholder="Price (₦)"
-                      value={newSubMenuPrice}
-                      onChange={(e) => setNewSubMenuPrice(e.target.value.replace(/\D/g, ""))}
-                      className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg outline-none focus:border-global-green focus:ring-1 focus:ring-global-green bg-white"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (newSubMenuName && newSubMenuPrice) {
-                        setSubMenus([...subMenus, { name: newSubMenuName, price: newSubMenuPrice }]);
-                        setNewSubMenuName("");
-                        setNewSubMenuPrice("");
-                      }
-                    }}
-                    className="w-full sm:w-auto shrink-0 px-4 py-2 bg-global-green text-white text-xs font-semibold rounded-lg hover:bg-emerald-600 transition-colors flex items-center justify-center cursor-pointer"
-                  >
-                    Add Extra
-                  </button>
-                </div>
-                {subMenus.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {subMenus.map((sm, idx) => (
-                      <span key={idx} className="inline-flex items-center gap-1.5 bg-white border border-emerald-200 text-xs font-medium px-2.5 py-1 rounded-full text-gray-800">
-                        {sm.name} (+₦{Number(sm.price).toLocaleString()})
-                        <button
-                          type="button"
-                          onClick={() => setSubMenus(subMenus.filter((_, i) => i !== idx))}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          &times;
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Additional Service Fields */}
           {formFields.product_type === "SERVICE" && (
             <div className="w-full bg-blue-50/60 p-4 rounded-xl border border-blue-100 flex flex-col gap-y-3">
@@ -710,6 +638,78 @@ function Products() {
               </div>
             )}
           </div>
+
+          {/* Additional Food Fields (Placed after Meal Name and Price) */}
+          {formFields.product_type === "FOOD" && (
+            <div className="w-full bg-emerald-50/60 p-4 rounded-xl border border-emerald-100 flex flex-col gap-y-3">
+              <h4 className="text-sm font-bold text-global-green flex items-center gap-1.5">
+                <span>🍲</span> Prepared Food & Meal Options
+              </h4>
+              <SelectInput
+                isInput
+                label="Delivery Fee (₦)"
+                placeholder="Enter delivery fee (e.g. 1,000)"
+                value={formFields.delivery_fee}
+                setValue={(val) => {
+                  const numeric = val.replace(/\D/g, "");
+                  const formatted = numeric.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                  setFormFields({ ...formFields, delivery_fee: formatted });
+                }}
+              />
+              <div className="flex flex-col gap-y-2">
+                <label className="text-xs font-semibold text-gray-700">Sub-Menus / Extras (Optional)</label>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <div className="flex-1 min-w-0">
+                    <input
+                      type="text"
+                      placeholder="Extra Item (e.g., Fried Plantain)"
+                      value={newSubMenuName}
+                      onChange={(e) => setNewSubMenuName(e.target.value)}
+                      className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg outline-none focus:border-global-green focus:ring-1 focus:ring-global-green bg-white"
+                    />
+                  </div>
+                  <div className="w-full sm:w-28 shrink-0">
+                    <input
+                      type="text"
+                      placeholder="Price (₦)"
+                      value={newSubMenuPrice}
+                      onChange={(e) => setNewSubMenuPrice(e.target.value.replace(/\D/g, ""))}
+                      className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg outline-none focus:border-global-green focus:ring-1 focus:ring-global-green bg-white"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (newSubMenuName && newSubMenuPrice) {
+                        setSubMenus([...subMenus, { name: newSubMenuName, price: newSubMenuPrice }]);
+                        setNewSubMenuName("");
+                        setNewSubMenuPrice("");
+                      }
+                    }}
+                    className="w-full sm:w-auto shrink-0 px-4 py-2 bg-global-green text-white text-xs font-semibold rounded-lg hover:bg-emerald-600 transition-colors flex items-center justify-center cursor-pointer"
+                  >
+                    Add Extra
+                  </button>
+                </div>
+                {subMenus.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {subMenus.map((sm, idx) => (
+                      <span key={idx} className="inline-flex items-center gap-1.5 bg-white border border-emerald-200 text-xs font-medium px-2.5 py-1 rounded-full text-gray-800">
+                        {sm.name} (+₦{Number(sm.price).toLocaleString()})
+                        <button
+                          type="button"
+                          onClick={() => setSubMenus(subMenus.filter((_, i) => i !== idx))}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          &times;
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Categories & Options */}
           <div className="w-full flex flex-col md:flex-row items-center gap-3 justify-between">
