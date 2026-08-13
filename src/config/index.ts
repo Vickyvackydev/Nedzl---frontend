@@ -5,8 +5,8 @@ import { reset } from "../state/slices/authReducer";
 // import { reset } from "../state/slices/authReducer";
 
 export const API = axios.create({
-  baseURL: "https://api.nedzl.com",
-  // baseURL: "http://localhost:8000",
+  // baseURL: "https://api.nedzl.com",
+  baseURL: "http://localhost:8000",
 });
 
 API.defaults.headers.common.Accept = "application/json";
