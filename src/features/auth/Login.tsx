@@ -157,6 +157,22 @@ function Login() {
         if (response?.data?.user?.role === "ADMIN") {
           navigate("/admin/overview");
         } else {
+          const pendingActionRaw = sessionStorage.getItem("pending_user_action");
+          if (pendingActionRaw) {
+            try {
+              const pendingAction = JSON.parse(pendingActionRaw);
+              if (pendingAction?.returnUrl) {
+                navigate(pendingAction.returnUrl, {
+                  replace: true,
+                  state: { restoredPendingAction: pendingAction },
+                });
+                reset();
+                return;
+              }
+            } catch (err) {
+              console.error("Failed to parse pending action:", err);
+            }
+          }
           navigate(redirectPath, { replace: true });
         }
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Modal from "./Modal";
 import Button from "./Button";
@@ -29,8 +29,31 @@ export default function FoodCheckoutModal({
   const [activePortionTab, setActivePortionTab] = useState<number>(1);
   const [customerPhone, setCustomerPhone] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
-  const [customerName] = useState("");
+  const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Restore saved pending draft on load/modal open
+  useEffect(() => {
+    if (!isOpen) return;
+    const pendingActionRaw = sessionStorage.getItem("pending_user_action");
+    if (pendingActionRaw) {
+      try {
+        const pendingAction = JSON.parse(pendingActionRaw);
+        if (pendingAction?.type === "FOOD_ORDER" && pendingAction?.payload) {
+          const p = pendingAction.payload;
+          if (p.quantity) setQuantity(p.quantity);
+          if (p.portionExtras) setPortionExtras(p.portionExtras);
+          if (p.deliveryAddress) setDeliveryAddress(p.deliveryAddress);
+          if (p.customerPhone) setCustomerPhone(p.customerPhone);
+          if (p.notes) setNotes(p.notes);
+          // Clear after restoring
+          sessionStorage.removeItem("pending_user_action");
+        }
+      } catch (err) {
+        console.error("Failed to restore pending food order draft:", err);
+      }
+    }
+  }, [isOpen]);
 
   if (!meal) return null;
 
@@ -105,6 +128,21 @@ export default function FoodCheckoutModal({
     const token = Store.getState().auths.token;
     if (!token) {
       toast.error("Please login or create an account to place a food order");
+      sessionStorage.setItem(
+        "pending_user_action",
+        JSON.stringify({
+          type: "FOOD_ORDER",
+          returnUrl: location.pathname + location.search,
+          payload: {
+            foodId: meal.id,
+            quantity,
+            portionExtras,
+            deliveryAddress,
+            customerPhone,
+            notes,
+          },
+        })
+      );
       onClose();
       navigate("/login", {
         state: { from: location.pathname + location.search },
@@ -140,7 +178,7 @@ export default function FoodCheckoutModal({
       const response = await createFoodOrder({
         product_id: meal.id,
         sub_menus: allSubMenusToSend,
-        customer_name: user?.user_name || customerName || "Customer",
+        customer_name: user?.user_name || "Customer",
         customer_phone: customerPhone,
         delivery_address: deliveryAddress,
         total_amount: grandTotal,

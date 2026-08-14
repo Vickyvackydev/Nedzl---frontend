@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Modal from "./Modal";
 import Button from "./Button";
@@ -28,6 +28,28 @@ export default function BookingCheckoutModal({
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Restore saved pending service booking draft on load/modal open
+  useEffect(() => {
+    if (!isOpen) return;
+    const pendingActionRaw = sessionStorage.getItem("pending_user_action");
+    if (pendingActionRaw) {
+      try {
+        const pendingAction = JSON.parse(pendingActionRaw);
+        if (pendingAction?.type === "SERVICE_BOOKING" && pendingAction?.payload) {
+          const p = pendingAction.payload;
+          if (p.scheduledDate) setScheduledDate(p.scheduledDate);
+          if (p.serviceAddress) setServiceAddress(p.serviceAddress);
+          if (p.customerPhone) setCustomerPhone(p.customerPhone);
+          if (p.notes) setNotes(p.notes);
+          // Clear after restoring
+          sessionStorage.removeItem("pending_user_action");
+        }
+      } catch (err) {
+        console.error("Failed to restore pending service booking draft:", err);
+      }
+    }
+  }, [isOpen]);
+
   if (!service) return null;
 
   const bookingFee = service.product_price || 0;
@@ -36,6 +58,20 @@ export default function BookingCheckoutModal({
     const token = Store.getState().auths.token;
     if (!token) {
       toast.error("Please login or create an account to book a service");
+      sessionStorage.setItem(
+        "pending_user_action",
+        JSON.stringify({
+          type: "SERVICE_BOOKING",
+          returnUrl: location.pathname + location.search,
+          payload: {
+            serviceId: service.id,
+            scheduledDate,
+            serviceAddress,
+            customerPhone,
+            notes,
+          },
+        })
+      );
       onClose();
       navigate("/login", { state: { from: location.pathname + location.search } });
       return;
