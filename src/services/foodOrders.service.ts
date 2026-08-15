@@ -35,3 +35,8 @@ export const updateFoodOrderStatus = async (
   });
   return response.data;
 };
+
+export const confirmFoodOrderDelivery = async (orderId: string) => {
+  const response = await API.post(`/food-orders/${orderId}/confirm-delivery`);
+  return response.data;
+};

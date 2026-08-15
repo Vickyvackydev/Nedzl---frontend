@@ -20,6 +20,7 @@ import {
   getUserFoodOrders,
   getVendorFoodOrders,
   updateFoodOrderStatus,
+  confirmFoodOrderDelivery,
 } from "../../../services/foodOrders.service";
 
 export default function MyOrders() {
@@ -27,10 +28,15 @@ export default function MyOrders() {
   const [sorting, setSorting] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const token = Store.getState().auths.token;
 
-  const { data: customerOrdersData, isLoading: isLoadingCustomer } = useQuery({
+  const {
+    data: customerOrdersData,
+    isLoading: isLoadingCustomer,
+    refetch: refetchCustomer,
+  } = useQuery({
     queryKey: ["customer-food-orders"],
     queryFn: () => getUserFoodOrders(),
     enabled: !!token && activeTab === "customer",
@@ -59,6 +65,26 @@ export default function MyOrders() {
       }
     } catch (err: any) {
       toast.error("Failed to update status");
+    }
+  };
+
+  const handleConfirmDelivery = async (orderId: string) => {
+    setIsConfirming(true);
+    try {
+      await confirmFoodOrderDelivery(orderId);
+      toast.success("Delivery confirmed successfully! Funds released to vendor.");
+      refetchCustomer();
+      if (selectedOrder && selectedOrder.id === orderId) {
+        setSelectedOrder({
+          ...selectedOrder,
+          status: "COMPLETED",
+          payment_status: "RELEASED_TO_VENDOR",
+        });
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to confirm delivery");
+    } finally {
+      setIsConfirming(false);
     }
   };
 
@@ -121,26 +147,70 @@ export default function MyOrders() {
     {
       header: "Status",
       accessorKey: "status",
-      cell: (info: any) => (
-        <span className="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-semibold">
-          {info.getValue()}
-        </span>
-      ),
+      cell: (info: any) => {
+        const status = info.getValue();
+        const paymentStatus = info.row.original?.payment_status;
+        const isDeliveredWaitingConfirmation =
+          (status === "DELIVERED" || status === "DELIVERED_BY_VENDOR") &&
+          paymentStatus !== "RELEASED_TO_VENDOR";
+
+        if (isDeliveredWaitingConfirmation) {
+          return (
+            <span className="bg-amber-100 text-amber-900 border border-amber-300 text-xs px-2.5 py-1 rounded-full font-bold">
+              Delivered (Awaiting Confirmation)
+            </span>
+          );
+        }
+
+        if (status === "COMPLETED" || paymentStatus === "RELEASED_TO_VENDOR") {
+          return (
+            <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs px-2.5 py-1 rounded-full font-bold flex items-center gap-1 w-fit">
+              <FiCheckCircle size={12} />
+              <span>Completed</span>
+            </span>
+          );
+        }
+
+        return (
+          <span className="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-semibold">
+            {status}
+          </span>
+        );
+      },
     },
     {
-      header: "Details",
-      cell: (info: any) => (
-        <button
-          onClick={() => {
-            setSelectedOrder(info.row.original);
-            setIsDetailsOpen(true);
-          }}
-          className="text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1 rounded-lg border border-emerald-200 transition-colors flex items-center gap-1"
-        >
-          <FiEye size={13} />
-          <span>Details</span>
-        </button>
-      ),
+      header: "Action",
+      cell: (info: any) => {
+        const order = info.row.original;
+        const isDeliveredWaitingConfirmation =
+          (order.status === "DELIVERED" || order.status === "DELIVERED_BY_VENDOR") &&
+          order.payment_status !== "RELEASED_TO_VENDOR";
+
+        return (
+          <div className="flex items-center gap-2">
+            {isDeliveredWaitingConfirmation && (
+              <button
+                onClick={() => handleConfirmDelivery(order.id)}
+                disabled={isConfirming}
+                className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1 rounded-lg shadow-xs transition-all flex items-center gap-1 cursor-pointer disabled:opacity-50"
+              >
+                <FiCheckCircle size={12} />
+                <span>Confirm</span>
+              </button>
+            )}
+            <button
+              onClick={() => {
+                setSelectedOrder(order);
+                setIsDetailsOpen(true);
+              }}
+              className="text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1 rounded-lg border border-emerald-200 transition-colors flex items-center gap-1"
+            >
+              <FiEye size={13} />
+              <span>Details</span>
+            </button>
+          </div>
+        );
+      },
     },
     {
       header: "Date",
@@ -508,6 +578,32 @@ export default function MyOrders() {
                 {selectedOrder.status || "Paid"}
               </span>
             </div>
+
+            {/* Customer Delivery Confirmation Banner */}
+            {activeTab === "customer" &&
+              (selectedOrder.status === "DELIVERED" ||
+                selectedOrder.status === "DELIVERED_BY_VENDOR") &&
+              selectedOrder.payment_status !== "RELEASED_TO_VENDOR" && (
+                <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl flex flex-col gap-2">
+                  <div className="flex items-center gap-2 text-amber-900 font-bold text-sm">
+                    <FiCheckCircle className="text-amber-600 w-5 h-5 flex-shrink-0" />
+                    <span>Food Delivered by Vendor</span>
+                  </div>
+                  <p className="text-xs text-amber-800">
+                    The vendor has marked your food order as delivered. Please confirm you have received your order so funds can be released to the vendor.
+                  </p>
+                  <button
+                    onClick={() => handleConfirmDelivery(selectedOrder.id)}
+                    disabled={isConfirming}
+                    className="mt-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  >
+                    <FiCheckCircle size={15} />
+                    <span>
+                      {isConfirming ? "Confirming..." : "Confirm Food Received"}
+                    </span>
+                  </button>
+                </div>
+              )}
 
             {/* Product Item Card */}
             <div className="flex items-start gap-3 py-3 border-t border-b border-gray-100">
