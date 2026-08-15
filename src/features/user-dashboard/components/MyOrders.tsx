@@ -72,7 +72,9 @@ export default function MyOrders() {
     setIsConfirming(true);
     try {
       await confirmFoodOrderDelivery(orderId);
-      toast.success("Delivery confirmed successfully! Funds released to vendor.");
+      toast.success(
+        "Delivery confirmed successfully! Funds released to vendor.",
+      );
       refetchCustomer();
       if (selectedOrder && selectedOrder.id === orderId) {
         setSelectedOrder({
@@ -183,7 +185,8 @@ export default function MyOrders() {
       cell: (info: any) => {
         const order = info.row.original;
         const isDeliveredWaitingConfirmation =
-          (order.status === "DELIVERED" || order.status === "DELIVERED_BY_VENDOR") &&
+          (order.status === "DELIVERED" ||
+            order.status === "DELIVERED_BY_VENDOR") &&
           order.payment_status !== "RELEASED_TO_VENDOR";
 
         return (
@@ -228,7 +231,7 @@ export default function MyOrders() {
       header: "Order #",
       accessorKey: "order_number",
       cell: (info: any) => (
-        <span className="font-mono text-xs font-bold text-gray-800">
+        <span className="font-mono text-sm font-bold text-gray-800">
           {info.getValue()}
         </span>
       ),
@@ -297,7 +300,7 @@ export default function MyOrders() {
           onChange={(e) =>
             handleUpdateStatus(info.row.original.id, e.target.value)
           }
-          className="text-xs border rounded-lg px-2 py-1 bg-white font-semibold outline-none focus:border-global-green"
+          className="text-xs border border-borderColor rounded-lg px-2 py-1 bg-white font-semibold outline-none focus:border-global-green"
         >
           <option value="PAID">PAID</option>
           <option value="PREPARING">PREPARING</option>
@@ -359,8 +362,12 @@ export default function MyOrders() {
         ) : customerOrders.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-2xl border border-gray-100 p-6 flex flex-col items-center gap-2">
             <span className="text-4xl">🍲</span>
-            <p className="text-sm font-semibold text-gray-700">No Food Orders Placed Yet</p>
-            <p className="text-xs text-gray-400">Order delicious food from local vendors on Nedzl!</p>
+            <p className="text-sm font-semibold text-gray-700">
+              No Food Orders Placed Yet
+            </p>
+            <p className="text-xs text-gray-400">
+              Order delicious food from local vendors on Nedzl!
+            </p>
           </div>
         ) : (
           <>
@@ -449,8 +456,12 @@ export default function MyOrders() {
       ) : vendorOrders.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-2xl border border-gray-100 p-6 flex flex-col items-center gap-2">
           <span className="text-4xl">👨‍🍳</span>
-          <p className="text-sm font-semibold text-gray-700">No Vendor Food Orders Received</p>
-          <p className="text-xs text-gray-400">Orders placed for your food items will appear here.</p>
+          <p className="text-sm font-semibold text-gray-700">
+            No Vendor Food Orders Received
+          </p>
+          <p className="text-xs text-gray-400">
+            Orders placed for your food items will appear here.
+          </p>
         </div>
       ) : (
         <>
@@ -494,7 +505,9 @@ export default function MyOrders() {
                       >
                         <option value="PAID">PAID</option>
                         <option value="PREPARING">PREPARING</option>
-                        <option value="OUT_FOR_DELIVERY">OUT FOR DELIVERY</option>
+                        <option value="OUT_FOR_DELIVERY">
+                          OUT FOR DELIVERY
+                        </option>
                         <option value="DELIVERED">DELIVERED</option>
                       </select>
                     </div>
@@ -590,7 +603,9 @@ export default function MyOrders() {
                     <span>Food Delivered by Vendor</span>
                   </div>
                   <p className="text-xs text-amber-800">
-                    The vendor has marked your food order as delivered. Please confirm you have received your order so funds can be released to the vendor.
+                    The vendor has marked your food order as delivered. Please
+                    confirm you have received your order so funds can be
+                    released to the vendor.
                   </p>
                   <button
                     onClick={() => handleConfirmDelivery(selectedOrder.id)}
@@ -637,7 +652,9 @@ export default function MyOrders() {
                     );
                     return (
                       <span className="text-xs text-gray-500 font-semibold bg-gray-100 px-2.5 py-0.5 rounded-full">
-                        {maxPortion > 1 ? `${maxPortion} Portions` : "1 Portion"}
+                        {maxPortion > 1
+                          ? `${maxPortion} Portions`
+                          : "1 Portion"}
                       </span>
                     );
                   })()}
