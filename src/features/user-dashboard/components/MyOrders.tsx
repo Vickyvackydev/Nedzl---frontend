@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Store } from "../../../state/store";
 import TableComponent from "../../../components/TableComponent";
@@ -55,13 +55,50 @@ export default function MyOrders() {
   const customerOrders = customerOrdersData?.data || [];
   const vendorOrders = vendorOrdersData?.data || [];
 
+  const [customerVisibleCount, setCustomerVisibleCount] = useState(8);
+  const [vendorVisibleCount, setVendorVisibleCount] = useState(8);
+
+  const displayedCustomerOrders = customerOrders.slice(0, customerVisibleCount);
+  const hasMoreCustomerOrders = customerOrders.length > customerVisibleCount;
+
+  const displayedVendorOrders = vendorOrders.slice(0, vendorVisibleCount);
+  const hasMoreVendorOrders = vendorOrders.length > vendorVisibleCount;
+
+  useEffect(() => {
+    setCustomerVisibleCount(8);
+    setVendorVisibleCount(8);
+  }, [activeTab]);
+
+  // Infinite Scroll Listener
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 300
+      ) {
+        if (activeTab === "customer" && hasMoreCustomerOrders) {
+          setCustomerVisibleCount((prev) => prev + 8);
+        } else if (activeTab === "vendor" && hasMoreVendorOrders) {
+          setVendorVisibleCount((prev) => prev + 8);
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [activeTab, hasMoreCustomerOrders, hasMoreVendorOrders]);
+
   const handleUpdateStatus = async (orderId: string, status: string) => {
     try {
       await updateFoodOrderStatus(orderId, status);
       toast.success(`Order status updated to ${status}`);
       refetchVendor();
       if (selectedOrder && selectedOrder.id === orderId) {
-        setSelectedOrder({ ...selectedOrder, status });
+        const newStatus =
+          status === "DELIVERED" || status === "DELIVERED_BY_VENDOR"
+            ? "DELIVERED_BY_VENDOR"
+            : status;
+        setSelectedOrder({ ...selectedOrder, status: newStatus });
       }
     } catch (err: any) {
       toast.error("Failed to update status");
@@ -374,7 +411,7 @@ export default function MyOrders() {
             {/* Desktop Table View */}
             <div className="hidden md:block">
               <TableComponent
-                DATA={customerOrders}
+                DATA={displayedCustomerOrders}
                 COLUMNS={customerColumns}
                 sorting={sorting}
                 setSorting={setSorting}
@@ -383,7 +420,7 @@ export default function MyOrders() {
 
             {/* Mobile Card View */}
             <div className="flex flex-col gap-3.5 md:hidden">
-              {customerOrders.map((order: any) => {
+              {displayedCustomerOrders.map((order: any) => {
                 const imageUrl =
                   order.product?.image_urls?.[0] ||
                   "https://nedzl.com/placeholder.png";
@@ -478,6 +515,22 @@ export default function MyOrders() {
                 );
               })}
             </div>
+
+            {/* Load More Pagination Banner */}
+            {hasMoreCustomerOrders && (
+              <div className="w-full flex flex-col items-center justify-center py-5 gap-2 border-t border-gray-100 mt-2">
+                <span className="text-xs text-gray-500 font-semibold">
+                  Showing {displayedCustomerOrders.length} of {customerOrders.length} food orders
+                </span>
+                <button
+                  onClick={() => setCustomerVisibleCount((prev) => prev + 8)}
+                  className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-extrabold px-5 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5 active:scale-95"
+                >
+                  <FiClock size={14} />
+                  <span>Load More Food Orders</span>
+                </button>
+              </div>
+            )}
           </>
         )
       ) : isLoadingVendor ? (
@@ -499,7 +552,7 @@ export default function MyOrders() {
           {/* Desktop Table View */}
           <div className="hidden md:block">
             <TableComponent
-              DATA={vendorOrders}
+              DATA={displayedVendorOrders}
               COLUMNS={vendorColumns}
               sorting={sorting}
               setSorting={setSorting}
@@ -508,7 +561,7 @@ export default function MyOrders() {
 
           {/* Mobile Card View */}
           <div className="flex flex-col gap-3.5 md:hidden">
-            {vendorOrders.map((order: any) => {
+            {displayedVendorOrders.map((order: any) => {
               const imageUrl =
                 order.product?.image_urls?.[0] ||
                 "https://nedzl.com/placeholder.png";
@@ -604,6 +657,22 @@ export default function MyOrders() {
             })}
           </div>
 
+          {/* Load More Pagination Banner */}
+          {hasMoreVendorOrders && (
+            <div className="w-full flex flex-col items-center justify-center py-5 gap-2 border-t border-gray-100 mt-2">
+              <span className="text-xs text-gray-500 font-semibold">
+                Showing {displayedVendorOrders.length} of {vendorOrders.length} vendor orders
+              </span>
+              <button
+                onClick={() => setVendorVisibleCount((prev) => prev + 8)}
+                className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-extrabold px-5 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5 active:scale-95"
+              >
+                <FiClock size={14} />
+                <span>Load More Vendor Orders</span>
+              </button>
+            </div>
+          )}
+
         </>
       )}
 
@@ -637,7 +706,13 @@ export default function MyOrders() {
                 </p>
               </div>
               <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-3 py-1 rounded-full font-bold">
-                {selectedOrder.status || "Paid"}
+                {selectedOrder.status === "DELIVERED_BY_VENDOR" ||
+                selectedOrder.status === "DELIVERED"
+                  ? "Delivered (Awaiting Confirmation)"
+                  : selectedOrder.status === "COMPLETED" ||
+                    selectedOrder.payment_status === "RELEASED_TO_VENDOR"
+                  ? "Completed"
+                  : selectedOrder.status || "Paid"}
               </span>
             </div>
 
@@ -877,7 +952,10 @@ export default function MyOrders() {
                   <div className="absolute -left-6 bg-white">
                     {selectedOrder.status === "PREPARING" ||
                     selectedOrder.status === "OUT_FOR_DELIVERY" ||
-                    selectedOrder.status === "DELIVERED" ? (
+                    selectedOrder.status === "DELIVERED" ||
+                    selectedOrder.status === "DELIVERED_BY_VENDOR" ||
+                    selectedOrder.status === "COMPLETED" ||
+                    selectedOrder.payment_status === "RELEASED_TO_VENDOR" ? (
                       <FiCheckCircle className="text-emerald-500 w-5 h-5 bg-white rounded-full" />
                     ) : (
                       <FiClock className="text-gray-300 w-5 h-5 bg-white rounded-full" />
@@ -887,7 +965,10 @@ export default function MyOrders() {
                     className={
                       selectedOrder.status === "PREPARING" ||
                       selectedOrder.status === "OUT_FOR_DELIVERY" ||
-                      selectedOrder.status === "DELIVERED"
+                      selectedOrder.status === "DELIVERED" ||
+                      selectedOrder.status === "DELIVERED_BY_VENDOR" ||
+                      selectedOrder.status === "COMPLETED" ||
+                      selectedOrder.payment_status === "RELEASED_TO_VENDOR"
                         ? "font-medium text-gray-900"
                         : "text-gray-400"
                     }
@@ -895,12 +976,22 @@ export default function MyOrders() {
                     Order in Progress
                   </span>
                   <span className="text-gray-400">
-                    {selectedOrder.status === "PREPARING" ? "Current" : ""}
+                    {selectedOrder.status === "PREPARING" ||
+                    selectedOrder.status === "OUT_FOR_DELIVERY"
+                      ? "In Progress"
+                      : selectedOrder.status === "DELIVERED" ||
+                        selectedOrder.status === "DELIVERED_BY_VENDOR" ||
+                        selectedOrder.status === "COMPLETED"
+                      ? "Completed"
+                      : ""}
                   </span>
                 </div>
                 <div className="relative flex items-center justify-between text-xs">
                   <div className="absolute -left-6 bg-white">
-                    {selectedOrder.status === "DELIVERED" ? (
+                    {selectedOrder.status === "DELIVERED" ||
+                    selectedOrder.status === "DELIVERED_BY_VENDOR" ||
+                    selectedOrder.status === "COMPLETED" ||
+                    selectedOrder.payment_status === "RELEASED_TO_VENDOR" ? (
                       <FiCheckCircle className="text-emerald-500 w-5 h-5 bg-white rounded-full" />
                     ) : (
                       <FiClock className="text-gray-300 w-5 h-5 bg-white rounded-full" />
@@ -908,7 +999,10 @@ export default function MyOrders() {
                   </div>
                   <span
                     className={
-                      selectedOrder.status === "DELIVERED"
+                      selectedOrder.status === "DELIVERED" ||
+                      selectedOrder.status === "DELIVERED_BY_VENDOR" ||
+                      selectedOrder.status === "COMPLETED" ||
+                      selectedOrder.payment_status === "RELEASED_TO_VENDOR"
                         ? "font-medium text-gray-900"
                         : "text-gray-400"
                     }
@@ -916,7 +1010,13 @@ export default function MyOrders() {
                     Delivered & Payout Released
                   </span>
                   <span className="text-gray-400">
-                    {selectedOrder.status === "DELIVERED" ? "Completed" : ""}
+                    {selectedOrder.status === "COMPLETED" ||
+                    selectedOrder.payment_status === "RELEASED_TO_VENDOR"
+                      ? "Completed"
+                      : selectedOrder.status === "DELIVERED" ||
+                        selectedOrder.status === "DELIVERED_BY_VENDOR"
+                      ? "Delivered"
+                      : ""}
                   </span>
                 </div>
               </div>

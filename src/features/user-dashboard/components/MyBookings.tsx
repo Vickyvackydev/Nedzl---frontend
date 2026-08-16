@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Store } from "../../../state/store";
 import TableComponent from "../../../components/TableComponent";
@@ -54,6 +54,39 @@ export default function MyBookings() {
 
   const customerBookings = customerBookingsData?.data || [];
   const artisanBookings = artisanBookingsData?.data || [];
+
+  const [customerVisibleCount, setCustomerVisibleCount] = useState(8);
+  const [artisanVisibleCount, setArtisanVisibleCount] = useState(8);
+
+  const displayedCustomerBookings = customerBookings.slice(0, customerVisibleCount);
+  const hasMoreCustomerBookings = customerBookings.length > customerVisibleCount;
+
+  const displayedArtisanBookings = artisanBookings.slice(0, artisanVisibleCount);
+  const hasMoreArtisanBookings = artisanBookings.length > artisanVisibleCount;
+
+  useEffect(() => {
+    setCustomerVisibleCount(8);
+    setArtisanVisibleCount(8);
+  }, [activeTab]);
+
+  // Infinite Scroll Listener
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 300
+      ) {
+        if (activeTab === "customer" && hasMoreCustomerBookings) {
+          setCustomerVisibleCount((prev) => prev + 8);
+        } else if (activeTab === "artisan" && hasMoreArtisanBookings) {
+          setArtisanVisibleCount((prev) => prev + 8);
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [activeTab, hasMoreCustomerBookings, hasMoreArtisanBookings]);
 
   const handleArtisanComplete = async (bookingId: string) => {
     try {
@@ -345,7 +378,7 @@ export default function MyBookings() {
             {/* Desktop Table View */}
             <div className="hidden md:block">
               <TableComponent
-                DATA={customerBookings}
+                DATA={displayedCustomerBookings}
                 COLUMNS={customerColumns}
                 sorting={sorting}
                 setSorting={setSorting}
@@ -354,7 +387,7 @@ export default function MyBookings() {
 
             {/* Mobile Card View */}
             <div className="flex flex-col gap-3.5 md:hidden">
-              {customerBookings.map((booking: any) => {
+              {displayedCustomerBookings.map((booking: any) => {
                 const imageUrl =
                   booking.service?.image_urls?.[0] ||
                   "https://nedzl.com/placeholder.png";
@@ -451,6 +484,22 @@ export default function MyBookings() {
                 );
               })}
             </div>
+
+            {/* Load More Pagination Banner */}
+            {hasMoreCustomerBookings && (
+              <div className="w-full flex flex-col items-center justify-center py-5 gap-2 border-t border-gray-100 mt-2">
+                <span className="text-xs text-gray-500 font-semibold">
+                  Showing {displayedCustomerBookings.length} of {customerBookings.length} service bookings
+                </span>
+                <button
+                  onClick={() => setCustomerVisibleCount((prev) => prev + 8)}
+                  className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-extrabold px-5 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5 active:scale-95"
+                >
+                  <FiClock size={14} />
+                  <span>Load More Service Bookings</span>
+                </button>
+              </div>
+            )}
           </>
         )
       ) : isLoadingArtisan ? (
@@ -468,7 +517,7 @@ export default function MyBookings() {
           {/* Desktop Table View */}
           <div className="hidden md:block">
             <TableComponent
-              DATA={artisanBookings}
+              DATA={displayedArtisanBookings}
               COLUMNS={artisanColumns}
               sorting={sorting}
               setSorting={setSorting}
@@ -477,7 +526,7 @@ export default function MyBookings() {
 
           {/* Mobile Card View */}
           <div className="flex flex-col gap-3.5 md:hidden">
-            {artisanBookings.map((booking: any) => {
+            {displayedArtisanBookings.map((booking: any) => {
               const imageUrl =
                 booking.service?.image_urls?.[0] ||
                 "https://nedzl.com/placeholder.png";
@@ -572,6 +621,22 @@ export default function MyBookings() {
               );
             })}
           </div>
+
+          {/* Load More Pagination Banner */}
+          {hasMoreArtisanBookings && (
+            <div className="w-full flex flex-col items-center justify-center py-5 gap-2 border-t border-gray-100 mt-2">
+              <span className="text-xs text-gray-500 font-semibold">
+                Showing {displayedArtisanBookings.length} of {artisanBookings.length} artisan jobs
+              </span>
+              <button
+                onClick={() => setArtisanVisibleCount((prev) => prev + 8)}
+                className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-extrabold px-5 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5 active:scale-95"
+              >
+                <FiClock size={14} />
+                <span>Load More Artisan Jobs</span>
+              </button>
+            </div>
+          )}
         </>
       )}
 
@@ -605,7 +670,12 @@ export default function MyBookings() {
                 </p>
               </div>
               <span className="bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs px-3 py-1 rounded-full font-bold">
-                {selectedBooking.status || "Booked"}
+                {selectedBooking.status === "ARTISAN_COMPLETED"
+                  ? "Artisan Completed (Awaiting Confirmation)"
+                  : selectedBooking.status === "COMPLETED" ||
+                    selectedBooking.payment_status === "RELEASED_TO_ARTISAN"
+                  ? "Completed"
+                  : selectedBooking.status || "Booked"}
               </span>
             </div>
 
