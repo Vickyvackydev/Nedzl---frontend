@@ -387,6 +387,13 @@ export default function MyOrders() {
                 const imageUrl =
                   order.product?.image_urls?.[0] ||
                   "https://nedzl.com/placeholder.png";
+                const isDeliveredWaitingConfirmation =
+                  (order.status === "DELIVERED" ||
+                    order.status === "DELIVERED_BY_VENDOR") &&
+                  order.payment_status !== "RELEASED_TO_VENDOR";
+                const isCompleted =
+                  order.status === "COMPLETED" ||
+                  order.payment_status === "RELEASED_TO_VENDOR";
 
                 return (
                   <div
@@ -401,9 +408,19 @@ export default function MyOrders() {
                       <span className="font-mono text-xs font-bold text-gray-900">
                         #{order.order_number}
                       </span>
-                      <span className="bg-emerald-100 text-emerald-800 text-[11px] px-2.5 py-0.5 rounded-full font-bold">
-                        {order.status || "PAID"}
-                      </span>
+                      {isDeliveredWaitingConfirmation ? (
+                        <span className="bg-amber-100 text-amber-900 border border-amber-300 text-[11px] px-2.5 py-0.5 rounded-full font-bold animate-pulse">
+                          Delivered (Awaiting Confirmation)
+                        </span>
+                      ) : isCompleted ? (
+                        <span className="bg-emerald-100 text-emerald-800 text-[11px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1">
+                          <FiCheckCircle size={11} /> Completed
+                        </span>
+                      ) : (
+                        <span className="bg-emerald-100 text-emerald-800 text-[11px] px-2.5 py-0.5 rounded-full font-bold">
+                          {order.status || "PAID"}
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -427,17 +444,31 @@ export default function MyOrders() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
-                      <span className="text-gray-400">
-                        {moment(order.created_at).format("MMM DD, YYYY")}
-                      </span>
+                    <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs gap-2">
+                      {isDeliveredWaitingConfirmation ? (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleConfirmDelivery(order.id);
+                          }}
+                          disabled={isConfirming}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition-all flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                        >
+                          <FiCheckCircle size={13} />
+                          <span>{isConfirming ? "Confirming..." : "Confirm Food Received"}</span>
+                        </button>
+                      ) : (
+                        <span className="text-gray-400">
+                          {moment(order.created_at).format("MMM DD, YYYY")}
+                        </span>
+                      )}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedOrder(order);
                           setIsDetailsOpen(true);
                         }}
-                        className="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center gap-1 active:scale-95"
+                        className="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center gap-1 active:scale-95 flex-shrink-0"
                       >
                         <FiEye size={13} />
                         <span>View Details</span>
@@ -481,6 +512,10 @@ export default function MyOrders() {
               const imageUrl =
                 order.product?.image_urls?.[0] ||
                 "https://nedzl.com/placeholder.png";
+              const isAlreadyDelivered =
+                order.status === "DELIVERED" ||
+                order.status === "DELIVERED_BY_VENDOR" ||
+                order.status === "COMPLETED";
 
               return (
                 <div
@@ -535,17 +570,30 @@ export default function MyOrders() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
-                    <span className="text-gray-400">
-                      {moment(order.created_at).format("MMM DD, YYYY")}
-                    </span>
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs gap-2">
+                    {!isAlreadyDelivered ? (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUpdateStatus(order.id, "DELIVERED");
+                        }}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition-all flex items-center gap-1 cursor-pointer"
+                      >
+                        <FiCheckCircle size={13} />
+                        <span>Mark Delivered</span>
+                      </button>
+                    ) : (
+                      <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                        <FiCheckCircle size={12} /> Delivered
+                      </span>
+                    )}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedOrder(order);
                         setIsDetailsOpen(true);
                       }}
-                      className="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center gap-1 active:scale-95"
+                      className="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center gap-1 active:scale-95 flex-shrink-0"
                     >
                       <FiEye size={13} />
                       <span>View Details</span>
@@ -555,6 +603,7 @@ export default function MyOrders() {
               );
             })}
           </div>
+
         </>
       )}
 

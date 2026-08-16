@@ -358,6 +358,8 @@ export default function MyBookings() {
                 const imageUrl =
                   booking.service?.image_urls?.[0] ||
                   "https://nedzl.com/placeholder.png";
+                const isArtisanCompleted = booking.status === "ARTISAN_COMPLETED";
+                const isCompleted = booking.status === "COMPLETED";
 
                 return (
                   <div
@@ -372,17 +374,23 @@ export default function MyBookings() {
                       <span className="font-mono text-xs font-bold text-gray-900">
                         #{booking.booking_number}
                       </span>
-                      <span
-                        className={`text-[11px] px-2.5 py-0.5 rounded-full font-bold ${
-                          booking.payment_status === "RELEASED_TO_ARTISAN"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-amber-100 text-amber-800"
-                        }`}
-                      >
-                        {booking.payment_status === "RELEASED_TO_ARTISAN"
-                          ? "RELEASED"
-                          : "ESCROW HELD"}
-                      </span>
+                      {isArtisanCompleted ? (
+                        <span className="bg-amber-100 text-amber-900 border border-amber-300 text-[11px] px-2.5 py-0.5 rounded-full font-bold animate-pulse">
+                          Artisan Completed (Action Needed)
+                        </span>
+                      ) : (
+                        <span
+                          className={`text-[11px] px-2.5 py-0.5 rounded-full font-bold ${
+                            booking.payment_status === "RELEASED_TO_ARTISAN" || isCompleted
+                              ? "bg-green-100 text-green-800"
+                              : "bg-amber-100 text-amber-800"
+                          }`}
+                        >
+                          {booking.payment_status === "RELEASED_TO_ARTISAN" || isCompleted
+                            ? "RELEASED"
+                            : "ESCROW HELD"}
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -409,8 +417,8 @@ export default function MyBookings() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
-                      {booking.status === "COMPLETED" ? (
+                    <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs gap-2">
+                      {isCompleted ? (
                         <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
                           <FiCheckCircle /> Completed
                         </span>
@@ -420,9 +428,10 @@ export default function MyBookings() {
                             e.stopPropagation();
                             handleCustomerComplete(booking.id);
                           }}
-                          className="bg-global-green hover:bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs"
+                          className="bg-global-green hover:bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs flex items-center gap-1 cursor-pointer"
                         >
-                          Mark as Completed
+                          <FiCheckCircle size={13} />
+                          <span>{isArtisanCompleted ? "Confirm Completed" : "Mark as Completed"}</span>
                         </button>
                       )}
 
@@ -432,7 +441,7 @@ export default function MyBookings() {
                           setSelectedBooking(booking);
                           setIsDetailsOpen(true);
                         }}
-                        className="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200 flex items-center gap-1 active:scale-95"
+                        className="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200 flex items-center gap-1 active:scale-95 flex-shrink-0"
                       >
                         <FiEye size={13} />
                         <span>Details</span>
@@ -472,6 +481,8 @@ export default function MyBookings() {
               const imageUrl =
                 booking.service?.image_urls?.[0] ||
                 "https://nedzl.com/placeholder.png";
+              const isArtisanCompleted = booking.status === "ARTISAN_COMPLETED";
+              const isCompleted = booking.status === "COMPLETED";
 
               return (
                 <div
@@ -488,12 +499,14 @@ export default function MyBookings() {
                     </span>
                     <span
                       className={`text-[11px] px-2.5 py-0.5 rounded-full font-bold ${
-                        booking.status === "COMPLETED"
+                        isCompleted
                           ? "bg-green-100 text-green-800"
+                          : isArtisanCompleted
+                          ? "bg-amber-100 text-amber-800"
                           : "bg-blue-100 text-blue-800"
                       }`}
                     >
-                      {booking.status}
+                      {isArtisanCompleted ? "AWAITING CUSTOMER" : booking.status}
                     </span>
                   </div>
 
@@ -521,10 +534,14 @@ export default function MyBookings() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
-                    {booking.status === "COMPLETED" ? (
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs gap-2">
+                    {isCompleted ? (
                       <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
-                        <FiCheckCircle /> Completed
+                        <FiCheckCircle /> Completed & Paid
+                      </span>
+                    ) : isArtisanCompleted ? (
+                      <span className="text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-1 rounded-lg">
+                        Awaiting Customer / 24h Auto-Release
                       </span>
                     ) : (
                       <button
@@ -532,9 +549,10 @@ export default function MyBookings() {
                           e.stopPropagation();
                           handleArtisanComplete(booking.id);
                         }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs"
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs flex items-center gap-1 cursor-pointer"
                       >
-                        Mark Completed
+                        <FiCheckCircle size={13} />
+                        <span>Mark Completed</span>
                       </button>
                     )}
 
@@ -544,7 +562,7 @@ export default function MyBookings() {
                         setSelectedBooking(booking);
                         setIsDetailsOpen(true);
                       }}
-                      className="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200 flex items-center gap-1 active:scale-95"
+                      className="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200 flex items-center gap-1 active:scale-95 flex-shrink-0"
                     >
                       <FiEye size={13} />
                       <span>Details</span>
@@ -590,6 +608,61 @@ export default function MyBookings() {
                 {selectedBooking.status || "Booked"}
               </span>
             </div>
+
+            {/* Customer Completion Action Banner */}
+            {activeTab === "customer" && selectedBooking.status !== "COMPLETED" && (
+              <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-xl flex flex-col gap-2">
+                <div className="flex items-center gap-2 text-emerald-900 font-bold text-sm">
+                  <FiCheckCircle className="text-emerald-600 w-5 h-5 flex-shrink-0" />
+                  <span>
+                    {selectedBooking.status === "ARTISAN_COMPLETED"
+                      ? "Artisan Marked Service as Completed"
+                      : "Confirm Service Completion"}
+                  </span>
+                </div>
+                <p className="text-xs text-emerald-800">
+                  {selectedBooking.status === "ARTISAN_COMPLETED"
+                    ? "The artisan has completed your service. Please confirm to release payment immediately to the artisan."
+                    : "Has the artisan completed your requested service? Confirming will release payment to the artisan."}
+                </p>
+                <button
+                  onClick={async () => {
+                    await handleCustomerComplete(selectedBooking.id);
+                    setIsDetailsOpen(false);
+                  }}
+                  className="mt-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <FiCheckCircle size={15} />
+                  <span>Confirm Service Completed</span>
+                </button>
+              </div>
+            )}
+
+            {/* Artisan Completion Action Banner */}
+            {activeTab === "artisan" &&
+              selectedBooking.status !== "COMPLETED" &&
+              selectedBooking.status !== "ARTISAN_COMPLETED" && (
+                <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl flex flex-col gap-2">
+                  <div className="flex items-center gap-2 text-blue-900 font-bold text-sm">
+                    <FiCheckCircle className="text-blue-600 w-5 h-5 flex-shrink-0" />
+                    <span>Mark Service as Completed</span>
+                  </div>
+                  <p className="text-xs text-blue-800">
+                    Finished providing this service to the customer? Click below to mark it as completed so the customer can confirm and release your payout.
+                  </p>
+                  <button
+                    onClick={async () => {
+                      await handleArtisanComplete(selectedBooking.id);
+                      setIsDetailsOpen(false);
+                    }}
+                    className="mt-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <FiCheckCircle size={15} />
+                    <span>Mark Service Completed</span>
+                  </button>
+                </div>
+              )}
+
 
             {/* Service Item Card */}
             <div className="flex items-start gap-3 py-3 border-t border-b border-gray-100">
