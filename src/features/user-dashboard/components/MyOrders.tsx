@@ -329,6 +329,37 @@ export default function MyOrders() {
       ),
     },
     {
+      header: "Payout Status",
+      cell: (info: any) => {
+        const order = info.row.original;
+        const isReleased =
+          order.status === "COMPLETED" ||
+          order.payment_status === "RELEASED_TO_VENDOR";
+
+        if (!isReleased) {
+          return (
+            <span className="text-[11px] font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+              Escrow Held
+            </span>
+          );
+        }
+
+        if (order.payout_transfer_ref) {
+          return (
+            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full flex items-center gap-1 w-fit">
+              <FiCheckCircle size={11} /> Transferred
+            </span>
+          );
+        }
+
+        return (
+          <span className="text-[11px] font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2.5 py-0.5 rounded-full flex items-center gap-1 w-fit" title="Paystack clearance in progress. Payout will land in bank account within 24 hours.">
+            <FiClock size={11} /> Processing (24h)
+          </span>
+        );
+      },
+    },
+    {
       header: "Status",
       accessorKey: "status",
       cell: (info: any) => (
@@ -919,6 +950,56 @@ export default function MyOrders() {
                 )}
               </div>
             )}
+
+            {/* Payout Transfer Status Banner for Vendor */}
+            {activeTab === "vendor" &&
+              (selectedOrder.status === "COMPLETED" ||
+                selectedOrder.payment_status === "RELEASED_TO_VENDOR") && (
+                <div
+                  className={`p-4 rounded-xl border flex items-start gap-2.5 text-xs ${
+                    selectedOrder.payout_transfer_ref
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-900"
+                      : "bg-amber-50 border-amber-200 text-amber-900"
+                  }`}
+                >
+                  {selectedOrder.payout_transfer_ref ? (
+                    <>
+                      <FiCheckCircle className="text-emerald-600 w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold block text-sm text-emerald-950 mb-0.5">
+                          Payout Status: Bank Transfer Completed
+                        </span>
+                        <span className="text-emerald-800">
+                          Your 90% payout of ₦
+                          {Number(
+                            selectedOrder.vendor_payout || 0,
+                          ).toLocaleString()}{" "}
+                          has been transferred to your bank account via Paystack
+                          (Ref: {selectedOrder.payout_transfer_ref}).
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <FiClock className="text-amber-600 w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold block text-sm text-amber-950 mb-0.5">
+                          Payout Status: Processing (Within 24 Hours)
+                        </span>
+                        <span className="text-amber-800">
+                          Delivery confirmed! Your 90% payout of ₦
+                          {Number(
+                            selectedOrder.vendor_payout || 0,
+                          ).toLocaleString()}{" "}
+                          has been released. Paystack clearance is in progress
+                          and funds will land in your registered bank account
+                          within 24 hours.
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
 
             {/* Timeline Order Section (Matching Screenshot) */}
             <div className="pt-2">

@@ -302,6 +302,37 @@ export default function MyBookings() {
       ),
     },
     {
+      header: "Payout Status",
+      cell: (info: any) => {
+        const booking = info.row.original;
+        const isReleased =
+          booking.status === "COMPLETED" ||
+          booking.payment_status === "RELEASED_TO_ARTISAN";
+
+        if (!isReleased) {
+          return (
+            <span className="text-[11px] font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+              Escrow Held
+            </span>
+          );
+        }
+
+        if (booking.payout_transfer_ref) {
+          return (
+            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full flex items-center gap-1 w-fit">
+              <FiCheckCircle size={11} /> Transferred
+            </span>
+          );
+        }
+
+        return (
+          <span className="text-[11px] font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2.5 py-0.5 rounded-full flex items-center gap-1 w-fit" title="Paystack clearance in progress. Payout will land in bank account within 24 hours.">
+            <FiClock size={11} /> Processing (24h)
+          </span>
+        );
+      },
+    },
+    {
       header: "Action",
       cell: (info: any) => {
         const status = info.row.original.status;
@@ -309,7 +340,7 @@ export default function MyBookings() {
         if (status === "COMPLETED") {
           return (
             <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
-              <FiCheckCircle /> Completed & Paid
+              <FiCheckCircle /> Completed
             </span>
           );
         }
@@ -875,6 +906,56 @@ export default function MyBookings() {
                 )}
               </div>
             )}
+
+            {/* Payout Transfer Status Banner for Artisan */}
+            {activeTab === "artisan" &&
+              (selectedBooking.status === "COMPLETED" ||
+                selectedBooking.payment_status === "RELEASED_TO_ARTISAN") && (
+                <div
+                  className={`p-4 rounded-xl border flex items-start gap-2.5 text-xs ${
+                    selectedBooking.payout_transfer_ref
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-900"
+                      : "bg-amber-50 border-amber-200 text-amber-900"
+                  }`}
+                >
+                  {selectedBooking.payout_transfer_ref ? (
+                    <>
+                      <FiCheckCircle className="text-emerald-600 w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold block text-sm text-emerald-950 mb-0.5">
+                          Payout Status: Bank Transfer Completed
+                        </span>
+                        <span className="text-emerald-800">
+                          Your 90% payout of ₦
+                          {Number(
+                            selectedBooking.artisan_payout || 0,
+                          ).toLocaleString()}{" "}
+                          has been transferred to your bank account via Paystack
+                          (Ref: {selectedBooking.payout_transfer_ref}).
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <FiClock className="text-amber-600 w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold block text-sm text-amber-950 mb-0.5">
+                          Payout Status: Processing (Within 24 Hours)
+                        </span>
+                        <span className="text-amber-800">
+                          Booking completed! Your 90% payout of ₦
+                          {Number(
+                            selectedBooking.artisan_payout || 0,
+                          ).toLocaleString()}{" "}
+                          has been released. Paystack clearance is in progress
+                          and funds will land in your registered bank account
+                          within 24 hours.
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
 
             {/* Timeline Booking Section (Matching Screenshot) */}
             <div className="pt-2">
