@@ -22,7 +22,7 @@ import {
 } from "../../../constant";
 import imageCompression from "browser-image-compression";
 
-import { FiEdit2, FiSearch, FiX } from "react-icons/fi";
+import { FiEdit2, FiSearch, FiTag, FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
 import FullScreenLoader from "../../../components/FullScreenLoader";
 import { ProductType } from "../../../types";
@@ -33,11 +33,12 @@ import {
   updateProductStatus,
   uploadProduct,
 } from "../../../services/product.service";
+import { getUserProfile } from "../../../services/auth.service";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
 import { formatText } from "../../../utils";
 import Modal from "../../../components/Modal";
-import { Ban } from "lucide-react";
+import { AlertTriangle, Ban, Zap } from "lucide-react";
 import { sanitizeRichText } from "../../../utils/sanitize";
 
 type Tabs = "active" | "closed" | "reviewed";
@@ -65,6 +66,23 @@ function Products() {
   const [images, setImages] = useState<File[]>([]);
   const maxImages = 5;
   const [loading, setLoading] = useState(false);
+
+  const [uploadMode, setUploadMode] = useState<"quick" | "full">("quick");
+  const [userEmail, setUserEmail] = useState("");
+  const [userPhone, setUserPhone] = useState("");
+
+  const { data: userProfile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: getUserProfile,
+  });
+  const user = userProfile?.data?.user;
+
+  useEffect(() => {
+    if (user) {
+      if (!userEmail) setUserEmail(user.email || "");
+      if (!userPhone) setUserPhone(user.phone_number || "");
+    }
+  }, [user]);
 
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [formFields, setFormFields] = useState({
@@ -167,11 +185,15 @@ function Products() {
     const selectedFiles = Array.from(e.target.files);
 
     const validFiles = selectedFiles.filter(
-      (file) => file.type === "image/jpeg" || file.type === "image/jpg",
+      (file) =>
+        file.type === "image/jpeg" ||
+        file.type === "image/jpg" ||
+        file.type === "image/png" ||
+        file.type === "image/webp",
     );
 
     if (validFiles.length < selectedFiles.length) {
-      toast.error("Only JPG/JPEG images are allowed");
+      toast.error("Only JPG, PNG, or WEBP images are allowed");
       if (validFiles.length === 0) return;
     }
 
@@ -270,7 +292,14 @@ function Products() {
 
   const handleCreateProduct = async () => {
     // Type-specific required fields validation
-    if (formFields.product_type === "FOOD") {
+    if (formFields.product_type === "MARKET" && uploadMode === "quick") {
+      if (!userPhone.trim()) { toast.error("Phone number is required"); return; }
+      if (!formFields.product_name) { toast.error("Product Title is required"); return; }
+      if (!formFields.product_price) { toast.error("Price is required"); return; }
+      if (!formFields.category_name) { toast.error("Category is required"); return; }
+      if (!formFields.description) { toast.error("Description is required"); return; }
+      if (totalImagesCount < 1) { toast.error("Please upload at least 1 photo of your product"); return; }
+    } else if (formFields.product_type === "FOOD") {
       if (!formFields.product_name) { toast.error("Meal Name is required"); return; }
       if (!formFields.product_price) { toast.error("Price is required"); return; }
       if (!formFields.category_name) { toast.error("Category is required"); return; }
@@ -287,7 +316,7 @@ function Products() {
       if (!formFields.description) { toast.error("Service Description is required"); return; }
       if (totalImagesCount < 1) { toast.error("Please upload at least 1 portfolio photo"); return; }
     } else {
-      // Standard Market Product Validation
+      // Standard Market Product Validation (Full Upload Mode)
       const requiredFields = [
         { key: "product_name", label: "Product Name" },
         { key: "product_price", label: "Product Price" },
@@ -324,11 +353,11 @@ function Products() {
     }
 
     setIsCreatingProduct(true);
-    const allowedTypes = ["image/jpeg", "image/png"];
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
     for (const file of images) {
       if (!allowedTypes.includes(file.type)) {
-        toast.error("Only JPEG and PNG images are allowed");
+        toast.error("Only JPEG, PNG, or WEBP images are allowed");
         setIsCreatingProduct(false);
         return;
       }
@@ -344,18 +373,18 @@ function Products() {
     formData.append("market_price_from", priceFromNum as any);
     formData.append("market_price_to", priceToNum as any);
     formData.append("category_name", formFields.category_name);
-    formData.append("condition", formFields.condition || (formFields.product_type === "FOOD" ? "Fresh" : "Professional"));
+    formData.append("condition", formFields.condition || (formFields.product_type === "FOOD" ? "Fresh" : "NEW"));
     formData.append("description", sanitizeRichText(formFields.description));
     formData.append(
       "is_negotiable",
-      formFields.is_negotiable === "yes" || formFields.is_negotiable === "Yes"
-        ? "true"
-        : "false",
+      formFields.is_negotiable === "no" || formFields.is_negotiable === "No" || formFields.is_negotiable === "false"
+        ? "false"
+        : "true",
     );
-    formData.append("state", formFields.state);
-    formData.append("address_in_state", formFields.address_in_state);
+    formData.append("state", formFields.state || "Enugu");
+    formData.append("address_in_state", formFields.address_in_state || user?.location || "Main Campus");
     formData.append("outstanding_issues", formFields.outstanding_issues || "None");
-    formData.append("brand_name", formFields.brand_name || (formFields.product_type === "FOOD" ? "Vendor Special" : "Artisan Service"));
+    formData.append("brand_name", formFields.brand_name || (formFields.product_type === "FOOD" ? "Vendor Special" : formFields.product_type === "SERVICE" ? "Artisan Service" : "N/A"));
     formData.append("university", formFields.university || "N/A");
     formData.append("product_type", formFields.product_type);
     formData.append("delivery_fee", formFields.delivery_fee.replace(/,/g, "") || "0");
@@ -550,6 +579,189 @@ function Products() {
               </button>
             </div>
           </div>
+
+          {/* Upload Method Selection (Quick Upload vs Full Product Upload) - MARKET Items Only */}
+          {formFields.product_type === "MARKET" && (
+            <div className="w-full flex flex-col gap-y-1.5 mb-2">
+              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+                Upload Method
+              </label>
+              <div className="grid grid-cols-2 gap-2 p-1 bg-emerald-50/70 border border-emerald-200/60 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => setUploadMode("quick")}
+                  className={`py-2 px-3 rounded-lg text-xs sm:text-sm font-extrabold transition-all flex items-center justify-center gap-1.5 ${
+                    uploadMode === "quick"
+                      ? "bg-global-green text-white shadow-md"
+                      : "text-gray-700 hover:bg-emerald-100/50"
+                  }`}
+                >
+                  <Zap size={16} className={uploadMode === "quick" ? "text-amber-300" : "text-global-green"} />
+                  <span>Quick Upload (Simplified)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUploadMode("full")}
+                  className={`py-2 px-3 rounded-lg text-xs sm:text-sm font-extrabold transition-all flex items-center justify-center gap-1.5 ${
+                    uploadMode === "full"
+                      ? "bg-global-green text-white shadow-md"
+                      : "text-gray-700 hover:bg-emerald-100/50"
+                  }`}
+                >
+                  <FiEdit2 size={15} />
+                  <span>Full Product Upload</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {formFields.product_type === "MARKET" && uploadMode === "quick" ? (
+            <div className="flex flex-col gap-y-4">
+              {/* Seller Contact Info Box */}
+              <div className="flex flex-col gap-y-3 bg-gray-50 p-3.5 rounded-xl border border-gray-200">
+                <div className="flex items-center gap-2 border-b border-gray-200 pb-2">
+                  <FiTag className="text-global-green w-4 h-4" />
+                  <span className="text-xs font-bold text-gray-800">
+                    Seller Contact Details (Prefilled)
+                  </span>
+                </div>
+
+                {/* Missing Phone Number Flag Alert (Requirement 4) */}
+                {(!user?.phone_number || !userPhone.trim()) && (
+                  <div className="bg-amber-50 border border-amber-300 p-3 rounded-xl flex items-start gap-2.5 text-xs text-amber-900">
+                    <AlertTriangle className="text-amber-600 w-4 h-4 mt-0.5 shrink-0" />
+                    <div>
+                      <span className="font-bold block">Phone Number Missing</span>
+                      <span>
+                        If you registered using <strong>Google</strong> or <strong>Facebook</strong>, your account might not have a phone number attached. Please fill in your phone number below or update it in Account Information so buyers can contact you!
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="flex flex-col gap-y-1">
+                    <label className="text-xs font-bold text-gray-700">Email Address *</label>
+                    <input
+                      type="email"
+                      required
+                      readOnly
+                      value={userEmail || user?.email || ""}
+                      className="w-full px-3 py-2 text-xs bg-gray-100 border border-gray-300 rounded-lg text-gray-700 cursor-not-allowed"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-y-1">
+                    <label className="text-xs font-bold text-gray-700">Phone Number *</label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="e.g. 08012345678"
+                      value={userPhone}
+                      onChange={(e) => setUserPhone(e.target.value)}
+                      className="w-full px-3 py-2 text-xs bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Product Title */}
+              <div className="flex flex-col gap-y-1">
+                <label className="text-xs font-semibold text-gray-700">Product Title / Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Clean 2.8kVA Generator / Air Fryer / iPhone 13"
+                  value={formFields.product_name}
+                  onChange={(e) => setFormFields({ ...formFields, product_name: e.target.value })}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                />
+              </div>
+
+              {/* Price & Category */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-y-1">
+                  <label className="text-xs font-semibold text-gray-700">Price (₦) *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. 37,000"
+                    value={formFields.product_price}
+                    onChange={(e) => {
+                      const numeric = e.target.value.replace(/\D/g, "");
+                      const formatted = numeric.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                      setFormFields({
+                        ...formFields,
+                        product_price: formatted,
+                        market_price_from: formatted,
+                        market_price_to: formatted,
+                      });
+                    }}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  />
+                </div>
+                <div className="flex flex-col gap-y-1">
+                  <label className="text-xs font-semibold text-gray-700">Category *</label>
+                  <select
+                    required
+                    value={formFields.category_name}
+                    onChange={(e) => setFormFields({ ...formFields, category_name: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  >
+                    <option value="">-- Select Category --</option>
+                    {categories.map((cat, i) => (
+                      <option key={i} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Condition & Location */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-y-1">
+                  <label className="text-xs font-semibold text-gray-700">Condition *</label>
+                  <select
+                    value={formFields.condition || "NEW"}
+                    onChange={(e) => setFormFields({ ...formFields, condition: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  >
+                    <option value="NEW">New (Brand New)</option>
+                    <option value="USED">Used / Pre-owned</option>
+                    <option value="REFURBISHED">Refurbished</option>
+                  </select>
+                </div>
+                <div className="flex flex-col gap-y-1">
+                  <label className="text-xs font-semibold text-gray-700">State / Location *</label>
+                  <select
+                    value={formFields.state || "Enugu"}
+                    onChange={(e) => setFormFields({ ...formFields, state: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  >
+                    {statesInNigeria.map((st, i) => (
+                      <option key={i} value={st.value}>
+                        {st.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="flex flex-col gap-y-1">
+                <label className="text-xs font-semibold text-gray-700">Description & Details *</label>
+                <textarea
+                  required
+                  rows={3}
+                  placeholder="Describe your item, features, usage duration, reason for selling..."
+                  value={formFields.description}
+                  onChange={(e) => setFormFields({ ...formFields, description: e.target.value })}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                />
+              </div>
+            </div>
+          ) : (
+            <>
 
           {/* Additional Service Fields */}
           {formFields.product_type === "SERVICE" && (
@@ -858,6 +1070,8 @@ function Products() {
               </div>
             </>
           )}
+          </>
+          )}
 
           <div className="w-full flex flex-col relative gap-y-3 p-3 rounded-xl border border-borderColor">
             <span className="text-primary-300 font-normal text-sm">
@@ -983,7 +1197,7 @@ function Products() {
             type="file"
             ref={imageInputRef}
             multiple
-            accept=".jpg, .jpeg"
+            accept="image/*"
             className="hidden"
             onChange={handleAddImages}
           />

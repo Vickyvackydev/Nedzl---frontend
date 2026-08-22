@@ -2,7 +2,7 @@ import { EDIT_PROFILE, GREEN_USER } from "../../../assets";
 import SelectInput from "../../../components/SelectInput";
 import Button from "../../../components/Button";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, Heart, Package, ShoppingBag, TrendingUp } from "lucide-react";
+import { Eye, Heart, Package, ShoppingBag, TrendingUp, AlertTriangle } from "lucide-react";
 import { getUserProfile, updateUser } from "../../../services/auth.service";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
@@ -90,6 +90,21 @@ function Account() {
 
   return (
     <div className="w-full flex items-center gap-y-3 flex-col justify-center py-10">
+      {/* Warning Flag for Missing Phone Number (e.g. Google / Facebook signups) */}
+      {(!user?.phone_number || !fields.phone_number.trim()) && (
+        <div className="w-[96%] bg-amber-50 border border-amber-300 p-4 rounded-xl flex items-start gap-3 text-xs text-amber-900 shadow-xs mb-2">
+          <AlertTriangle className="text-amber-600 w-5 h-5 mt-0.5 shrink-0" />
+          <div className="flex flex-col gap-0.5">
+            <span className="font-extrabold text-amber-900 text-xs sm:text-sm">
+              Phone Number Missing
+            </span>
+            <span className="text-amber-800 leading-relaxed">
+              If you signed up using <strong>Google</strong> or <strong>Facebook</strong>, your account might not have a phone number attached.
+              Please add your phone number below and click <strong>Update</strong> so buyers and delivery contacts can reach you!
+            </span>
+          </div>
+        </div>
+      )}
       {/* Statistics Cards Grid */}
       <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-4 px-4 mb-6">
         <div className="bg-white p-4 rounded-xl border border-gray-50 shadow-sm flex flex-col gap-y-1">

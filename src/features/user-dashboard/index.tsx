@@ -31,6 +31,7 @@ import {
   setProductFields,
 } from "../../state/slices/globalReducer";
 import { reset } from "../../state/slices/authReducer";
+import { queryClient } from "../../config";
 import { useNavigate, useSearchParams } from "react-router-dom";
 // import { motion } from "framer-motion";
 // import Button from "../../components/Button";
@@ -163,6 +164,7 @@ function UserDashboard() {
       <button
         onClick={() => {
           dispatch(reset());
+          queryClient.clear();
           navigate("/");
           closeSidebar();
         }}

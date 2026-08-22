@@ -8,7 +8,8 @@ import SearchBar from "./SearchBar";
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile } from "../services/auth.service";
 import { useSidebar } from "../context/SidebarContext";
-import { Store } from "../state/store";
+import { useSelector } from "react-redux";
+import { selectToken } from "../state/slices/authReducer";
 import GuestProductListingModal from "./GuestProductListingModal";
 
 function Header() {
@@ -17,13 +18,14 @@ function Header() {
   const { toggleSidebar } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
+  const token = useSelector(selectToken);
   const { data: userProfile } = useQuery({
     queryKey: ["profile"],
     queryFn: getUserProfile,
-    enabled: !!Store.getState().auths.token,
+    enabled: !!token,
   });
   const user = userProfile?.data?.user;
-  const isLoggedIn = !!Store.getState().auths.token || !!user;
+  const isLoggedIn = !!token && !!user;
   const isDashboard = location.pathname.startsWith("/dashboard");
 
   const handlePostProductClick = () => {

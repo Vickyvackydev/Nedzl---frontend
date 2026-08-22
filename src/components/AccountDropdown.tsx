@@ -7,6 +7,7 @@ import { reset, selectToken } from "../state/slices/authReducer";
 import { ChevronDown } from "lucide-react";
 import Modal from "./Modal";
 import Button from "./Button";
+import { queryClient } from "../config";
 
 export default function AccountDropdown({ user }: any) {
   const [open, setOpen] = useState(false);
@@ -38,6 +39,7 @@ export default function AccountDropdown({ user }: any) {
 
   const handleLogout = () => {
     dispatch(reset());
+    queryClient.clear();
     setShowLogoutModal(false);
     navigate("/");
   };
