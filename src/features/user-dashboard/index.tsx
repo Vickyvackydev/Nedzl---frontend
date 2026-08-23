@@ -26,9 +26,11 @@ import CustomerReview from "./components/CustomerReview";
 import MyReview from "./components/MyReview";
 import Settings from "./components/Settings";
 import { useDispatch, useSelector } from "react-redux";
+import { Zap } from "lucide-react";
 import {
   selectProductFields,
   setProductFields,
+  setUploadMode,
 } from "../../state/slices/globalReducer";
 import { reset } from "../../state/slices/authReducer";
 import { queryClient } from "../../config";
@@ -228,26 +230,43 @@ function UserDashboard() {
                     : formatText(activeTab)}
                 </span>
                 {activeTab === "my_products" && (
-                  <button
-                    onClick={() => dispatch(setProductFields(true))}
-                    className="flex items-center gap-1.5 bg-[#00C853]/10 text-[#00C853] text-sm font-medium px-3 py-1.5 rounded-md hover:bg-[#00C853]/20 transition-all duration-200"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={2}
-                      stroke="currentColor"
-                      className="w-4 h-4"
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        dispatch(setUploadMode("quick"));
+                        dispatch(setProductFields(true));
+                      }}
+                      className="flex items-center gap-1.5 bg-gradient-to-r from-[#FF9900] to-[#FF5500] hover:from-[#FF5500] hover:to-[#D44400] text-white font-extrabold text-xs sm:text-sm px-3.5 py-1.5 rounded-xl transition-all shadow-sm shadow-orange-500/20 active:scale-95 cursor-pointer border border-orange-400/30"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 4.5v15m7.5-7.5h-15"
-                      />
-                    </svg>
-                    Add Product
-                  </button>
+                      <Zap size={15} className="text-amber-300 fill-amber-300 shrink-0" />
+                      <span>Quick Upload</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        dispatch(setUploadMode("full"));
+                        dispatch(setProductFields(true));
+                      }}
+                      className="flex items-center gap-1.5 bg-[#00C853]/10 text-[#00C853] text-xs sm:text-sm font-medium px-3 py-1.5 rounded-xl hover:bg-[#00C853]/20 transition-all duration-200 cursor-pointer"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className="w-4 h-4"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M12 4.5v15m7.5-7.5h-15"
+                        />
+                      </svg>
+                      Add Product
+                    </button>
+                  </div>
                 )}
               </div>
             ) : (

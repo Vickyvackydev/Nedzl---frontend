@@ -10,8 +10,10 @@ import Button from "../../../components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectProductFields,
+  selectUploadMode,
   setCurrentPage,
   setProductFields,
+  setUploadMode,
 } from "../../../state/slices/globalReducer";
 import SelectInput from "../../../components/SelectInput";
 import RichTextEditor from "../../../components/RichTextEditor";
@@ -67,7 +69,7 @@ function Products() {
   const maxImages = 5;
   const [loading, setLoading] = useState(false);
 
-  const [uploadMode, setUploadMode] = useState<"quick" | "full">("quick");
+  const uploadMode = useSelector(selectUploadMode);
   const [userEmail, setUserEmail] = useState("");
   const [userPhone, setUserPhone] = useState("");
 
@@ -579,41 +581,6 @@ function Products() {
               </button>
             </div>
           </div>
-
-          {/* Upload Method Selection (Quick Upload vs Full Product Upload) - MARKET Items Only */}
-          {formFields.product_type === "MARKET" && (
-            <div className="w-full flex flex-col gap-y-1.5 mb-2">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                Upload Method
-              </label>
-              <div className="grid grid-cols-2 gap-2 p-1 bg-emerald-50/70 border border-emerald-200/60 rounded-xl">
-                <button
-                  type="button"
-                  onClick={() => setUploadMode("quick")}
-                  className={`py-2 px-3 rounded-lg text-xs sm:text-sm font-extrabold transition-all flex items-center justify-center gap-1.5 ${
-                    uploadMode === "quick"
-                      ? "bg-global-green text-white shadow-md"
-                      : "text-gray-700 hover:bg-emerald-100/50"
-                  }`}
-                >
-                  <Zap size={16} className={uploadMode === "quick" ? "text-amber-300" : "text-global-green"} />
-                  <span>Quick Upload (Simplified)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setUploadMode("full")}
-                  className={`py-2 px-3 rounded-lg text-xs sm:text-sm font-extrabold transition-all flex items-center justify-center gap-1.5 ${
-                    uploadMode === "full"
-                      ? "bg-global-green text-white shadow-md"
-                      : "text-gray-700 hover:bg-emerald-100/50"
-                  }`}
-                >
-                  <FiEdit2 size={15} />
-                  <span>Full Product Upload</span>
-                </button>
-              </div>
-            </div>
-          )}
 
           {formFields.product_type === "MARKET" && uploadMode === "quick" ? (
             <div className="flex flex-col gap-y-4">
@@ -1465,15 +1432,30 @@ function Products() {
                   ? "Closed listings will appear here"
                   : "Posted items in this category will appear here"}
               </span>
-              <Button
-                title="Post a new product"
-                textStyle="text-white font-medium text-sm"
-                handleClick={() => {
-                  reset();
-                  dispatch(setProductFields(true));
-                }}
-                btnStyles="w-fit px-5 py-3 rounded-xl bg-global-green"
-              />
+              <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    reset();
+                    dispatch(setUploadMode("quick"));
+                    dispatch(setProductFields(true));
+                  }}
+                  className="flex items-center gap-2 bg-gradient-to-r from-[#FF9900] to-[#FF5500] hover:from-[#FF5500] hover:to-[#D44400] text-white font-extrabold text-sm px-6 py-3 rounded-xl transition-all shadow-md shadow-orange-500/20 active:scale-95 cursor-pointer border border-orange-400/30"
+                >
+                  <Zap size={16} className="text-amber-300 fill-amber-300 shrink-0" />
+                  <span>Quick Upload Item</span>
+                </button>
+                <Button
+                  title="Full Product Listing"
+                  textStyle="text-gray-700 font-bold text-sm"
+                  handleClick={() => {
+                    reset();
+                    dispatch(setUploadMode("full"));
+                    dispatch(setProductFields(true));
+                  }}
+                  btnStyles="w-fit px-5 py-3 rounded-xl bg-gray-100 border border-gray-300 hover:bg-gray-200 text-gray-700 cursor-pointer"
+                />
+              </div>
             </div>
           )}
         </>

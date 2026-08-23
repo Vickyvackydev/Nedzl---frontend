@@ -5,6 +5,7 @@ import { ProductResponse } from "../../types";
 
 interface GlobalTypes {
   productFields: boolean;
+  uploadMode: "quick" | "full";
   globalUserId: string | null;
   userAction:
     | "SUSPEND"
@@ -21,6 +22,7 @@ interface GlobalTypes {
 }
 const initialState: GlobalTypes = {
   productFields: false,
+  uploadMode: "quick",
   globalUserId: null,
   userAction: null,
   productDetails: null,
@@ -34,6 +36,9 @@ export const GlobalSlice = createSlice({
   reducers: {
     setProductFields: (state, action: PayloadAction<boolean>) => {
       state.productFields = action.payload;
+    },
+    setUploadMode: (state, action: PayloadAction<"quick" | "full">) => {
+      state.uploadMode = action.payload;
     },
     setUserId: (state, action: PayloadAction<string | null>) => {
       state.globalUserId = action.payload;
@@ -74,6 +79,7 @@ export const GlobalSlice = createSlice({
     },
     resetGlobalState: (state) => {
       state.productFields = false;
+      state.uploadMode = "quick";
       state.globalUserId = null;
       state.userAction = null;
       state.productDetails = null;
@@ -85,6 +91,7 @@ export const GlobalSlice = createSlice({
 
 export const {
   setProductFields,
+  setUploadMode,
   setUserId,
   setUserAction,
   setProductDetails,
@@ -96,6 +103,8 @@ export const {
 
 export const selectProductFields = (state: RootState) =>
   state.globalstate.productFields;
+export const selectUploadMode = (state: RootState) =>
+  state.globalstate.uploadMode;
 export const selectUserId = (state: RootState) =>
   state.globalstate.globalUserId;
 export const selectUserAction = (state: RootState) =>
