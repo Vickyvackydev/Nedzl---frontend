@@ -24,7 +24,7 @@ import {
 } from "../../../constant";
 import imageCompression from "browser-image-compression";
 
-import { FiEdit2, FiSearch, FiTag, FiX } from "react-icons/fi";
+import { FiEdit2, FiSearch, FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
 import FullScreenLoader from "../../../components/FullScreenLoader";
 import { ProductType } from "../../../types";
@@ -35,7 +35,7 @@ import {
   updateProductStatus,
   uploadProduct,
 } from "../../../services/product.service";
-import { getUserProfile } from "../../../services/auth.service";
+import { getUserProfile, updateUser } from "../../../services/auth.service";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
 import { formatText } from "../../../utils";
@@ -72,8 +72,9 @@ function Products() {
   const uploadMode = useSelector(selectUploadMode);
   const [userEmail, setUserEmail] = useState("");
   const [userPhone, setUserPhone] = useState("");
+  const [savingPhone, setSavingPhone] = useState(false);
 
-  const { data: userProfile } = useQuery({
+  const { data: userProfile, refetch: refetchProfile } = useQuery({
     queryKey: ["profile"],
     queryFn: getUserProfile,
   });
@@ -85,6 +86,29 @@ function Products() {
       if (!userPhone) setUserPhone(user.phone_number || "");
     }
   }, [user]);
+
+  const handleSavePhoneNumber = async () => {
+    if (!userPhone.trim()) {
+      toast.error("Please enter a valid phone number");
+      return;
+    }
+    setSavingPhone(true);
+    try {
+      const userFormData = new FormData();
+      userFormData.append("user_name", user?.user_name || "");
+      userFormData.append("email", user?.email || "");
+      userFormData.append("phone_number", userPhone.trim());
+      const res = await updateUser(userFormData);
+      if (res) {
+        toast.success("Phone number updated successfully!");
+        refetchProfile();
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error || "Failed to update phone number");
+    } finally {
+      setSavingPhone(false);
+    }
+  };
 
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [formFields, setFormFields] = useState({
@@ -293,9 +317,29 @@ function Products() {
   };
 
   const handleCreateProduct = async () => {
+    // Universal check: User MUST have a phone number on the platform to post any product
+    const effectivePhone = userPhone.trim() || user?.phone_number || "";
+    if (!effectivePhone) {
+      toast.error("Please add your phone number to your account before posting items so buyers can contact you!");
+      return;
+    }
+
+    // Auto-update phone number on user profile if missing and entered now
+    if (!user?.phone_number && userPhone.trim()) {
+      try {
+        const userFormData = new FormData();
+        userFormData.append("user_name", user?.user_name || "");
+        userFormData.append("email", user?.email || "");
+        userFormData.append("phone_number", userPhone.trim());
+        await updateUser(userFormData);
+        refetchProfile();
+      } catch (err) {
+        console.error("Failed to auto-update phone number", err);
+      }
+    }
+
     // Type-specific required fields validation
     if (formFields.product_type === "MARKET" && uploadMode === "quick") {
-      if (!userPhone.trim()) { toast.error("Phone number is required"); return; }
       if (!formFields.product_name) { toast.error("Product Title is required"); return; }
       if (!formFields.product_price) { toast.error("Price is required"); return; }
       if (!formFields.category_name) { toast.error("Category is required"); return; }
@@ -582,54 +626,41 @@ function Products() {
             </div>
           </div>
 
-          {formFields.product_type === "MARKET" && uploadMode === "quick" ? (
-            <div className="flex flex-col gap-y-4">
-              {/* Seller Contact Info Box */}
-              <div className="flex flex-col gap-y-3 bg-gray-50 p-3.5 rounded-xl border border-gray-200">
-                <div className="flex items-center gap-2 border-b border-gray-200 pb-2">
-                  <FiTag className="text-global-green w-4 h-4" />
-                  <span className="text-xs font-bold text-gray-800">
-                    Seller Contact Details (Prefilled)
-                  </span>
-                </div>
-
-                {/* Missing Phone Number Flag Alert (Requirement 4) */}
-                {(!user?.phone_number || !userPhone.trim()) && (
-                  <div className="bg-amber-50 border border-amber-300 p-3 rounded-xl flex items-start gap-2.5 text-xs text-amber-900">
-                    <AlertTriangle className="text-amber-600 w-4 h-4 mt-0.5 shrink-0" />
-                    <div>
-                      <span className="font-bold block">Phone Number Missing</span>
-                      <span>
-                        If you registered using <strong>Google</strong> or <strong>Facebook</strong>, your account might not have a phone number attached. Please fill in your phone number below or update it in Account Information so buyers can contact you!
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="flex flex-col gap-y-1">
-                    <label className="text-xs font-bold text-gray-700">Email Address *</label>
-                    <input
-                      type="email"
-                      required
-                      readOnly
-                      value={userEmail || user?.email || ""}
-                      className="w-full px-3 py-2 text-xs bg-gray-100 border border-gray-300 rounded-lg text-gray-700 cursor-not-allowed"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-y-1">
-                    <label className="text-xs font-bold text-gray-700">Phone Number *</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="e.g. 08012345678"
-                      value={userPhone}
-                      onChange={(e) => setUserPhone(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-                    />
-                  </div>
+          {/* Missing Phone Number Alert & Input (Required before posting) */}
+          {(!user?.phone_number && !userPhone.trim()) && (
+            <div className="bg-amber-50 border border-amber-300 p-3.5 rounded-xl flex items-start gap-3 text-xs text-amber-900 shadow-sm mb-3">
+              <AlertTriangle className="text-amber-600 w-5 h-5 mt-0.5 shrink-0" />
+              <div className="flex flex-col gap-1 w-full">
+                <span className="font-extrabold text-amber-900 text-sm">
+                  Phone Number Required To Post
+                </span>
+                <span className="text-amber-800 leading-relaxed">
+                  Your account is missing a phone number (common for Google or Facebook signups). Please enter your phone number below before posting so buyers can contact you!
+                </span>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mt-1">
+                  <input
+                    type="tel"
+                    required
+                    placeholder="e.g. 08012345678"
+                    value={userPhone}
+                    onChange={(e) => setUserPhone(e.target.value)}
+                    className="px-3 py-2 text-xs bg-white border border-amber-400 rounded-lg outline-none focus:ring-2 focus:ring-amber-500/20 text-gray-900 font-medium flex-1"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSavePhoneNumber}
+                    disabled={savingPhone || !userPhone.trim()}
+                    className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg transition-colors shadow-xs shrink-0 cursor-pointer"
+                  >
+                    {savingPhone ? "Saving..." : "Save Phone Number"}
+                  </button>
                 </div>
               </div>
+            </div>
+          )}
+
+          {formFields.product_type === "MARKET" && uploadMode === "quick" ? (
+            <div className="flex flex-col gap-y-4">
 
               {/* Product Title */}
               <div className="flex flex-col gap-y-1">
