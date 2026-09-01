@@ -62,8 +62,17 @@ export default function RichTextEditor({
   });
 
   useEffect(() => {
-    if (editor && content !== editor.getHTML()) {
-      editor.commands.setContent(content, { emitUpdate: false });
+    if (editor && content) {
+      const formatted = /<[a-z][\s\S]*>/i.test(content)
+        ? content
+        : content
+            .split(/\r?\n\r?\n/)
+            .map((p) => `<p>${p.replace(/\r?\n/g, "<br />")}</p>`)
+            .join("");
+
+      if (formatted !== editor.getHTML()) {
+        editor.commands.setContent(formatted, { emitUpdate: false });
+      }
     }
   }, [editor, content]);
 

@@ -267,6 +267,15 @@ function Products() {
   const handleEditProduct = (product: ProductType) => {
     setEditingProduct(product);
 
+    // Ensure raw description text retains formatting & linebreaks in rich text editor
+    const rawDesc = product.description || "";
+    const formattedDesc = /<[a-z][\s\S]*>/i.test(rawDesc)
+      ? rawDesc
+      : rawDesc
+          .split(/\r?\n\r?\n/)
+          .map((p) => `<p>${p.replace(/\r?\n/g, "<br />")}</p>`)
+          .join("");
+
     // Populate form fields
     setFormFields({
       product_name: product.product_name || "",
@@ -286,7 +295,7 @@ function Products() {
       state: product.state || "",
       address_in_state: product.address_in_state || "",
       outstanding_issues: product.outstanding_issues || "",
-      description: product.description || "",
+      description: formattedDesc,
       condition: product.condition || "",
       is_negotiable: product.is_negotiable ? "yes" : "no",
       brand_name: (product as any).brand_name || "",
@@ -305,6 +314,8 @@ function Products() {
     setExistingImageUrls(imageUrls);
     setImages([]); // Clear new file uploads
 
+    // Strictly open the main/full product upload form for editing
+    dispatch(setUploadMode("full"));
     // Show the form
     dispatch(setProductFields(true));
   };
