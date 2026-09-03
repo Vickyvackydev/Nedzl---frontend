@@ -19,6 +19,7 @@ export { default as MISSION } from "../assets/images/mission.svg";
 export { default as VISION } from "../assets/images/vision.svg";
 export { default as TIKTOK } from "../assets/icons/tiktok-xxl.png";
 export { default as INSTAGRAM } from "../assets/images/basil_instagram-solid.svg";
+export { default as LINKEDIN } from "../assets/images/linkedin.svg";
 export { default as LEXUS } from "../assets/images/lexus.jpg";
 export { default as GRAY_PLAY } from "../assets/icons/gray-play.svg";
 export { default as LOCATION } from "../assets/images/location.svg";

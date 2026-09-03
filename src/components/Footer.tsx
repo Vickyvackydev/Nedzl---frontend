@@ -3,6 +3,7 @@ import {
   FACEBOOK,
   // FEND_FOOTER_LOGO,
   INSTAGRAM,
+  LINKEDIN,
   NEDZL_LOGO_GREEN,
   TIKTOK,
   X,
@@ -94,6 +95,10 @@ function Footer() {
                 {
                   icon: TIKTOK,
                   link: "https://www.tiktok.com/@nedzl_?_r=1&_t=ZS-939GyJuQQ5a",
+                },
+                {
+                  icon: LINKEDIN,
+                  link: "https://www.linkedin.com/company/nedzlworld/",
                 },
               ].map((item, index) => (
                 <Link
